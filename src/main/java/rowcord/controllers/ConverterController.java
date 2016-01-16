@@ -1,4 +1,4 @@
-package rowcord;
+package rowcord.controllers;
 
 import responses.JsonResponse;
 import responses.WeightAdjustedResponse;
@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestBody;
+import rowcord.Test;
 import utilities.WeightAdjuster;
 
 
@@ -16,6 +17,7 @@ import utilities.WeightAdjuster;
  */
 
 @RestController
+@RequestMapping("/api")
 public class ConverterController {
 
     public ConverterController() {

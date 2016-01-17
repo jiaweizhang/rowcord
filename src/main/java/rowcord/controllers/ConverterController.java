@@ -28,7 +28,7 @@ public class ConverterController {
             method = RequestMethod.GET)
     @ResponseBody
     public WeightAdjustedResponse test(@RequestParam(value = "lbs", defaultValue = "0") double lbs, @RequestParam(value = "secs", defaultValue = "0") double secs, @RequestParam(value = "meters", defaultValue = "0") double meters) {
-        return new WeightAdjustedResponse(WeightAdjuster.adjust(lbs, secs, meters));
+        return WeightAdjuster.adjust(lbs, secs, meters);
     }
 
     @RequestMapping(value = "/addTest",

@@ -31,11 +31,17 @@ public class AccountProcess {
             System.out.println("Failed prepared statement");
             return getBadRegisterResponse("Failed prepared statement");
         }
+        String passwordHash = null;
+        try {
+            passwordHash = PasswordHash.createHash(password);}
+        catch (Exception g) {
+            return getBadRegisterResponse("Failed during hashing");
+        }
         try {
             System.out.println();
             System.out.println("register");
             st.setString(1, email);
-            st.setString(2, PasswordHash.createHash(password));
+            st.setString(2, passwordHash);
             st.setString(3, "null");
             st.executeUpdate();
             st.close();

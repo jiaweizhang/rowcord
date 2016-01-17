@@ -1,52 +1,87 @@
-package rowcord.models;
+package rowcord.processes;
 
 import databases.JDBC;
 import org.apache.tomcat.util.codec.binary.Base64;
 import responses.JsonResponse;
+import responses.LoginResponse;
 
 import java.io.ByteArrayOutputStream;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 /**
  * Created by jiawe on 1/17/2016.
  */
-public class AccountModel {
+public class AccountProcess {
     private String email;
     private byte[] password;
 
-    public AccountModel(String email, String password) {
+    public AccountProcess(String email, String password) {
         this.email = email;
         this.password = stringToByte(password);
     }
 
-    public JsonResponse addToDatabase() {
+    public JsonResponse register() {
         Connection c = JDBC.connect();
         PreparedStatement st = null;
         try {
             st = c.prepareStatement("INSERT INTO accounts (email, passhash, salt) VALUES (?, ?, ?);");
-            //st = c.prepareStatement("INSERT INTO accounts (email, passhash, salt) VALUES (emale, pahs, salty);");
         } catch (Exception e) {
             System.out.println("Failed prepared statement");
-            return getBadResponse();
+            return getBadRegisterResponse();
         }
         try {
             st.setString(1, email);
             byte[] salt = generateSalt();
             st.setString(2, generateHash(password, salt));
-            st.setString(3, Base64.encodeBase64String(salt));
+            st.setString(3, byteToString(salt));
             System.out.println("salt: "+Base64.encodeBase64String(salt));
             System.out.println("hash: "+generateHash(password, salt));
             st.executeUpdate();
             st.close();
+            return getGoodRegisterResponse();
         } catch (Exception f) {
             f.printStackTrace();
             System.out.println("Failed during execution");
-            return getBadResponse();
+            return getBadRegisterResponse();
         }
-        return getGoodResponse();
+    }
+
+    public LoginResponse login() {
+        Connection c = JDBC.connect();
+        PreparedStatement st = null;
+        try {
+            st = c.prepareStatement("SELECT passhash, salt, token FROM accounts WHERE email = ?;");
+        } catch (Exception e) {
+            System.out.println("Failed prepared statement");
+            return getBadLoginResponse();
+        }
+        try {
+            st.setString(1, email);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                String salt = rs.getString("salt");
+                byte[] byteSalt = stringToByte(salt);
+                String passhash = rs.getString("passhash");
+                String token = rs.getString("token");
+                st.close();
+                rs.close();
+                String calchash = generateHash(password, byteSalt);
+                if (passhash.equals(calchash)) {
+                    return getGoodLoginResponse(token);
+                } else {
+                    return getBadLoginResponse();
+                }
+            }
+            return getBadLoginResponse();
+        } catch (Exception f) {
+            f.printStackTrace();
+            System.out.println("Failed during execution");
+            return getBadLoginResponse();
+        }
     }
 
     private byte[] generateSalt() {
@@ -69,7 +104,6 @@ public class AccountModel {
             outputStream.write( str );
             outputStream.write( salt );
             byte c[] = outputStream.toByteArray( );
-
             md.update(c);
             byte[] digest = md.digest();
             String output = byteToString(digest);
@@ -80,11 +114,11 @@ public class AccountModel {
         }
     }
 
-    public String byteToString(byte[] input) {
+    private String byteToString(byte[] input) {
         return Base64.encodeBase64String(input);
     }
 
-    public byte[] stringToByte(String input) {
+    private byte[] stringToByte(String input) {
         if (Base64.isBase64(input)) {
             return Base64.decodeBase64(input);
         } else {
@@ -92,13 +126,23 @@ public class AccountModel {
         }
     }
 
-    private JsonResponse getGoodResponse() {
+    private JsonResponse getGoodRegisterResponse() {
         JsonResponse response = new JsonResponse("Ok", "Successfully added");
         return response;
     }
 
-    private JsonResponse getBadResponse() {
+    private JsonResponse getBadRegisterResponse() {
         JsonResponse response = new JsonResponse("Bad", "Failed to add");
+        return response;
+    }
+
+    private LoginResponse getGoodLoginResponse(String token) {
+        LoginResponse response = new LoginResponse("Ok", "Valid email and password", token);
+        return response;
+    }
+
+    private LoginResponse getBadLoginResponse() {
+        LoginResponse response = new LoginResponse("Bad", "Invalid email and password", "");
         return response;
     }
 }

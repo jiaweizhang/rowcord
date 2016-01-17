@@ -4,12 +4,13 @@ package rowcord.controllers;
  * Created by jiawe on 1/16/2016.
  */
 
-import databases.JDBC;
 import org.springframework.web.bind.annotation.*;
+import requestdata.LoginData;
 import requestdata.RegisterData;
 import responses.JsonResponse;
+import responses.LoginResponse;
 import responses.Test;
-import rowcord.models.AccountModel;
+import rowcord.processes.AccountProcess;
 
 @RestController
 @RequestMapping("/api/account")
@@ -20,16 +21,17 @@ public class AccountController {
             headers = {"Content-type=application/json"})
     @ResponseBody
     public JsonResponse register(@RequestBody final RegisterData rd) {
-        AccountModel am = new AccountModel(rd.getEmail(), rd.getPassword());
-        return am.addToDatabase();
+        AccountProcess ap = new AccountProcess(rd.getEmail(), rd.getPassword());
+        return ap.register();
     }
 
-    @RequestMapping("/login")
-    public Test login() {
-        //JDBC pg = new JDBC();
-        //String output = pg.connect();
-        return new Test(2, "login", "login");
-
+    @RequestMapping(value = "/login",
+            method = RequestMethod.POST,
+            headers = {"Content-type=application/json"})
+    @ResponseBody
+    public LoginResponse login(@RequestBody final LoginData ld) {
+        AccountProcess ap = new AccountProcess(ld.getEmail(), ld.getPassword());
+        return ap.login();
     }
 
     @RequestMapping("/logout")

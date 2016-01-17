@@ -16,6 +16,7 @@ import rowcord.processes.AccountProcess;
 @RequestMapping("/api/account")
 public class AccountController {
 
+    @CrossOrigin
     @RequestMapping(value = "/register",
             method = RequestMethod.POST,
             headers = {"Content-type=application/json"})
@@ -23,6 +24,13 @@ public class AccountController {
     public RegisterResponse register(@RequestBody final RegisterData rd) {
         AccountProcess ap = new AccountProcess(rd.getEmail(), rd.getPassword());
         return ap.register();
+    }
+
+    @RequestMapping(value = "/register",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse test() {
+        return new JsonResponse("one", "two");
     }
 
     @RequestMapping(value = "/login",

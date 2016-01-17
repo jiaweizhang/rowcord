@@ -1,7 +1,9 @@
 package rowcord.processes;
 
 import databases.JDBC;
-import org.apache.tomcat.util.codec.binary.Base64;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import responses.LoginResponse;
 import responses.RegisterResponse;
 
@@ -21,7 +23,10 @@ public class AccountProcess {
 
     public AccountProcess(String email, String password) {
         this.email = email;
+        System.out.println("prepassword : "+password);
         this.password = stringToByte(password);
+        System.out.println("postpassword: "+this.password);
+        System.out.println("erggpassword: "+byteToString(this.password));
     }
 
     public RegisterResponse register() {
@@ -34,12 +39,17 @@ public class AccountProcess {
             return getBadRegisterResponse();
         }
         try {
+            System.out.println();
+
+            System.out.println("register");
             st.setString(1, email);
             byte[] salt = generateSalt();
-            st.setString(2, generateHash(password, salt));
+            st.setString(2, byteToString(generateHash(salt)));
             st.setString(3, byteToString(salt));
-            System.out.println("salt: "+Base64.encodeBase64String(salt));
-            System.out.println("hash: "+generateHash(password, salt));
+            System.out.println("salt: "+byteToString(salt));
+            System.out.println("password: "+password);
+            System.out.println("bytehash: "+generateHash(salt));
+            System.out.println("passhash: "+byteToString(generateHash(salt)));
             st.executeUpdate();
             st.close();
             return getGoodRegisterResponse();
@@ -63,14 +73,24 @@ public class AccountProcess {
             st.setString(1, email);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
+                System.out.println();
+                System.out.println("login");
+
                 String salt = rs.getString("salt");
+                System.out.println("salt: "+salt);
                 byte[] byteSalt = stringToByte(salt);
                 String passhash = rs.getString("passhash");
                 String token = rs.getString("token");
                 st.close();
                 rs.close();
-                String calchash = generateHash(password, byteSalt);
-                if (passhash.equals(calchash)) {
+                byte[] bytehash = stringToByte(passhash);
+                byte[] calchash = generateHash(byteSalt);
+                String finalhash = byteToString(calchash);
+                System.out.println("password: "+password);
+                System.out.println("passhash: "+passhash);
+                System.out.println("bytehash: "+bytehash);
+                System.out.println("calchash: "+calchash);
+                if (finalhash.equals(passhash)) {
                     return getGoodLoginResponse(token);
                 } else {
                     return getBadLoginResponse();
@@ -97,17 +117,16 @@ public class AccountProcess {
         return salt;
     }
 
-    private String generateHash(byte[] str, byte[] salt) {
+    private byte[] generateHash(byte[] salt) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
-            outputStream.write( str );
+            outputStream.write( password );
             outputStream.write( salt );
             byte c[] = outputStream.toByteArray( );
             md.update(c);
             byte[] digest = md.digest();
-            String output = byteToString(digest);
-            return output;
+            return digest;
         } catch(Exception e) {
             System.out.println("Failed during generatehash");
             return null;
@@ -115,15 +134,13 @@ public class AccountProcess {
     }
 
     private String byteToString(byte[] input) {
-        return Base64.encodeBase64String(input);
+        String encoded = Base64.getEncoder().encodeToString(input);
+        return encoded;
     }
 
     private byte[] stringToByte(String input) {
-        if (Base64.isBase64(input)) {
-            return Base64.decodeBase64(input);
-        } else {
-            return Base64.encodeBase64(input.getBytes());
-        }
+        byte[] decoded = Base64.getDecoder().decode(input);
+        return decoded;
     }
 
     private RegisterResponse getGoodRegisterResponse() {

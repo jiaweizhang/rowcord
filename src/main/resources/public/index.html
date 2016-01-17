@@ -3,8 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>Title of Home</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.js"></script>
+    <script src="js/script.js"></script>
 </head>
-<body>
-    This is the body of the index file.
+<body ng-app="myApp">
+This is the body of the index file.
+
+<div ng-controller="myCtrl">
+    <form>
+        <h4>Register</h4>
+        Email:<br>
+        <input ng-model="registerEmail"/><br>
+        Password:<br>
+        <input ng-model="registerPassword"/>
+        <button ng-click="register()" type="submit">Register</button>
+    </form>
+
+    <form>
+        <h4>Login</h4>
+        Email:<br>
+        <input ng-model="loginEmail"/><br>
+        Password:<br>
+        <input ng-model="loginPassword"/>
+        <button ng-click="login()" type="submit">Login</button>
+    </form>
+</div>
 </body>
 </html>

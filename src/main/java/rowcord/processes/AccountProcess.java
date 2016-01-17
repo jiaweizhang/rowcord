@@ -29,7 +29,7 @@ public class AccountProcess {
             st = c.prepareStatement("INSERT INTO accounts (email, passhash, salt) VALUES (?, ?, ?);");
         } catch (Exception e) {
             System.out.println("Failed prepared statement");
-            return getBadRegisterResponse();
+            return getBadRegisterResponse("Failed prepared statement");
         }
         try {
             System.out.println();
@@ -43,7 +43,7 @@ public class AccountProcess {
         } catch (Exception f) {
             f.printStackTrace();
             System.out.println("Failed during execution");
-            return getBadRegisterResponse();
+            return getBadRegisterResponse("Failed during execution");
         }
     }
 
@@ -92,6 +92,11 @@ public class AccountProcess {
         return response;
     }
 
+    private RegisterResponse getBadRegisterResponse(String message) {
+        RegisterResponse response = new RegisterResponse("Bad", message);
+        return response;
+    }
+
     private LoginResponse getGoodLoginResponse(String token) {
         LoginResponse response = new LoginResponse("Ok", "Valid email and password", token);
         return response;
@@ -99,6 +104,11 @@ public class AccountProcess {
 
     private LoginResponse getBadLoginResponse() {
         LoginResponse response = new LoginResponse("Bad", "Invalid email and password", "");
+        return response;
+    }
+
+    private LoginResponse getBadLoginResponse(String message) {
+        LoginResponse response = new LoginResponse("Bad", message, "");
         return response;
     }
 }

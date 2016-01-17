@@ -11,21 +11,21 @@ public class JDBC {
     public String connect() {
 
         // MySQL
-        String url = "jdbc:mysql://localhost:3306/";
+        /*String url = "jdbc:mysql://localhost:3306/";
         String dbName = "testdb";
         String driver = "com.mysql.jdbc.Driver";
         String username = "root";
-        String password = "password";
-
-        // PostgreSQL
-        /*String url = "jdbc:postgresql://localhost:5432/";
-        String dbName = "testdb";
-        String driver = "org.postgresql.Driver";
-        String username = "root";
         String password = "password";*/
 
+        // PostgreSQL
+        String url = "jdbc:postgresql://localhost:5432/";
+        String dbName = "testdb";
+        String driver = "org.postgresql.Driver";
+        String username = "postgres";
+        String password = "password";
+
         // MySQL
-        System.out.println("Started connection attempt");
+        /*System.out.println("Started connection attempt");
         Connection c = null;
         try {
             Class.forName(driver).newInstance();
@@ -42,10 +42,10 @@ public class JDBC {
             return "Failed on getConnection()";
         }
         System.out.println("Opened database successfully");
-        return "Success";
+        return "Success";*/
 
         // PostgreSQL
-        /*System.out.println("Started connection attempt");
+        System.out.println("Started connection attempt");
         Connection c = null;
         try {
             Class.forName(driver);
@@ -61,6 +61,6 @@ public class JDBC {
             return "Failed on getConnection()";
         }
         System.out.println("Opened database successfully");
-        return "Success";*/
+        return "Success";
     }
 }

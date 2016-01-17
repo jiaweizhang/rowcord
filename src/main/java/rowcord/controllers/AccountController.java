@@ -4,9 +4,8 @@ package rowcord.controllers;
  * Created by jiawe on 1/16/2016.
  */
 
-import databases.PostgreSQLJDBC;
+import databases.JDBC;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import rowcord.Test;
 
@@ -16,8 +15,9 @@ public class AccountController {
 
     @RequestMapping("/register")
     public Test register() {
-        PostgreSQLJDBC.connect();
-        return new Test(1, "register", "register");
+        JDBC pg = new JDBC();
+        String output = pg.connect();
+        return new Test(1, "message: "+ output, "register");
     }
 
     @RequestMapping("/login")

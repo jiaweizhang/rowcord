@@ -9,7 +9,7 @@ import requestdata.LoginData;
 import requestdata.RegisterData;
 import responses.JsonResponse;
 import responses.LoginResponse;
-import responses.Test;
+import responses.RegisterResponse;
 import rowcord.processes.AccountProcess;
 
 @RestController
@@ -20,7 +20,7 @@ public class AccountController {
             method = RequestMethod.POST,
             headers = {"Content-type=application/json"})
     @ResponseBody
-    public JsonResponse register(@RequestBody final RegisterData rd) {
+    public RegisterResponse register(@RequestBody final RegisterData rd) {
         AccountProcess ap = new AccountProcess(rd.getEmail(), rd.getPassword());
         return ap.register();
     }
@@ -35,8 +35,8 @@ public class AccountController {
     }
 
     @RequestMapping("/logout")
-    public Test logout() {
-        return new Test(2, "logout", "logout");
+    public JsonResponse logout() {
+        return new JsonResponse("logout", "logout");
 
     }
 }

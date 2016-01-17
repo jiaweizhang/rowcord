@@ -2,8 +2,8 @@ package rowcord.processes;
 
 import databases.JDBC;
 import org.apache.tomcat.util.codec.binary.Base64;
-import responses.JsonResponse;
 import responses.LoginResponse;
+import responses.RegisterResponse;
 
 import java.io.ByteArrayOutputStream;
 import java.security.MessageDigest;
@@ -24,7 +24,7 @@ public class AccountProcess {
         this.password = stringToByte(password);
     }
 
-    public JsonResponse register() {
+    public RegisterResponse register() {
         Connection c = JDBC.connect();
         PreparedStatement st = null;
         try {
@@ -126,13 +126,13 @@ public class AccountProcess {
         }
     }
 
-    private JsonResponse getGoodRegisterResponse() {
-        JsonResponse response = new JsonResponse("Ok", "Successfully added");
+    private RegisterResponse getGoodRegisterResponse() {
+        RegisterResponse response = new RegisterResponse("Ok", "Successfully added");
         return response;
     }
 
-    private JsonResponse getBadRegisterResponse() {
-        JsonResponse response = new JsonResponse("Bad", "Failed to add");
+    private RegisterResponse getBadRegisterResponse() {
+        RegisterResponse response = new RegisterResponse("Bad", "Failed to add");
         return response;
     }
 

@@ -38,8 +38,6 @@ public class AccountProcess {
             return getBadRegisterResponse("Failed during hashing");
         }
         try {
-            System.out.println();
-            System.out.println("register");
             st.setString(1, email);
             st.setString(2, passwordHash);
             st.setString(3, "null");
@@ -47,9 +45,7 @@ public class AccountProcess {
             st.close();
             return getGoodRegisterResponse();
         } catch (Exception f) {
-            f.printStackTrace();
-            System.out.println("Failed during execution");
-            return getBadRegisterResponse("Failed during execution");
+            return getBadRegisterResponse(f.getMessage());
         }
     }
 

@@ -8,7 +8,7 @@ import java.sql.DriverManager;
  */
 public class JDBC {
 
-    public String connect() {
+    public static Connection connect() {
 
         // MySQL
         /*String url = "jdbc:mysql://localhost:3306/";
@@ -51,16 +51,16 @@ public class JDBC {
             Class.forName(driver);
         } catch (Exception e) {
             e.printStackTrace();
-            return "Failed on Class.forName()";
+            return null;
         }
 
         try {
             c = DriverManager.getConnection(url + dbName, username, password);
         } catch (Exception e) {
             e.printStackTrace();
-            return "Failed on getConnection()";
+            return null;
         }
         System.out.println("Opened database successfully");
-        return "Success";
+        return c;
     }
 }

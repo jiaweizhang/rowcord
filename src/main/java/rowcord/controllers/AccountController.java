@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import requestdata.RegisterData;
 import responses.JsonResponse;
 import responses.Test;
+import rowcord.models.AccountModel;
 
 @RestController
 @RequestMapping("/api/account")
@@ -19,13 +20,14 @@ public class AccountController {
             headers = {"Content-type=application/json"})
     @ResponseBody
     public JsonResponse register(@RequestBody final RegisterData rd) {
-        return new JsonResponse(rd.getEmail(), rd.getPassword());
+        AccountModel am = new AccountModel(rd.getEmail(), rd.getPassword());
+        return am.addToDatabase();
     }
 
     @RequestMapping("/login")
     public Test login() {
-        JDBC pg = new JDBC();
-        String output = pg.connect();
+        //JDBC pg = new JDBC();
+        //String output = pg.connect();
         return new Test(2, "login", "login");
 
     }

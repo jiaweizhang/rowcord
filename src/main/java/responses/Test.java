@@ -1,4 +1,4 @@
-package rowcord;
+package responses;
 
 import java.io.Serializable;
 

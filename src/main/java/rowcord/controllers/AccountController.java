@@ -5,23 +5,27 @@ package rowcord.controllers;
  */
 
 import databases.JDBC;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import rowcord.Test;
+import org.springframework.web.bind.annotation.*;
+import requestdata.RegisterData;
+import responses.JsonResponse;
+import responses.Test;
 
 @RestController
 @RequestMapping("/api/account")
 public class AccountController {
 
-    @RequestMapping("/register")
-    public Test register() {
-        JDBC pg = new JDBC();
-        String output = pg.connect();
-        return new Test(1, "message: "+ output, "register");
+    @RequestMapping(value = "/register",
+            method = RequestMethod.POST,
+            headers = {"Content-type=application/json"})
+    @ResponseBody
+    public JsonResponse register(@RequestBody final RegisterData rd) {
+        return new JsonResponse(rd.getEmail(), rd.getPassword());
     }
 
     @RequestMapping("/login")
     public Test login() {
+        JDBC pg = new JDBC();
+        String output = pg.connect();
         return new Test(2, "login", "login");
 
     }

@@ -54,6 +54,7 @@ public class GroupController {
         final Claims claims = (Claims) request.getAttribute("claims");
         String email = claims.getSubject();
         String groupName = gd.getGroupName();
+        groupName = groupName.replaceAll("\\+", " ");
         return getGroupDetailDB(email, groupName);
     }
 

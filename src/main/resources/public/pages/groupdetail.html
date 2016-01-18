@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Group</title>
+</head>
+<body>
+<div class="jumbotron"><h1>Group Detail</h1></div>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Group Name</th>
+        <th>Group Description</th>
+        <th>Creation Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td ng-bind="group.groupName"></td>
+        <td ng-bind="group.groupDescription"></td>
+        <td ng-bind="group.createDate"></td>
+    </tr>
+    </tbody>
+</table>
+<h2>Admins:</h2>
+<li>
+    <ul ng-repeat="x in group.admins" ng-bind="x"></ul>
+</li>
+<p>Your admin status: <span ng-bind="group.admin"></span></p>
+</body>
+</html>

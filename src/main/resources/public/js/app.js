@@ -36,12 +36,17 @@ myApp.config(function ($routeProvider) {
         .when('/groups/mygroups', {
             templateUrl: 'pages/mygroups.html',
             controller: 'mygroupsController'
+        })
+
+        .when('/groups/group/:groupName', {
+            templateUrl: 'pages/groupdetail.html',
+            controller: 'groupdetailController'
         });
 });
 
 myApp.controller('mainController', ['httpService', '$scope', '$http', '$window', function (httpService, $scope, $http, $window) {
     console.log("mainController");
-    $scope.logout = function() {
+    $scope.logout = function () {
         $window.sessionStorage.removeItem("accessToken");
     }
 }]);
@@ -110,6 +115,21 @@ myApp.service('httpService', function ($http, $window) {
                 url: "api/groups",
                 method: "GET",
                 headers: {
+                    "Authorization": $window.sessionStorage.accessToken
+                }
+            }).success(function (data, status) {
+                console.log(data);
+                return data;
+            });
+        },
+
+        getGroupDetail: function (data) {
+            return $http({
+                url: "api/groups/groupdetail",
+                method: "POST",
+                data: data,
+                headers: {
+                    "Content-Type": "application/json",
                     "Authorization": $window.sessionStorage.accessToken
                 }
             }).success(function (data, status) {

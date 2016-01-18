@@ -8,7 +8,11 @@ myApp.controller('groupsController', ['httpService', '$scope', '$http', function
     httpService.getGroups().then(function (response) {
         console.log(response);
         $scope.groups = response.data.data;
-    })
+    });
+
+    $scope.urlEncode = function(groupName) {
+        return groupName.replace(/\s+/g, '+');
+    }
 }]);
 
 myApp.controller('groupcreateController', ['httpService', '$scope', '$http', function (httpService, $scope, $http) {
@@ -27,6 +31,7 @@ myApp.controller('groupcreateController', ['httpService', '$scope', '$http', fun
             $scope.groupDescription = "";
         })
     }
+    
 }]);
 
 myApp.controller('mygroupsController', ['httpService', '$scope', '$http', function (httpService, $scope, $http) {
@@ -35,6 +40,10 @@ myApp.controller('mygroupsController', ['httpService', '$scope', '$http', functi
         console.log(response);
         $scope.groups = response.data.data;
     })
+
+    $scope.urlEncode = function(groupName) {
+        return groupName.replace(/\s+/g, '+');
+    }
 }]);
 
 

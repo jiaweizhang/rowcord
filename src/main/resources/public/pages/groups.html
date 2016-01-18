@@ -16,7 +16,7 @@
     </thead>
     <tbody>
     <tr ng-repeat="x in groups">
-        <td ng-bind="x.groupName"></td>
+        <td><a ng-bind="x.groupName" target="_self" ng-href="/#/groups/group/{{urlEncode(x.groupName)}}"></a></td>
         <td ng-bind="x.groupDescription"></td>
         <td ng-bind="x.createDate"></td>
     </tr>

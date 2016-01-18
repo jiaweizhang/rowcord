@@ -14,7 +14,7 @@ angular.module('myApp', [])
             };
             console.log(data.toString());
             $http({
-                url: "api/account/register",
+                url: "acc/account/register",
                 method: "POST",
                 data: data,
                 headers: {
@@ -35,7 +35,7 @@ angular.module('myApp', [])
             };
             console.log(data.toString());
             $http({
-                url: "api/account/login",
+                url: "acc/account/login",
                 method: "POST",
                 data: data,
                 headers: {

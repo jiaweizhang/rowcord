@@ -13,7 +13,7 @@ import responses.RegisterResponse;
 import rowcord.processes.AccountProcess;
 
 @RestController
-@RequestMapping("/api/account")
+@RequestMapping("/acc/account")
 public class AccountController {
 
     @CrossOrigin

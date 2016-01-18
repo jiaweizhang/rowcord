@@ -10,6 +10,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.crypto.MacProvider;
+
+import java.security.Key;
+import java.util.Arrays;
+import java.util.Date;
+
 /**
  * Created by jiawe on 1/17/2016.
  */
@@ -33,8 +41,8 @@ public class AccountProcess {
         }
         String passwordHash = null;
         try {
-            passwordHash = PasswordHash.createHash(password);}
-        catch (Exception g) {
+            passwordHash = PasswordHash.createHash(password);
+        } catch (Exception g) {
             return getBadRegisterResponse("Failed during hashing");
         }
         try {
@@ -68,10 +76,13 @@ public class AccountProcess {
                 String salt = rs.getString("salt");
                 String passhash = rs.getString("passhash");
                 String token = rs.getString("token");
+                String jwt = Jwts.builder().setSubject(email)
+                        .claim("roles", Arrays.asList("user", "admin")).setIssuedAt(new Date())
+                        .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
                 st.close();
                 rs.close();
-                if (PasswordHash.validatePassword(password, passhash)){
-                    return getGoodLoginResponse(token);
+                if (PasswordHash.validatePassword(password, passhash)) {
+                    return getGoodLoginResponse(jwt);
                 } else {
                     return getBadLoginResponse();
                 }

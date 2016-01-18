@@ -6,6 +6,7 @@ buildscript {
         //classpath 'mysql:mysql-connector-java:5.1.38'
         classpath 'org.postgresql:postgresql:9.4.1207'
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.1.RELEASE")
+        classpath 'io.jsonwebtoken:jjwt:0.6.0'
     }
 }
 
@@ -29,6 +30,7 @@ targetCompatibility = 1.8
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile 'org.postgresql:postgresql:9.4.1207'
+    compile 'io.jsonwebtoken:jjwt:0.6.0'
     //compile 'mysql:mysql-connector-java:5.1.38'
     //testCompile("junit:junit")
 }

@@ -6,10 +6,7 @@ package rowcord.controllers;
 import databases.JDBC;
 import io.jsonwebtoken.Claims;
 import org.springframework.web.bind.annotation.*;
-import requestdata.group.ApplyData;
-import requestdata.group.ChangeRoleData;
-import requestdata.group.CreateGroupData;
-import requestdata.group.InviteData;
+import requestdata.group.*;
 import responses.StandardResponse;
 import responses.subresponses.ApplicationResponse;
 import responses.subresponses.MembershipResponse;
@@ -82,6 +79,19 @@ public class GroupController {
         String email = claims.getSubject();
 
         return applicationsDB(email);
+    }
+
+    @RequestMapping(
+            value = "/applicationaccept",
+            method = RequestMethod.POST,
+            headers = {"Content-type=application/json"})
+    @ResponseBody
+    public StandardResponse applicationAccept(@RequestBody final AcceptData rd, final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        String email = claims.getSubject();
+        String acceptedEmail = rd.getEmail();
+        String groupName = rd.getGroupName();
+        return applicationAcceptDB(email, acceptedEmail, groupName);
     }
 
     @RequestMapping(
@@ -250,6 +260,61 @@ public class GroupController {
         } catch (Exception f) {
             f.printStackTrace();
             return new StandardResponse("error", "Failed to fetch applications");
+        }
+    }
+
+    private StandardResponse applicationAcceptDB(String email, String acceptedEmail, String groupName) {
+        // validate admin
+        Connection c = JDBC.connect();
+        if (!validateAdmin(email, groupName, c)) {
+            return new StandardResponse("error", "Permission denied - not group admin");
+        }
+        PreparedStatement st = null;
+        // delete from applications
+        try {
+            st = c.prepareStatement("DELETE FROM groupapplications " +
+                    "WHERE email = ? AND groupname = ?;");
+            st.setString(1, acceptedEmail);
+            st.setString(2, groupName);
+            st.executeUpdate();
+            st.close();
+        } catch (Exception f) {
+
+            return new StandardResponse("error", "Failed to delete application");
+        }
+        // add to group
+        try {
+            st = c.prepareStatement("INSERT INTO groups (email, groupname, admin, coach, joindate) "+
+                    "VALUES (?, ?, 0, 0, ?);");
+            st.setString(1, acceptedEmail);
+            st.setString(2, groupName);
+            st.setDate(3, new java.sql.Date(new java.util.Date().getTime()));
+            st.executeUpdate();
+            st.close();
+            return new StandardResponse("success", "Successfully added member to group");
+        } catch (Exception f) {
+            return new StandardResponse("error", "Failed to add member to group - already in group");
+        }
+    }
+
+    private boolean validateAdmin(String email, String groupName, Connection c) {
+        PreparedStatement st = null;
+        try {
+            st = c.prepareStatement("SELECT 1 FROM groups WHERE groupname = ? AND email = ? AND admin = 1;");
+            st.setString(1, groupName);
+            st.setString(2, email);
+
+            ResultSet rs = st.executeQuery();
+            if (!rs.next()) {
+                st.close();
+                rs.close();
+                return false;
+            }
+            st.close();
+            rs.close();
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 }

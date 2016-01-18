@@ -16,13 +16,14 @@ create table groups (
 	groupname varchar(255) not null,
 	admin int,
 	coach int,
-	joindate date not null
+	joindate date not null,
+	unique (email, groupname)
 );
 
 create table groupapplications (
 	email varchar(255) not null,
 	groupname varchar(255) not null,
-	applydate date not null
+	applydate date not null,
 	unique (email, groupname)
 );
 

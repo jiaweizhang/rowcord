@@ -3,7 +3,7 @@
  */
 
 var myApp = angular
-    .module('myApp', ['ngRoute']);
+    .module('myApp', ['ngRoute', 'ngCookies']);
 
 myApp.config(function ($routeProvider) {
     $routeProvider
@@ -51,7 +51,7 @@ myApp.controller('mainController', ['httpService', '$scope', '$http', '$window',
     }
 }]);
 
-myApp.service('httpService', function ($http, $window) {
+myApp.service('httpService', function ($http, $window, $cookies) {
     return {
         register: function (data) {
             return $http({
@@ -89,7 +89,7 @@ myApp.service('httpService', function ($http, $window) {
                 data: data,
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": $window.sessionStorage.accessToken
+                    "Authorization": $cookies.get("Authorization")
                 }
             }).success(function (data, status) {
                 console.log(data);
@@ -102,7 +102,7 @@ myApp.service('httpService', function ($http, $window) {
                 url: "api/groups/memberships",
                 method: "GET",
                 headers: {
-                    "Authorization": $window.sessionStorage.accessToken
+                    "Authorization": $cookies.get("Authorization")
                 }
             }).success(function (data, status) {
                 console.log(data);
@@ -115,7 +115,7 @@ myApp.service('httpService', function ($http, $window) {
                 url: "api/groups",
                 method: "GET",
                 headers: {
-                    "Authorization": $window.sessionStorage.accessToken
+                    "Authorization": $cookies.get("Authorization")
                 }
             }).success(function (data, status) {
                 console.log(data);
@@ -130,7 +130,7 @@ myApp.service('httpService', function ($http, $window) {
                 data: data,
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": $window.sessionStorage.accessToken
+                    "Authorization": $cookies.get("Authorization")
                 }
             }).success(function (data, status) {
                 console.log(data);

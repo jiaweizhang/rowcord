@@ -31,7 +31,7 @@ myApp.controller('groupcreateController', ['httpService', '$scope', '$http', fun
             $scope.groupDescription = "";
         })
     }
-    
+
 }]);
 
 myApp.controller('mygroupsController', ['httpService', '$scope', '$http', function (httpService, $scope, $http) {

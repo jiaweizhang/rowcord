@@ -58,6 +58,21 @@ public class GroupController {
     }
 
     @RequestMapping(
+            value = "/changeotherrole",
+            method = RequestMethod.POST,
+            headers = {"Content-type=application/json"})
+    @ResponseBody
+    public StandardResponse changeOtherRole(@RequestBody final ChangeOtherRoleData rd, final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        String email = claims.getSubject();
+        String otherEmail = rd.getEmail();
+        String groupName = rd.getGroupName();
+        int admin = rd.getAdmin();
+        int coach = rd.getCoach();
+        return changeOtherRoleDB( email, otherEmail, groupName,  admin,  coach);
+    }
+
+    @RequestMapping(
             value = "/apply",
             method = RequestMethod.POST,
             headers = {"Content-type=application/json"})
@@ -172,10 +187,11 @@ public class GroupController {
                 rs.close();
             }
 
-            st = c.prepareStatement("UPDATE groups SET admin = ?, coach = ? WHERE groupname = ?;");
+            st = c.prepareStatement("UPDATE groups SET admin = ?, coach = ? WHERE groupname = ? AND email = ?;");
             st.setInt(1, admin);
             st.setInt(2, coach);
             st.setString(3, groupName);
+            st.setString(4, email);
             st.executeUpdate();
             st.close();
             return new StandardResponse("success", "Successfully changed permissions");
@@ -183,6 +199,42 @@ public class GroupController {
         } catch (Exception f) {
             f.printStackTrace();
             return new StandardResponse("error", "Failed to change role");
+        }
+    }
+
+    private StandardResponse changeOtherRoleDB(String email, String otherEmail, String groupName, int admin, int coach) {
+        Connection c = JDBC.connect();
+        PreparedStatement st = null;
+        if (!validateAdmin(email, groupName, c)) {
+            return new StandardResponse("error", "Permission denied - not group admin");
+        }
+        try {
+            st = c.prepareStatement("SELECT 1 FROM groups WHERE groupname = ? AND email = ?;");
+            st.setString(1, groupName);
+            st.setString(2, otherEmail);
+
+            ResultSet rs = st.executeQuery();
+            if (!rs.next()) {
+                st.close();
+                rs.close();
+                return new StandardResponse("error", "other user is not in the group - cannot change permissions");
+            }
+            st.close();
+            rs.close();
+        } catch (Exception e) {
+            return new StandardResponse("error", "other user is not in the group - cannot change permissions");
+        }
+        try {
+            st = c.prepareStatement("UPDATE groups SET admin = ?, coach = ? WHERE groupname = ? AND email = ?;");
+            st.setInt(1, admin);
+            st.setInt(2, coach);
+            st.setString(3, groupName);
+            st.setString(4, otherEmail);
+            st.executeUpdate();
+            st.close();
+            return new StandardResponse("success", "Successfully changed other's permissions");
+        } catch (Exception f) {
+            return new StandardResponse("error", "Failed to change other's permissions");
         }
     }
 

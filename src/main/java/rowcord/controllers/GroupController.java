@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import requestdata.group.*;
 import responses.StandardResponse;
 import responses.subresponses.ApplicationResponse;
+import responses.subresponses.GroupDetailResponse;
 import responses.subresponses.GroupResponse;
 import responses.subresponses.MembershipResponse;
 
@@ -42,6 +43,20 @@ public class GroupController {
         String email = claims.getSubject();
         return getMembershipDB(email);
     }
+
+
+    @RequestMapping(
+            value = "/groupdetail",
+            method = RequestMethod.POST,
+            headers = {"Content-type=application/json"})
+    @ResponseBody
+    public StandardResponse getGroupDetail(@RequestBody final GroupDetailData gd, final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        String email = claims.getSubject();
+        String groupName = gd.getGroupName();
+        return getGroupDetailDB(email, groupName);
+    }
+
 
     @RequestMapping(
             value = "/create",
@@ -254,6 +269,53 @@ public class GroupController {
 
         } catch (Exception f) {
             return new StandardResponse("error", "Failed to lookup groups");
+        }
+    }
+
+    private StandardResponse getGroupDetailDB(String email, String groupName) {
+        Connection c = JDBC.connect();
+        PreparedStatement st = null;
+        try {
+            st = c.prepareStatement("SELECT description, createdate FROM groupdetails WHERE groupname = ?;");
+            st.setString(1, groupName);
+
+            ResultSet rs = st.executeQuery();
+            String groupDescription;
+            Date createDate;
+
+            if (rs.next()) {
+                groupDescription = rs.getString("description");
+                createDate = rs.getDate("createdate");
+                st.close();
+                rs.close();
+            } else {
+                st.close();
+                rs.close();
+                return new StandardResponse("error", "group not found");
+            }
+
+            st = c.prepareStatement("SELECT email FROM groups WHERE groupname = ? AND admin = 1;");
+            st.setString(1, groupName);
+
+            rs = st.executeQuery();
+            List<String> emails = new ArrayList<String>();
+            boolean isAdmin = false;
+
+            while (rs.next()) {
+                String currentEmail = rs.getString("email");
+                emails.add(currentEmail);
+                if (currentEmail.equals(email)) {
+                    isAdmin = true;
+                }
+            }
+            st.close();
+            rs.close();
+            return new StandardResponse("success", "Successfully fetched group detail",
+                    new GroupDetailResponse(groupName, groupDescription, createDate, emails, isAdmin));
+
+        } catch (Exception f) {
+            f.printStackTrace();
+            return new StandardResponse("error", "Failed to fetch group detail");
         }
     }
 

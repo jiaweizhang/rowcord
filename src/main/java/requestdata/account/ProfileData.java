@@ -1,4 +1,4 @@
-package requestdata;
+package requestdata.account;
 
 /**
  * Created by jiawe on 1/17/2016.

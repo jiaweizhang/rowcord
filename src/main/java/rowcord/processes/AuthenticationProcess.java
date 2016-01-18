@@ -45,6 +45,7 @@ public class AuthenticationProcess {
             st.close();
             return new StandardResponse("success", "Successfully registered");
         } catch (Exception g) {
+            g.printStackTrace();
             return new StandardResponse("error", "Failed during execution in register");
         }
     }

@@ -1,9 +1,9 @@
-package requestdata;
+package requestdata.auth;
 
 /**
  * Created by jiawe on 1/17/2016.
  */
-public class LoginData {
+public class RegisterData {
     private String email;
     private String password;
 

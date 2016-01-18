@@ -5,8 +5,8 @@ package rowcord.controllers;
  */
 
 import org.springframework.web.bind.annotation.*;
-import requestdata.LoginData;
-import requestdata.RegisterData;
+import requestdata.auth.LoginData;
+import requestdata.auth.RegisterData;
 import responses.StandardResponse;
 import rowcord.processes.AuthenticationProcess;
 

@@ -7,7 +7,7 @@ package rowcord.controllers;
 import databases.JDBC;
 import io.jsonwebtoken.Claims;
 import org.springframework.web.bind.annotation.*;
-import requestdata.ProfileData;
+import requestdata.account.ProfileData;
 import responses.StandardResponse;
 
 import javax.servlet.http.HttpServletRequest;

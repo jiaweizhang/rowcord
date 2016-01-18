@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Groups</title>
+</head>
+<body>
+<div class="jumbotron"><h1>My Groups</h1></div>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Group Name</th>
+        <th>Admin</th>
+        <th>Coach</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="x in groups">
+        <td ng-bind="x.groupName"></td>
+        <td ng-bind="x.admin"></td>
+        <td ng-bind="x.coach"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

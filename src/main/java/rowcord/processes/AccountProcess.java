@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.crypto.MacProvider;
+import utilities.TokenCreator;
 
 import java.security.Key;
 import java.time.LocalDate;
@@ -87,23 +88,12 @@ public class AccountProcess {
             st.setString(1, email);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
-                System.out.println();
-                System.out.println("login");
-
                 String passhash = rs.getString("passhash");
                 st.close();
                 rs.close();
                 if (PasswordHash.validatePassword(password, passhash)) {
-                    LocalDate now = LocalDate.now();
-                    Date nowDate = Date.from(now.atStartOfDay(ZoneId.systemDefault()).toInstant());
-                    LocalDate expire = LocalDate.now().plusDays(7);
-                    Date expireDate = Date.from(expire.atStartOfDay(ZoneId.systemDefault()).toInstant());
                     List<String> roleList = getRoles(c);
-
-                    String jwt = Jwts.builder().setSubject(email)
-                            .claim("roles", roleList).setIssuedAt(nowDate)
-                            .setExpiration(expireDate)
-                            .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
+                    String jwt = TokenCreator.generateToken(email, roleList);
                     return getGoodLoginResponse(jwt);
                 } else {
                     return getBadLoginResponse();

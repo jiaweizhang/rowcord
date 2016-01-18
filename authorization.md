@@ -7,7 +7,7 @@ coach - coach profile update, join group, create group
 
 
 new - profile update
-workouts - workouts
+workout - workouts
 group - join group, create group
 groupadmin - invite to group, accept application
 coach - view group metadata

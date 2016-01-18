@@ -11,24 +11,19 @@ create table accounts (
 	dob date
 );
 
-create table auth (
-	email varchar(255) not null,
-	role varchar(255) not null,
-	unique (email, role)
-);
-
 create table groups (
 	email varchar(255) not null,
-	group varchar(255) not null,
-	auth varchar(255) not null,
+	groupname varchar(255) not null,
+	admin int,
+	coach int,
 	joindate date not null
 );
 
 create table subgroups (
 	email varchar(255) not null,
-	group varchar(255) not null,
-	subgroup varchar(255) not null,
+	groupname varchar(255) not null,
+	subgroupname varchar(255) not null,
 	auth varchar(255) not null,
-	tyype varchar(255) not null,
+	type varchar(255) not null,
 	joindate date not null
 );

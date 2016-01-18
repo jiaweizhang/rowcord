@@ -12,9 +12,6 @@ import java.sql.ResultSet;
 
 import utilities.TokenCreator;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by jiawe on 1/17/2016.
  */

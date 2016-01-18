@@ -2,4 +2,7 @@
 ## TODO
 
 * finish invitations
-* admins view applications
+* get all members for a group
+* keeping Authorization header for a session
+* changing permissions
+* remove invalid pages

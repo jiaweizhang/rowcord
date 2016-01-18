@@ -1,7 +1,7 @@
 /**
  * Created by jiawe on 1/18/2016.
  */
-myApp.controller('loginController', ['httpService', '$scope', '$http', function (httpService, $scope, $http) {
+myApp.controller('loginController', ['httpService', '$scope', '$http', '$window', function (httpService, $scope, $http, $window) {
 
     console.log("logincontroller started");
     $scope.email;
@@ -16,7 +16,8 @@ myApp.controller('loginController', ['httpService', '$scope', '$http', function 
             console.log(response);
             var token = response.data.data.token;
             console.log(token);
-            $http.defaults.headers.common.Authorization = 'Bearer ' + token;
+            $window.sessionStorage.accessToken = 'Bearer ' + token;
+            //$http.defaults.headers.common.Authorization = 'Bearer ' + token;
             $scope.email = "";
             $scope.password = "";
         })

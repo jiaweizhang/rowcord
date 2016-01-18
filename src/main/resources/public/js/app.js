@@ -34,11 +34,14 @@ myApp.config(function ($routeProvider) {
         });
 });
 
-myApp.controller('mainController', function ($scope, $http) {
+myApp.controller('mainController', ['httpService', '$scope', '$http', '$window', function (httpService, $scope, $http, $window) {
     console.log("mainController");
-});
+    $scope.logout = function() {
+        $window.sessionStorage.removeItem("accessToken");
+    }
+}]);
 
-myApp.service('httpService', function ($http) {
+myApp.service('httpService', function ($http, $window) {
     return {
         register: function (data) {
             return $http({
@@ -75,7 +78,8 @@ myApp.service('httpService', function ($http) {
                 method: "POST",
                 data: data,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": $window.sessionStorage.accessToken
                 }
             }).success(function (data, status) {
                 console.log(data);
@@ -86,7 +90,10 @@ myApp.service('httpService', function ($http) {
         getMembership: function () {
             return $http({
                 url: "api/groups",
-                method: "GET"
+                method: "GET",
+                headers: {
+                    "Authorization": $window.sessionStorage.accessToken
+                }
             }).success(function (data, status) {
                 console.log(data);
                 return data;

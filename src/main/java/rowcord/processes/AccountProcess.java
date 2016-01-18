@@ -15,6 +15,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.crypto.MacProvider;
 
 import java.security.Key;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -76,8 +79,13 @@ public class AccountProcess {
                 String salt = rs.getString("salt");
                 String passhash = rs.getString("passhash");
                 String token = rs.getString("token");
+                LocalDate now = LocalDate.now();
+                Date nowDate = Date.from(now.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                LocalDate expire = LocalDate.now().plusDays(7);
+                Date expireDate = Date.from(expire.atStartOfDay(ZoneId.systemDefault()).toInstant());
                 String jwt = Jwts.builder().setSubject(email)
-                        .claim("roles", Arrays.asList("user", "admin")).setIssuedAt(new Date())
+                        .claim("roles", Arrays.asList("user", "admin")).setIssuedAt(nowDate)
+                        .setExpiration(expireDate)
                         .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
                 st.close();
                 rs.close();

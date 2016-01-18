@@ -1,6 +1,7 @@
 package rowcord;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -35,6 +36,9 @@ public class JwtFilter extends GenericFilterBean {
         try {
             final Claims claims = Jwts.parser().setSigningKey("secretkey")
                     .parseClaimsJws(token).getBody();
+            if (claims.getExpiration().before(new Date())) {
+                throw new ServletException("Expired token");
+            }
             request.setAttribute("claims", claims);
         }
         catch (final SignatureException e) {

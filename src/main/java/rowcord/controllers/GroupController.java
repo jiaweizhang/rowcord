@@ -11,10 +11,12 @@ import requestdata.group.ChangeRoleData;
 import requestdata.group.CreateGroupData;
 import requestdata.group.InviteData;
 import responses.StandardResponse;
+import responses.subresponses.ApplicationResponse;
 import responses.subresponses.MembershipResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -72,6 +74,17 @@ public class GroupController {
     }
 
     @RequestMapping(
+            value = "/applications",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public StandardResponse applications(final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        String email = claims.getSubject();
+
+        return applicationsDB(email);
+    }
+
+    @RequestMapping(
             value = "/invite",
             method = RequestMethod.POST,
             headers = {"Content-type=application/json"})
@@ -110,7 +123,7 @@ public class GroupController {
             st.setDate(3, new java.sql.Date(new java.util.Date().getTime()));
             st.executeUpdate();
             st.close();
-            return new StandardResponse("success", "Successfully created group");
+            return new StandardResponse("success", "Successfully created group", new MembershipResponse(groupName, 1, 0));
 
         } catch (Exception f) {
             return new StandardResponse("error", "Failed to create group");
@@ -183,7 +196,7 @@ public class GroupController {
             rs.close();
 
             if  (md.size() == 0) {
-                return new StandardResponse("error", "not in any groups");
+                return new StandardResponse("success", "not in any groups", md);
             }
             return new StandardResponse("success", "Successfully fetched groups", md);
 
@@ -205,7 +218,38 @@ public class GroupController {
             st.close();
             return new StandardResponse("success", "Successfully applied to group");
         } catch (Exception f) {
-            return new StandardResponse("error", "Failed to apply to group - already in group");
+            return new StandardResponse("error", "Failed to apply to group - already applied");
+        }
+    }
+
+    private StandardResponse applicationsDB(String email) {
+        Connection c = JDBC.connect();
+        PreparedStatement st = null;
+        try {
+            st = c.prepareStatement("SELECT email, groupname, applydate FROM groupapplications WHERE groupname "+
+                    "IN (SELECT groupname FROM groups WHERE email = ? AND admin = 1);");
+            st.setString(1, email);
+
+            ResultSet rs = st.executeQuery();
+            List<ApplicationResponse> md = new ArrayList<ApplicationResponse>();
+            while (rs.next()) {
+                String applyEmail = rs.getString("email");
+                String groupName = rs.getString("groupname");
+                Date applyDate = rs.getDate("applydate");
+                ApplicationResponse ar = new ApplicationResponse(applyEmail, groupName, applyDate);
+                md.add(ar);
+            }
+            st.close();
+            rs.close();
+
+            if  (md.size() == 0) {
+                return new StandardResponse("success", "no applications", md);
+            }
+            return new StandardResponse("success", "Successfully fetched applications", md);
+
+        } catch (Exception f) {
+            f.printStackTrace();
+            return new StandardResponse("error", "Failed to fetch applications");
         }
     }
 }

@@ -5,8 +5,13 @@ package requestdata.group;
  */
 public class CreateGroupData {
     private String groupName;
+    private String groupDescription;
 
     public String getGroupName() {
         return groupName;
+    }
+
+    public String getGroupDescription() {
+        return groupDescription;
     }
 }

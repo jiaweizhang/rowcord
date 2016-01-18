@@ -89,7 +89,7 @@ myApp.service('httpService', function ($http, $window) {
 
         getMembership: function () {
             return $http({
-                url: "api/groups",
+                url: "api/groups/memberships",
                 method: "GET",
                 headers: {
                     "Authorization": $window.sessionStorage.accessToken

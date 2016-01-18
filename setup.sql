@@ -27,6 +27,12 @@ create table groupapplications (
 	unique (email, groupname)
 );
 
+create table groupdetails (
+	groupname varchar(255) primary key not null,
+	description varchar(2000) not null,
+	createdate date not null
+);
+
 create table subgroups (
 	email varchar(255) not null,
 	groupname varchar(255) not null,

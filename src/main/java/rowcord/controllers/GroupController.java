@@ -25,6 +25,20 @@ public class GroupController {
     @RequestMapping(
             method = RequestMethod.GET)
     @ResponseBody
+    public StandardResponse getGroups(final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        String email = claims.getSubject();
+        /*
+        TODO get all groups user is not in
+         */
+        return getMembershipDB(email);
+    }
+
+
+    @RequestMapping(
+            value = "/memberships",
+            method = RequestMethod.GET)
+    @ResponseBody
     public StandardResponse getMembership(final HttpServletRequest request) {
         final Claims claims = (Claims) request.getAttribute("claims");
         String email = claims.getSubject();
@@ -40,7 +54,8 @@ public class GroupController {
         final Claims claims = (Claims) request.getAttribute("claims");
         String email = claims.getSubject();
         String groupName = gd.getGroupName();
-        return createGroupDB(email, groupName);
+        String groupDescription = gd.getGroupDescription();
+        return createGroupDB(email, groupName, groupDescription);
     }
 
     @RequestMapping(
@@ -114,7 +129,7 @@ public class GroupController {
         return new StandardResponse("error", "invite not implemented");
     }
 
-    private StandardResponse createGroupDB(String email, String groupName) {
+    private StandardResponse createGroupDB(String email, String groupName, String groupDescription) {
         Connection c = JDBC.connect();
         PreparedStatement st = null;
         try {
@@ -131,15 +146,19 @@ public class GroupController {
             rs.close();
 
             st = c.prepareStatement("INSERT INTO groups (email, groupname, admin, coach, joindate) "+
-            "VALUES (?, ?, 1, 0, ?);");
+            "VALUES (?, ?, 1, 0, ?); INSERT INTO groupdetails (groupname, description, createdate) VALUES (?, ?, ?);");
             st.setString(1, email);
             st.setString(2, groupName);
             st.setDate(3, new java.sql.Date(new java.util.Date().getTime()));
+            st.setString(4, groupName);
+            st.setString(5, groupDescription);
+            st.setDate(6, new java.sql.Date(new java.util.Date().getTime()));
             st.executeUpdate();
             st.close();
             return new StandardResponse("success", "Successfully created group", new MembershipResponse(groupName, 1, 0));
 
         } catch (Exception f) {
+            f.printStackTrace();
             return new StandardResponse("error", "Failed to create group");
         }
     }

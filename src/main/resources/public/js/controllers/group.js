@@ -3,15 +3,18 @@
  */
 myApp.controller('groupcreateController', ['httpService', '$scope', '$http', function (httpService, $scope, $http) {
     $scope.groupName;
+    $scope.groupDescription;
     $scope.create = function () {
         console.log("sending request");
         var data = {
-            "groupName": $scope.groupName
+            "groupName": $scope.groupName,
+            "groupDescription": $scope.groupDescription
         };
         console.log(data.toString());
         httpService.createGroup(data).then(function (response) {
             console.log(response);
             $scope.groupName = "";
+            $scope.groupDescription = "";
         })
     }
 }]);

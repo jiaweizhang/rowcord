@@ -1,4 +1,4 @@
-package responses;
+package responses.subresponses;
 
 /**
  * Created by jiawe on 1/16/2016.

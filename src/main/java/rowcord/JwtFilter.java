@@ -36,9 +36,9 @@ public class JwtFilter extends GenericFilterBean {
         try {
             final Claims claims = Jwts.parser().setSigningKey("secretkey")
                     .parseClaimsJws(token).getBody();
-            if (claims.getExpiration().before(new Date())) {
+            /*if (claims.getExpiration().before(new Date())) {
                 throw new ServletException("Expired token");
-            }
+            }*/
             request.setAttribute("claims", claims);
         }
         catch (final SignatureException e) {

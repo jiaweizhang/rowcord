@@ -31,7 +31,7 @@ public class AuthenticationProcess {
         Connection c = JDBC.connect();
         PreparedStatement st = null;
         try {
-            st = c.prepareStatement("INSERT INTO accounts (email, passhash) VALUES (?, ?);");
+            st = c.prepareStatement("INSERT INTO accounts (email, passhash, profile, verify) VALUES (?, ?, 0, 0);");
         } catch (Exception e) {
             return new StandardResponse("error", "Failed prepared statement in register");
         }
@@ -46,18 +46,6 @@ public class AuthenticationProcess {
             st.setString(2, passwordHash);
             st.executeUpdate();
             st.close();
-        } catch (Exception g) {
-            return new StandardResponse("error", "Failed during execution in register");
-        }
-        try {
-            st = c.prepareStatement("INSERT INTO auth (email, role) VALUES (?, 'new');");
-        } catch (Exception h) {
-            return new StandardResponse("error", "Failed prepared statement in register");
-        }
-        try {
-            st.setString(1, email);
-            st.executeUpdate();
-            st.close();
             return new StandardResponse("success", "Successfully registered");
         } catch (Exception g) {
             return new StandardResponse("error", "Failed during execution in register");
@@ -68,7 +56,7 @@ public class AuthenticationProcess {
         Connection c = JDBC.connect();
         PreparedStatement st = null;
         try {
-            st = c.prepareStatement("SELECT passhash FROM accounts WHERE email = ?;");
+            st = c.prepareStatement("SELECT passhash, profile, verify FROM accounts WHERE email = ?;");
         } catch (Exception e) {
             return getBadLoginResponse("Failed prepared statement during login");
         }
@@ -77,45 +65,20 @@ public class AuthenticationProcess {
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 String passhash = rs.getString("passhash");
+                int profile = rs.getInt("profile");
+                int verify = rs.getInt("verify");
                 st.close();
                 rs.close();
                 if (PasswordHash.validatePassword(password, passhash)) {
-                    List<String> roleList = getRoles(c);
-                    String jwt = TokenCreator.generateToken(email, roleList);
+                    String jwt = TokenCreator.generateToken(email, profile, verify);
                     return getGoodLoginResponse(jwt);
                 } else {
-                    return getBadLoginResponse("");
+                    return getBadLoginResponse("Invalid username or password");
                 }
             }
             return getBadLoginResponse("Invalid username or password");
         } catch (Exception f) {
             return getBadLoginResponse("Failed during execution");
-        }
-    }
-
-    private List<String> getRoles(Connection c) {
-        PreparedStatement st = null;
-        try {
-            st = c.prepareStatement("SELECT role FROM auth WHERE email = ?;");
-        } catch (Exception e) {
-            System.out.println("Failed prepared statement");
-            return null;
-        }
-        try {
-            st.setString(1, email);
-            ResultSet rs = st.executeQuery();
-            List<String> roleList = new ArrayList<String>();
-            while (rs.next()) {
-                String role = rs.getString("role");
-                roleList.add(role);
-            }
-            st.close();
-            rs.close();
-            return roleList;
-        } catch (Exception f) {
-            f.printStackTrace();
-            System.out.println("Failed during execution");
-            return null;
         }
     }
 

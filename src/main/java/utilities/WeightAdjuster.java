@@ -1,6 +1,6 @@
 package utilities;
 
-import responses.WeightAdjustedResponse;
+import responses.subresponses.WeightAdjustedResponse;
 
 /**
  * Created by jiawe on 1/16/2016.

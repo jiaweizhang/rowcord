@@ -19,6 +19,13 @@ create table groups (
 	joindate date not null
 );
 
+create table groupapplications (
+	email varchar(255) not null,
+	groupname varchar(255) not null,
+	applydate date not null
+	unique (email, groupname)
+);
+
 create table subgroups (
 	email varchar(255) not null,
 	groupname varchar(255) not null,

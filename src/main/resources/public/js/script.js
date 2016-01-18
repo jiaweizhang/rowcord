@@ -44,7 +44,7 @@ angular.module('myApp', [])
                 }
             }).success(function (data, status) {
                 console.log(data);
-                console.log(data.token);
+                console.log(data.data.token);
                 $scope.note = data.token;
             });
         }

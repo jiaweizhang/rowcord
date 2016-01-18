@@ -6,8 +6,10 @@ package rowcord.controllers;
 import databases.JDBC;
 import io.jsonwebtoken.Claims;
 import org.springframework.web.bind.annotation.*;
+import requestdata.group.ApplyData;
 import requestdata.group.ChangeRoleData;
 import requestdata.group.CreateGroupData;
+import requestdata.group.InviteData;
 import responses.StandardResponse;
 import responses.subresponses.MembershipResponse;
 
@@ -54,6 +56,35 @@ public class GroupController {
         int admin = rd.getAdmin();
         int coach = rd.getCoach();
         return changeRoleDB( email,  groupName,  admin,  coach);
+    }
+
+    @RequestMapping(
+            value = "/apply",
+            method = RequestMethod.POST,
+            headers = {"Content-type=application/json"})
+    @ResponseBody
+    public StandardResponse apply(@RequestBody final ApplyData ad, final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        String email = claims.getSubject();
+        String groupName = ad.getGroupName();
+
+        return applyDB(email, groupName);
+    }
+
+    @RequestMapping(
+            value = "/invite",
+            method = RequestMethod.POST,
+            headers = {"Content-type=application/json"})
+    @ResponseBody
+    public StandardResponse invite(@RequestBody final InviteData rd, final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        String email = claims.getSubject();
+        String invitedEmail = rd.getEmail();
+        String groupName = rd.getGroupName();
+        /**
+         * TODO
+         */
+        return new StandardResponse("error", "invite not implemented");
     }
 
     private StandardResponse createGroupDB(String email, String groupName) {
@@ -158,6 +189,23 @@ public class GroupController {
 
         } catch (Exception f) {
             return new StandardResponse("error", "Failed to check group membership");
+        }
+    }
+
+    private StandardResponse applyDB(String email, String groupName) {
+        Connection c = JDBC.connect();
+        PreparedStatement st = null;
+        try {
+            st = c.prepareStatement("INSERT INTO groupapplications (email, groupname, applydate) "+
+                    "VALUES (?, ?, ?);");
+            st.setString(1, email);
+            st.setString(2, groupName);
+            st.setDate(3, new java.sql.Date(new java.util.Date().getTime()));
+            st.executeUpdate();
+            st.close();
+            return new StandardResponse("success", "Successfully applied to group");
+        } catch (Exception f) {
+            return new StandardResponse("error", "Failed to apply to group - already in group");
         }
     }
 }

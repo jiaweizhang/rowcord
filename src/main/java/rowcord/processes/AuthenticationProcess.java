@@ -2,54 +2,44 @@ package rowcord.processes;
 
 import databases.JDBC;
 
-import responses.LoginResponse;
-import responses.RegisterResponse;
+import responses.StandardResponse;
+import responses.subresponses.DataGen;
 import utilities.PasswordHash;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.crypto.MacProvider;
 import utilities.TokenCreator;
 
-import java.security.Key;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
  * Created by jiawe on 1/17/2016.
  */
-public class AccountProcess {
+public class AuthenticationProcess {
     private String email;
     private char[] password;
 
-    public AccountProcess(String email, String password) {
+    public AuthenticationProcess(String email, String password) {
         this.email = email;
         this.password = password.toCharArray();
     }
 
-    public RegisterResponse register() {
+    public StandardResponse register() {
         Connection c = JDBC.connect();
         PreparedStatement st = null;
         try {
             st = c.prepareStatement("INSERT INTO accounts (email, passhash) VALUES (?, ?);");
         } catch (Exception e) {
-            System.out.println("Failed prepared statement");
-            return getBadRegisterResponse("Failed prepared statement");
+            return new StandardResponse("error", "Failed prepared statement in register");
         }
         String passwordHash = null;
         try {
             passwordHash = PasswordHash.createHash(password);
         } catch (Exception f) {
-            return getBadRegisterResponse("Failed during hashing");
+            return new StandardResponse("error", "Failed during hashing in register");
         }
         try {
             st.setString(1, email);
@@ -57,32 +47,30 @@ public class AccountProcess {
             st.executeUpdate();
             st.close();
         } catch (Exception g) {
-            return getBadRegisterResponse(g.getMessage());
+            return new StandardResponse("error", "Failed during execution in register");
         }
         try {
             st = c.prepareStatement("INSERT INTO auth (email, role) VALUES (?, 'new');");
         } catch (Exception h) {
-            System.out.println("Failed prepared statement");
-            return getBadRegisterResponse("Failed prepared statement");
+            return new StandardResponse("error", "Failed prepared statement in register");
         }
         try {
             st.setString(1, email);
             st.executeUpdate();
             st.close();
-            return getGoodRegisterResponse();
+            return new StandardResponse("success", "Successfully registered");
         } catch (Exception g) {
-            return getBadRegisterResponse(g.getMessage());
+            return new StandardResponse("error", "Failed during execution in register");
         }
     }
 
-    public LoginResponse login() {
+    public StandardResponse login() {
         Connection c = JDBC.connect();
         PreparedStatement st = null;
         try {
             st = c.prepareStatement("SELECT passhash FROM accounts WHERE email = ?;");
         } catch (Exception e) {
-            System.out.println("Failed prepared statement");
-            return getBadLoginResponse();
+            return getBadLoginResponse("Failed prepared statement during login");
         }
         try {
             st.setString(1, email);
@@ -96,14 +84,12 @@ public class AccountProcess {
                     String jwt = TokenCreator.generateToken(email, roleList);
                     return getGoodLoginResponse(jwt);
                 } else {
-                    return getBadLoginResponse();
+                    return getBadLoginResponse("");
                 }
             }
-            return getBadLoginResponse();
+            return getBadLoginResponse("Invalid username or password");
         } catch (Exception f) {
-            f.printStackTrace();
-            System.out.println("Failed during execution");
-            return getBadLoginResponse();
+            return getBadLoginResponse("Failed during execution");
         }
     }
 
@@ -133,33 +119,13 @@ public class AccountProcess {
         }
     }
 
-    private RegisterResponse getGoodRegisterResponse() {
-        RegisterResponse response = new RegisterResponse("Ok", "Successfully added");
+    private StandardResponse getGoodLoginResponse(String token) {
+        StandardResponse response = new StandardResponse("success", "Valid email and password", DataGen.createData(token));
         return response;
     }
 
-    private RegisterResponse getBadRegisterResponse() {
-        RegisterResponse response = new RegisterResponse("Bad", "Failed to add");
-        return response;
-    }
-
-    private RegisterResponse getBadRegisterResponse(String message) {
-        RegisterResponse response = new RegisterResponse("Bad", message);
-        return response;
-    }
-
-    private LoginResponse getGoodLoginResponse(String token) {
-        LoginResponse response = new LoginResponse("Ok", "Valid email and password", token);
-        return response;
-    }
-
-    private LoginResponse getBadLoginResponse() {
-        LoginResponse response = new LoginResponse("Bad", "Invalid email and password", "");
-        return response;
-    }
-
-    private LoginResponse getBadLoginResponse(String message) {
-        LoginResponse response = new LoginResponse("Bad", message, "");
+    private StandardResponse getBadLoginResponse(String message) {
+        StandardResponse response = new StandardResponse("error", message);
         return response;
     }
 }

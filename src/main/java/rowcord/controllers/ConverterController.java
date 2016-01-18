@@ -1,6 +1,5 @@
 package rowcord.controllers;
 
-import responses.JsonResponse;
 import responses.WeightAdjustedResponse;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,18 +30,4 @@ public class ConverterController {
         return WeightAdjuster.adjust(lbs, secs, meters);
     }
 
-    @RequestMapping(value = "/addTest",
-            method = RequestMethod.POST,
-            headers = {"Content-type=application/json"})
-    @ResponseBody
-    public JsonResponse addTest(@RequestBody final Test test) {
-        return new JsonResponse("OK", "POST");
-    }
-
-    @RequestMapping(value = "/addTest",
-            method = RequestMethod.GET)
-    @ResponseBody
-    public JsonResponse getTest() {
-        return new JsonResponse("OK", "GET");
-    }
 }

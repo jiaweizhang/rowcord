@@ -16,7 +16,6 @@ public class JDBC {
         String username = "postgres";
         String password = "password";
 
-        System.out.println("Started connection attempt");
         Connection c = null;
         try {
             Class.forName(driver);
@@ -31,7 +30,7 @@ public class JDBC {
             e.printStackTrace();
             return null;
         }
-        System.out.println("Opened database successfully");
+        System.out.println("Connected to database successfully");
         return c;
     }
 }

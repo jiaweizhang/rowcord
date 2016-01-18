@@ -9,8 +9,8 @@ import io.jsonwebtoken.Claims;
 import org.springframework.web.bind.annotation.*;
 import requestdata.ProfileData;
 import requestdata.RoleData;
-import responses.JsonResponse;
-import responses.LoginResponse;
+import responses.StandardResponse;
+import responses.subresponses.DataGen;
 import utilities.TokenCreator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,13 +29,13 @@ public class ProfileController {
             method = RequestMethod.PUT,
             headers = {"Content-type=application/json"})
     @ResponseBody
-    public JsonResponse update(@RequestBody final ProfileData pd, final HttpServletRequest request) {
+    public StandardResponse update(@RequestBody final ProfileData pd, final HttpServletRequest request) {
         final Claims claims = (Claims) request.getAttribute("claims");
         String email = claims.getSubject();
         if (!updateProfile(email, pd.getFirstName(), pd.getMiddleName(), pd.getLastName(), pd.getDob())) {
-            return new JsonResponse("Bad", "Failed to update profile");
+            return new StandardResponse("error", "Failed to update profile");
         }
-        return new JsonResponse("Ok", "Successfully updated profile");
+        return new StandardResponse("success", "Successfully updated profile");
     }
 
     @RequestMapping(
@@ -43,15 +43,15 @@ public class ProfileController {
             method = RequestMethod.PUT,
             headers = {"Content-type=application/json"})
     @ResponseBody
-    public LoginResponse updateR(@RequestBody final RoleData pd, final HttpServletRequest request) {
+    public StandardResponse updateR(@RequestBody final RoleData pd, final HttpServletRequest request) {
         final Claims claims = (Claims) request.getAttribute("claims");
         String email = claims.getSubject();
         List<String> roles = updateRoles(email, pd.getAccType());
         if (roles.size() == 0) {
-            return getBadLoginResponse("Failed during update roles - invalid role");
+            return new StandardResponse("error", "Failed during update roles - invalid role");
         }
         String jwt = TokenCreator.generateToken(email, roles);
-        return getGoodLoginResponse(jwt);
+        return new StandardResponse("success", "Successful role update", DataGen.createData(jwt));
     }
 
     private boolean updateProfile(String email, String firstName, String middleName, String lastName, String dob) {
@@ -127,16 +127,6 @@ public class ProfileController {
             System.out.println("Failed during execution updateRoleDB");
             return false;
         }
-    }
-
-    private LoginResponse getGoodLoginResponse(String token) {
-        LoginResponse response = new LoginResponse("Ok", "Valid email and password", token);
-        return response;
-    }
-
-    private LoginResponse getBadLoginResponse(String message) {
-        LoginResponse response = new LoginResponse("Bad", message, "");
-        return response;
     }
 }
 

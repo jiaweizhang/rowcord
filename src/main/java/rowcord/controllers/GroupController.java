@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import requestdata.group.*;
 import responses.StandardResponse;
 import responses.subresponses.ApplicationResponse;
+import responses.subresponses.GroupResponse;
 import responses.subresponses.MembershipResponse;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,10 +29,7 @@ public class GroupController {
     public StandardResponse getGroups(final HttpServletRequest request) {
         final Claims claims = (Claims) request.getAttribute("claims");
         String email = claims.getSubject();
-        /*
-        TODO get all groups user is not in
-         */
-        return getMembershipDB(email);
+        return getAllGroupsDB(email);
     }
 
 
@@ -228,6 +226,34 @@ public class GroupController {
 
         } catch (Exception f) {
             return new StandardResponse("error", "Failed to check group membership");
+        }
+    }
+
+    private StandardResponse getAllGroupsDB(String email) {
+        Connection c = JDBC.connect();
+        PreparedStatement st = null;
+        try {
+            st = c.prepareStatement("SELECT groupname, description, createdate FROM groupdetails;");
+
+            ResultSet rs = st.executeQuery();
+            List<GroupResponse> md = new ArrayList<GroupResponse>();
+            while (rs.next()) {
+                String groupName = rs.getString("groupname");
+                String groupDescription = rs.getString("description");
+                Date createDate = rs.getDate("createdate");
+                GroupResponse mr = new GroupResponse(groupName, groupDescription, createDate);
+                md.add(mr);
+            }
+            st.close();
+            rs.close();
+
+            if  (md.size() == 0) {
+                return new StandardResponse("success", "no groups", md);
+            }
+            return new StandardResponse("success", "Successfully fetched groups", md);
+
+        } catch (Exception f) {
+            return new StandardResponse("error", "Failed to lookup groups");
         }
     }
 

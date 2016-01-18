@@ -23,6 +23,11 @@ myApp.config(function ($routeProvider) {
             controller: 'loginController'
         })
 
+        .when('/groups', {
+            templateUrl: 'pages/groups.html',
+            controller: 'groupsController'
+        })
+
         .when('/groups/create', {
             templateUrl: 'pages/groupcreate.html',
             controller: 'groupcreateController'
@@ -90,6 +95,19 @@ myApp.service('httpService', function ($http, $window) {
         getMembership: function () {
             return $http({
                 url: "api/groups/memberships",
+                method: "GET",
+                headers: {
+                    "Authorization": $window.sessionStorage.accessToken
+                }
+            }).success(function (data, status) {
+                console.log(data);
+                return data;
+            });
+        },
+
+        getGroups: function () {
+            return $http({
+                url: "api/groups",
                 method: "GET",
                 headers: {
                     "Authorization": $window.sessionStorage.accessToken

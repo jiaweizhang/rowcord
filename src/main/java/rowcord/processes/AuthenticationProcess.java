@@ -80,7 +80,7 @@ public class AuthenticationProcess {
     }
 
     private StandardResponse getGoodLoginResponse(String token) {
-        StandardResponse response = new StandardResponse("success", "Valid email and password", DataGen.createData(token));
+        StandardResponse response = new StandardResponse("success", "Valid email and password", DataGen.createToken(token));
         return response;
     }
 

@@ -9,15 +9,26 @@ import org.springframework.web.bind.annotation.*;
 import requestdata.group.ChangeRoleData;
 import requestdata.group.CreateGroupData;
 import responses.StandardResponse;
+import responses.subresponses.MembershipResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/groups")
 public class GroupController {
+    @RequestMapping(
+            method = RequestMethod.GET)
+    @ResponseBody
+    public StandardResponse getMembership(final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        String email = claims.getSubject();
+        return getMembershipDB(email);
+    }
 
     @RequestMapping(
             value = "/create",
@@ -118,6 +129,35 @@ public class GroupController {
         } catch (Exception f) {
             f.printStackTrace();
             return new StandardResponse("error", "Failed to change role");
+        }
+    }
+
+    private StandardResponse getMembershipDB(String email) {
+        Connection c = JDBC.connect();
+        PreparedStatement st = null;
+        try {
+            st = c.prepareStatement("SELECT groupname, admin, coach FROM groups WHERE email = ?;");
+            st.setString(1, email);
+
+            ResultSet rs = st.executeQuery();
+            List<MembershipResponse> md = new ArrayList<MembershipResponse>();
+            while (rs.next()) {
+                String groupName = rs.getString("groupname");
+                int admin = rs.getInt("admin");
+                int coach = rs.getInt("coach");
+                MembershipResponse mr = new MembershipResponse(groupName, admin, coach);
+                md.add(mr);
+            }
+            st.close();
+            rs.close();
+
+            if  (md.size() == 0) {
+                return new StandardResponse("error", "not in any groups");
+            }
+            return new StandardResponse("success", "Successfully fetched groups", md);
+
+        } catch (Exception f) {
+            return new StandardResponse("error", "Failed to check group membership");
         }
     }
 }

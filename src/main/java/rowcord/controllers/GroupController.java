@@ -295,24 +295,29 @@ public class GroupController {
                 return new StandardResponse("error", "group not found");
             }
 
-            st = c.prepareStatement("SELECT email FROM groups WHERE groupname = ? AND admin = 1;");
+            st = c.prepareStatement("SELECT email, admin FROM groups WHERE groupname = ?;");
             st.setString(1, groupName);
 
             rs = st.executeQuery();
-            List<String> emails = new ArrayList<String>();
+            List<String> admins = new ArrayList<String>();
+            List<String> members = new ArrayList<String>();
             boolean isAdmin = false;
 
             while (rs.next()) {
                 String currentEmail = rs.getString("email");
-                emails.add(currentEmail);
-                if (currentEmail.equals(email)) {
-                    isAdmin = true;
-                }
+                int admin = rs.getInt("admin");
+                members.add(currentEmail);
+                if (admin == 1) {
+                    admins.add(currentEmail);
+                    if (currentEmail.equals(email)) {
+                        isAdmin = true;
+                    }
+                } 
             }
             st.close();
             rs.close();
             return new StandardResponse("success", "Successfully fetched group detail",
-                    new GroupDetailResponse(groupName, groupDescription, createDate, emails, isAdmin));
+                    new GroupDetailResponse(groupName, groupDescription, createDate, admins, isAdmin, members));
 
         } catch (Exception f) {
             f.printStackTrace();

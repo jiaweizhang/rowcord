@@ -12,13 +12,15 @@ public class GroupDetailResponse {
     private Date createDate;
     private List<String> admins;
     private boolean isAdmin;
+    private List<String> members;
 
-    public GroupDetailResponse(String groupName, String groupDescription, Date createDate, List<String> admins, boolean isAdmin) {
+    public GroupDetailResponse(String groupName, String groupDescription, Date createDate, List<String> admins, boolean isAdmin, List<String> members) {
         this.groupName = groupName;
         this.groupDescription = groupDescription;
         this.createDate = createDate;
         this.admins = admins;
         this.isAdmin = isAdmin;
+        this.members = members;
     }
 
     public String getGroupName() {
@@ -39,5 +41,9 @@ public class GroupDetailResponse {
 
     public boolean isAdmin() {
         return isAdmin;
+    }
+
+    public List<String> getMembers() {
+        return members;
     }
 }

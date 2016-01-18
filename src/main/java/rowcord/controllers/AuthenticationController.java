@@ -13,10 +13,9 @@ import responses.RegisterResponse;
 import rowcord.processes.AccountProcess;
 
 @RestController
-@RequestMapping("/acc/account")
-public class AccountController {
+@RequestMapping("/auth/account")
+public class AuthenticationController {
 
-    @CrossOrigin
     @RequestMapping(value = "/register",
             method = RequestMethod.POST,
             headers = {"Content-type=application/json"})

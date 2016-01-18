@@ -4,6 +4,7 @@
 
 angular.module('myApp', [])
     .controller('myCtrl', function ($scope, $http) {
+        $scope.note = "";
         $scope.registerEmail = "";
         $scope.registerPassword = "";
         $scope.register = function () {
@@ -14,7 +15,7 @@ angular.module('myApp', [])
             };
             console.log(data.toString());
             $http({
-                url: "acc/account/register",
+                url: "auth/account/register",
                 method: "POST",
                 data: data,
                 headers: {
@@ -35,7 +36,7 @@ angular.module('myApp', [])
             };
             console.log(data.toString());
             $http({
-                url: "acc/account/login",
+                url: "auth/account/login",
                 method: "POST",
                 data: data,
                 headers: {
@@ -43,6 +44,8 @@ angular.module('myApp', [])
                 }
             }).success(function (data, status) {
                 console.log(data);
+                console.log(data.token);
+                $scope.note = data.token;
             });
         }
     })

@@ -18,8 +18,10 @@ import java.security.Key;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by jiawe on 1/17/2016.
@@ -37,7 +39,7 @@ public class AccountProcess {
         Connection c = JDBC.connect();
         PreparedStatement st = null;
         try {
-            st = c.prepareStatement("INSERT INTO accounts (email, passhash, salt) VALUES (?, ?, ?);");
+            st = c.prepareStatement("INSERT INTO accounts (email, passhash) VALUES (?, ?);");
         } catch (Exception e) {
             System.out.println("Failed prepared statement");
             return getBadRegisterResponse("Failed prepared statement");
@@ -45,18 +47,30 @@ public class AccountProcess {
         String passwordHash = null;
         try {
             passwordHash = PasswordHash.createHash(password);
-        } catch (Exception g) {
+        } catch (Exception f) {
             return getBadRegisterResponse("Failed during hashing");
         }
         try {
             st.setString(1, email);
             st.setString(2, passwordHash);
-            st.setString(3, "null");
+            st.executeUpdate();
+            st.close();
+        } catch (Exception g) {
+            return getBadRegisterResponse(g.getMessage());
+        }
+        try {
+            st = c.prepareStatement("INSERT INTO auth (email, role) VALUES (?, 'new');");
+        } catch (Exception h) {
+            System.out.println("Failed prepared statement");
+            return getBadRegisterResponse("Failed prepared statement");
+        }
+        try {
+            st.setString(1, email);
             st.executeUpdate();
             st.close();
             return getGoodRegisterResponse();
-        } catch (Exception f) {
-            return getBadRegisterResponse(f.getMessage());
+        } catch (Exception g) {
+            return getBadRegisterResponse(g.getMessage());
         }
     }
 
@@ -64,7 +78,7 @@ public class AccountProcess {
         Connection c = JDBC.connect();
         PreparedStatement st = null;
         try {
-            st = c.prepareStatement("SELECT passhash, salt, token FROM accounts WHERE email = ?;");
+            st = c.prepareStatement("SELECT passhash FROM accounts WHERE email = ?;");
         } catch (Exception e) {
             System.out.println("Failed prepared statement");
             return getBadLoginResponse();
@@ -76,20 +90,20 @@ public class AccountProcess {
                 System.out.println();
                 System.out.println("login");
 
-                String salt = rs.getString("salt");
                 String passhash = rs.getString("passhash");
-                String token = rs.getString("token");
-                LocalDate now = LocalDate.now();
-                Date nowDate = Date.from(now.atStartOfDay(ZoneId.systemDefault()).toInstant());
-                LocalDate expire = LocalDate.now().plusDays(7);
-                Date expireDate = Date.from(expire.atStartOfDay(ZoneId.systemDefault()).toInstant());
-                String jwt = Jwts.builder().setSubject(email)
-                        .claim("roles", Arrays.asList("user", "admin")).setIssuedAt(nowDate)
-                        .setExpiration(expireDate)
-                        .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
                 st.close();
                 rs.close();
                 if (PasswordHash.validatePassword(password, passhash)) {
+                    LocalDate now = LocalDate.now();
+                    Date nowDate = Date.from(now.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    LocalDate expire = LocalDate.now().plusDays(7);
+                    Date expireDate = Date.from(expire.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    List<String> roleList = getRoles(c);
+
+                    String jwt = Jwts.builder().setSubject(email)
+                            .claim("roles", roleList).setIssuedAt(nowDate)
+                            .setExpiration(expireDate)
+                            .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
                     return getGoodLoginResponse(jwt);
                 } else {
                     return getBadLoginResponse();
@@ -100,6 +114,32 @@ public class AccountProcess {
             f.printStackTrace();
             System.out.println("Failed during execution");
             return getBadLoginResponse();
+        }
+    }
+
+    private List<String> getRoles(Connection c) {
+        PreparedStatement st = null;
+        try {
+            st = c.prepareStatement("SELECT role FROM auth WHERE email = ?;");
+        } catch (Exception e) {
+            System.out.println("Failed prepared statement");
+            return null;
+        }
+        try {
+            st.setString(1, email);
+            ResultSet rs = st.executeQuery();
+            List<String> roleList = new ArrayList<String>();
+            while (rs.next()) {
+                String role = rs.getString("role");
+                roleList.add(role);
+            }
+            st.close();
+            rs.close();
+            return roleList;
+        } catch (Exception f) {
+            f.printStackTrace();
+            System.out.println("Failed during execution");
+            return null;
         }
     }
 

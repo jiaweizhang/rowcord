@@ -44,10 +44,11 @@ myApp.config(function ($routeProvider) {
         });
 });
 
-myApp.controller('mainController', ['httpService', '$scope', '$http', '$window', function (httpService, $scope, $http, $window) {
+myApp.controller('mainController', ['httpService', '$scope', '$http', '$window', '$cookies', function (httpService, $scope, $http, $window, $cookies) {
     console.log("mainController");
     $scope.logout = function () {
-        $window.sessionStorage.removeItem("accessToken");
+        //$window.sessionStorage.removeItem("accessToken");
+        $cookies.remove("Authorization");
     }
 }]);
 

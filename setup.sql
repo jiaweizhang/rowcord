@@ -1,16 +1,21 @@
-create table accounts (
-	id bigserial primary key not null,
+-- noinspection SqlNoDataSourceInspectionForFile
+
+drop table subgroups;
+drop table groupapplications;
+drop table groupdetails;
+drop table groups;
+drop table users;
+
+create table users (
+	user_id serial primary key not null,
 	email varchar(255) unique not null,
 	passhash varchar(255) not null,
-	profile int not null,
-	verify int not null,
-	timestamp timestamp default current_timestamp,
-	firstname varchar(255),
-	middlename varchar(255),
-	lastname varchar(255),
-	dob date
+	timestamp timestamp default current_timestamp
 );
 
+INSERT INTO users (email, passhash) VALUES ('admin@admin.com', '1000:b80b084e592ead78a94324c8adf58466b14265b2df4fdd1e:17010407d54439f13d7b4058bef6ee5e8d528c8a41999b43');
+
+/*
 create table groups (
 	email varchar(255) not null,
 	groupname varchar(255) not null,
@@ -40,4 +45,4 @@ create table subgroups (
 	auth varchar(255) not null,
 	type varchar(255) not null,
 	joindate date not null
-);
+);*/

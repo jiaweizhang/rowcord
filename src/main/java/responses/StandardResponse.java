@@ -4,29 +4,39 @@ package responses;
  * Created by jiawe on 1/18/2016.
  */
 public class StandardResponse {
-    private String status;
-    private Object data;
+    private boolean is_error;
     private String message;
+    private Object committed;
+    private Object data;
 
-    public StandardResponse(String status, String message, Object data) {
-        this.status = status;
+    public StandardResponse(boolean is_error, String message, Object committed, Object data) {
+        this.is_error = is_error;
         this.message = message;
+        this.committed = committed;
         this.data = data;
     }
 
-    public StandardResponse(String status, String message) {
-        this(status, message, null);
+    public StandardResponse(boolean is_error, String message, Object committed) {
+        this(is_error, message, committed, null);
     }
 
-    public String getStatus() {
-        return status;
+    public StandardResponse(boolean is_error, String message) {
+        this(is_error, message, null, null);
     }
 
-    public Object getData() {
-        return data;
+    public boolean is_error() {
+        return is_error;
     }
 
     public String getMessage() {
         return message;
+    }
+
+    public Object getCommitted() {
+        return committed;
+    }
+
+    public Object getData() {
+        return data;
     }
 }

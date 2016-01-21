@@ -12,7 +12,7 @@ import utilities.WeightAdjuster;
 /**
  * Created by jiawe on 1/16/2016.
  */
-
+/*
 @RestController
 @RequestMapping("/api")
 public class ConverterController {
@@ -28,4 +28,4 @@ public class ConverterController {
         return new StandardResponse("success", "successfully adjusted", WeightAdjuster.adjust(lbs, secs, meters));
     }
 
-}
+}*/

@@ -4,6 +4,7 @@ package rowcord.controllers;
  * Created by jiawe on 1/17/2016.
  */
 
+/*
 import databases.JDBC;
 import io.jsonwebtoken.Claims;
 import org.springframework.web.bind.annotation.*;
@@ -63,3 +64,4 @@ public class ProfileController {
     }
 }
 
+*/

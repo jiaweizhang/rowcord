@@ -3,7 +3,6 @@ package rowcord.controllers;
 /**
  * Created by jiawe on 1/18/2016.
  */
-import databases.JDBC;
 import io.jsonwebtoken.Claims;
 import org.springframework.web.bind.annotation.*;
 import requestdata.group.*;
@@ -20,7 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-
+/*
 @RestController
 @RequestMapping("/api/groups")
 public class GroupController {
@@ -139,7 +138,7 @@ public class GroupController {
         String groupName = rd.getGroupName();
         /**
          * TODO
-         */
+         *//*
         return new StandardResponse("error", "invite not implemented");
     }
 
@@ -312,7 +311,7 @@ public class GroupController {
                     if (currentEmail.equals(email)) {
                         isAdmin = true;
                     }
-                } 
+                }
             }
             st.close();
             rs.close();
@@ -428,3 +427,4 @@ public class GroupController {
         }
     }
 }
+*/

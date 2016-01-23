@@ -18,6 +18,8 @@ import java.util.Map;
 /**
  * Created by jiaweizhang on 1/20/2016.
  */
+
+/*
 @EnableWebMvc
 @ControllerAdvice
 public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
@@ -25,7 +27,7 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Throwable.class)
     @ResponseBody
     ResponseEntity<Object> handleControllerException(HttpServletRequest req, Throwable ex) {
-        return new ResponseEntity<Object>("error here", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<Object>(ex.getStackTrace(), HttpStatus.NOT_FOUND);
         /*ErrorResponse errorResponse = new ErrorResponse(ex);
         if(ex instanceof ServiceException) {
             errorResponse.setDetails(((ServiceException)ex).getDetails());
@@ -35,7 +37,7 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
         } else {
             return new ResponseEntity<Object>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
         }*/
-    }
+    /*}
 
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -44,4 +46,4 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
         responseBody.put("message","The URL you have reached is not in service at this time (404).");
         return new ResponseEntity<Object>(responseBody,HttpStatus.NOT_FOUND);
     }
-}
+}*/

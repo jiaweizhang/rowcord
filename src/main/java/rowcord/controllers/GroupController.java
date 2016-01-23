@@ -45,11 +45,20 @@ public class GroupController {
     }
 
     @RequestMapping(
-            value = "/public",
+            value = "/type={groupType}",
             method = RequestMethod.GET)
     @ResponseBody
-    public StandardResponse getPublics() {
-        return groupService.getPublics();
+    public StandardResponse getPublics(@PathVariable String groupType) {
+        if (groupType.equals("public")) {
+            return groupService.getPublics();
+        }
+        if (groupType.equals("private")) {
+            return groupService.getPrivates();
+        }
+        if (groupType.equals("all")) {
+            return groupService.getAll();
+        }
+        return new StandardResponse(true, 1005, "group type does not exist");
     }
 
     @RequestMapping(

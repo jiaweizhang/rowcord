@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Created by jiaweizhang on 1/23/16.
  */
-public class PublicGroup {
+public class PartGroup {
     private int groupId;
     private String groupName;
     private String description;

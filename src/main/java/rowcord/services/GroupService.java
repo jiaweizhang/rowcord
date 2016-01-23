@@ -19,7 +19,7 @@ import responses.data.group.PublicGroupData;
 import rowcord.data.ByIdGroup;
 import rowcord.data.Member;
 import rowcord.data.MembershipGroup;
-import rowcord.data.PublicGroup;
+import rowcord.data.PartGroup;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -100,11 +100,11 @@ public class GroupService {
     }
 
     public StandardResponse getPublics() {
-        List<PublicGroup> groups = jt.query(
-                "SELECT group_id, group_name, description, createdate FROM groups WHERE public_bool = true",
-                new RowMapper<PublicGroup>() {
-                    public PublicGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        PublicGroup group = new PublicGroup();
+        List<PartGroup> groups = jt.query(
+                "SELECT group_id, group_name, description, createdate FROM groups WHERE public_bool = true;",
+                new RowMapper<PartGroup>() {
+                    public PartGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        PartGroup group = new PartGroup();
                         group.setGroupId(rs.getInt("group_id"));
                         group.setGroupName(rs.getString("group_name"));
                         group.setDescription(rs.getString("description"));
@@ -113,6 +113,38 @@ public class GroupService {
                     }
                 });
         return new StandardResponse(false, 0, "Successfully retrieved public groups", new PublicGroupData(groups));
+    }
+
+    public StandardResponse getPrivates() {
+        List<PartGroup> groups = jt.query(
+                "SELECT group_id, group_name, description, createdate FROM groups WHERE public_bool = false;",
+                new RowMapper<PartGroup>() {
+                    public PartGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        PartGroup group = new PartGroup();
+                        group.setGroupId(rs.getInt("group_id"));
+                        group.setGroupName(rs.getString("group_name"));
+                        group.setDescription(rs.getString("description"));
+                        group.setCreateDate(rs.getTimestamp("createdate"));
+                        return group;
+                    }
+                });
+        return new StandardResponse(false, 0, "Successfully retrieved private groups", new PublicGroupData(groups));
+    }
+
+    public StandardResponse getAll() {
+        List<PartGroup> groups = jt.query(
+                "SELECT group_id, group_name, description, createdate FROM groups;",
+                new RowMapper<PartGroup>() {
+                    public PartGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        PartGroup group = new PartGroup();
+                        group.setGroupId(rs.getInt("group_id"));
+                        group.setGroupName(rs.getString("group_name"));
+                        group.setDescription(rs.getString("description"));
+                        group.setCreateDate(rs.getTimestamp("createdate"));
+                        return group;
+                    }
+                });
+        return new StandardResponse(false, 0, "Successfully retrieved all groups", new PublicGroupData(groups));
     }
 
     public StandardResponse getGroupById(int userId, int groupId) {

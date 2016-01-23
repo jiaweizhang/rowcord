@@ -14,6 +14,8 @@
 
 * 1001 - email already exists
 * 1002 - group name already exists
+* 1003 - application failed - already in group
+* 1004 - application failed - already applied
 
 
 * 1501 - email does not exist

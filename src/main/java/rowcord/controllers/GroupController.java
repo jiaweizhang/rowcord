@@ -62,6 +62,20 @@ public class GroupController {
         return groupService.getGroupById(userId, groupId);
     }
 
+    @RequestMapping(
+            value = "/apply",
+            method = RequestMethod.POST,
+            headers = {"Content-type=application/json"})
+    @ResponseBody
+    public StandardResponse apply(@RequestBody final GroupApplicationRequest req, final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        int userId =  Integer.parseInt(claims.get("userId").toString());
+        if (req.isValid()) {
+            return groupService.apply(req, userId);
+        }
+        return new StandardResponse(true, 1000, "json is not valid");
+    }
+
 
 /*
 

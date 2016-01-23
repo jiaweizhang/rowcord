@@ -1,5 +1,6 @@
 package rowcord.services;
 
+import com.sun.xml.internal.bind.api.impl.NameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import requestdata.group.AcceptRequest;
 import requestdata.group.CreateGroupRequest;
 import requestdata.group.GroupApplicationRequest;
+import requestdata.group.RoleRequest;
 import responses.StandardResponse;
 import responses.data.group.*;
 import rowcord.data.*;
@@ -275,5 +277,40 @@ public class GroupService {
                 false);
 
         return new StandardResponse(false, 0, "successfully accepted");
+    }
+
+    public StandardResponse changeRole(RoleRequest req, int userId) {
+        int inGroup = jt.queryForObject(
+                "SELECT COUNT(*) FROM groupmembers WHERE group_id = ? AND user_id =? AND admin_bool = true;", Integer.class, req.getGroupId(), userId);
+        if (inGroup != 1) {
+            return new StandardResponse(true, 3006, "You can't change roles because you're either not an admin or not in the group");
+        }
+
+        int memberExists = jt.queryForObject(
+                "SELECT COUNT(*) FROM groupmembers WHERE group_id = ? AND user_id =?;", Integer.class, req.getGroupId(), req.getUserId());
+
+        if (memberExists != 1) {
+            return new StandardResponse(true, 1503, "Member is not in group");
+        }
+
+        if (userId == req.getUserId()) {
+            // trying to change own role from admin
+            if (!req.getAdminBool()) {
+                int admins = jt.queryForObject(
+                        "SELECT COUNT(*) FROM groupmembers WHERE group_id = ? AND admin_bool = true;", Integer.class, req.getGroupId());
+                if (admins <= 1) {
+                    return new StandardResponse(true, 1006, "You can't change role to non-admin because group has to have admin");
+                }
+            }
+
+        }
+
+        jt.update("UPDATE groupmembers SET admin_bool = ?, coach_bool = ? WHERE user_id = ? AND group_id = ?;",
+                req.getAdminBool(),
+                req.getCoachBool(),
+                req.getUserId(),
+                req.getGroupId());
+
+        return new StandardResponse(false, 0, "successfully changed role");
     }
 }

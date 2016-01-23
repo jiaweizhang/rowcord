@@ -10,6 +10,16 @@ Written by Jiawei Zhang
 
 ## Existing Features
 
+* Create account
+* Login authentication
+* Create group
+* Group memberships
+* Get groups by type
+* Group by id
+* Apply to group
+* Get applications as an admin
+* Accept member application as admin
+
 ## Future Features
 
 * Add get user profile

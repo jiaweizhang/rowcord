@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import requestdata.group.AcceptRequest;
 import requestdata.group.CreateGroupRequest;
 import requestdata.group.GroupApplicationRequest;
+import requestdata.group.RoleRequest;
 import responses.StandardResponse;
 import rowcord.services.GroupService;
 
@@ -108,6 +109,20 @@ public class GroupController {
         int userId =  Integer.parseInt(claims.get("userId").toString());
         if (req.isValid()) {
             return groupService.accept(req, userId);
+        }
+        return new StandardResponse(true, 1000, "json is not valid");
+    }
+
+    @RequestMapping(
+            value = "/role",
+            method = RequestMethod.POST,
+            headers = {"Content-type=application/json"})
+    @ResponseBody
+    public StandardResponse changeRole(@RequestBody final RoleRequest req, final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        int userId =  Integer.parseInt(claims.get("userId").toString());
+        if (req.isValid()) {
+            return groupService.changeRole(req, userId);
         }
         return new StandardResponse(true, 1000, "json is not valid");
     }

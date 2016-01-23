@@ -3,7 +3,7 @@ package requestdata.auth;
 /**
  * Created by jiaweizhang on 1/17/2016.
  */
-public class UserRequest {
+public class LoginRequest {
     private String email;
     private char[] password;
 

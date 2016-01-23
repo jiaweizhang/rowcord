@@ -25,7 +25,7 @@ public class AuthenticationService {
     @Autowired
     private JdbcTemplate jt;
 
-    public StandardResponse register(String email, char[] password) {
+    public StandardResponse register(String email, char[] password, String firstName, String lastName) {
         String passwordHash = null;
         try {
             passwordHash = PasswordHash.createHash(password);
@@ -38,8 +38,8 @@ public class AuthenticationService {
             return new StandardResponse(true, 1001, "Email already exists");
         }
         int returnedValue = jt.update(
-                "INSERT INTO users (email, passhash) VALUES (?, ?);",
-                email, passwordHash);
+                "INSERT INTO users (email, passhash, first_name, last_name, verified) VALUES (?, ?, ?, ?, ?);",
+                email, passwordHash, firstName, lastName, false);
         return new StandardResponse(false, 0, "Successfully registered.");
     }
 

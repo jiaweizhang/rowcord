@@ -5,35 +5,32 @@ package responses;
  */
 public class StandardResponse {
     private boolean error;
+    private int code;
     private String message;
-    private Object committed;
     private Object data;
 
-    public StandardResponse(boolean error, String message, Object committed, Object data) {
+    public StandardResponse(boolean error, int code, String message, Object data) {
         this.error = error;
+        this.code = code;
         this.message = message;
-        this.committed = committed;
         this.data = data;
     }
 
-    public StandardResponse(boolean error, String message, Object committed) {
-        this(error, message, committed, null);
-    }
 
-    public StandardResponse(boolean error, String message) {
-        this(error, message, null, null);
+    public StandardResponse(boolean error, int code, String message) {
+        this(error, code, message, null);
     }
 
     public boolean isError() {
         return error;
     }
 
-    public String getMessage() {
-        return message;
+    public int getCode() {
+        return code;
     }
 
-    public Object getCommitted() {
-        return committed;
+    public String getMessage() {
+        return message;
     }
 
     public Object getData() {

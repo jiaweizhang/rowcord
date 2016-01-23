@@ -15,6 +15,7 @@ import responses.subresponses.MembershipResponse;
 import rowcord.services.GroupService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.PathParam;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -40,7 +41,7 @@ public class GroupController {
         if (req.isValid()) {
             return groupService.createGroup(req, userId);
         }
-        return new StandardResponse(true, "json is not valid");
+        return new StandardResponse(true, 1000, "json is not valid");
     }
 
 
@@ -62,38 +63,18 @@ public class GroupController {
         return groupService.getPublics();
     }
 
+    @RequestMapping(
+            value = "/{groupId}",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public StandardResponse getGroupById(@PathVariable int groupId, final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        int userId =  Integer.parseInt(claims.get("userId").toString());
+        return groupService.getGroupById(userId, groupId);
+    }
+
 
 /*
-
-
-
-    private StandardResponse getAllGroupsDB(String email) {
-        Connection c = JDBC.connect();
-        PreparedStatement st = null;
-        try {
-            st = c.prepareStatement("SELECT groupname, description, createdate FROM groupdetails;");
-
-            ResultSet rs = st.executeQuery();
-            List<GroupResponse> md = new ArrayList<GroupResponse>();
-            while (rs.next()) {
-                String groupName = rs.getString("groupname");
-                String groupDescription = rs.getString("description");
-                Date createDate = rs.getDate("createdate");
-                GroupResponse mr = new GroupResponse(groupName, groupDescription, createDate);
-                md.add(mr);
-            }
-            st.close();
-            rs.close();
-
-            if  (md.size() == 0) {
-                return new StandardResponse("success", "no groups", md);
-            }
-            return new StandardResponse("success", "Successfully fetched groups", md);
-
-        } catch (Exception f) {
-            return new StandardResponse("error", "Failed to lookup groups");
-        }
-    }
 
     private StandardResponse getGroupDetailDB(String email, String groupName) {
         Connection c = JDBC.connect();

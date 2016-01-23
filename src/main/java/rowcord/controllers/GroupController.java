@@ -3,10 +3,13 @@ package rowcord.controllers;
 /**
  * Created by jiaweizhang on 1/18/2016.
  */
+
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import requestdata.group.*;
+import requestdata.group.AcceptRequest;
+import requestdata.group.CreateGroupRequest;
+import requestdata.group.GroupApplicationRequest;
 import responses.StandardResponse;
 import rowcord.services.GroupService;
 

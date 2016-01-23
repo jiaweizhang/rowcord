@@ -54,110 +54,18 @@ public class GroupController {
         return groupService.getMemberships(userId);
     }
 
+    @RequestMapping(
+            value = "/public",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public StandardResponse getPublics() {
+        return groupService.getPublics();
+    }
+
 
 /*
 
-    private StandardResponse createGroupDB(String email, String groupName, String groupDescription) {
-        Connection c = JDBC.connect();
-        PreparedStatement st = null;
-        try {
-            st = c.prepareStatement("SELECT 1 FROM groups WHERE groupname = ?;");
-            st.setString(1, groupName);
 
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                st.close();
-                rs.close();
-                return new StandardResponse("error", "group already exists");
-            }
-            st.close();
-            rs.close();
-
-            st = c.prepareStatement("INSERT INTO groups (email, groupname, admin, coach, joindate) "+
-            "VALUES (?, ?, 1, 0, ?); INSERT INTO groupdetails (groupname, description, createdate) VALUES (?, ?, ?);");
-            st.setString(1, email);
-            st.setString(2, groupName);
-            st.setDate(3, new java.sql.Date(new java.util.Date().getTime()));
-            st.setString(4, groupName);
-            st.setString(5, groupDescription);
-            st.setDate(6, new java.sql.Date(new java.util.Date().getTime()));
-            st.executeUpdate();
-            st.close();
-            return new StandardResponse("success", "Successfully created group", new MembershipResponse(groupName, 1, 0));
-
-        } catch (Exception f) {
-            f.printStackTrace();
-            return new StandardResponse("error", "Failed to create group");
-        }
-    }
-
-    private StandardResponse changeRoleDB(String email, String otherEmail, String groupName, int admin, int coach) {
-        Connection c = JDBC.connect();
-        PreparedStatement st = null;
-        try {
-            if (!validateAdmin(email, groupName, c)) {
-                return new StandardResponse("error", "Permission denied - not group admin");
-            }
-            // email is admin
-            if (admin == 0) {
-                st = c.prepareStatement("SELECT 1 FROM groups WHERE groupname = ? AND email <> ? AND admin = 1;");
-                st.setString(1, groupName);
-                st.setString(2, email);
-                // number of other admins is 1
-
-                ResultSet rs = st.executeQuery();
-                if (!rs.next()) {
-                    st.close();
-                    rs.close();
-                    return new StandardResponse("error", "cannot change permission - no other admins");
-                }
-                st.close();
-                rs.close();
-            }
-
-            st = c.prepareStatement("UPDATE groups SET admin = ?, coach = ? WHERE groupname = ? AND email = ?;");
-            st.setInt(1, admin);
-            st.setInt(2, coach);
-            st.setString(3, groupName);
-            st.setString(4, otherEmail);
-            st.executeUpdate();
-            st.close();
-            return new StandardResponse("success", "Successfully changed permissions");
-
-        } catch (Exception f) {
-            f.printStackTrace();
-            return new StandardResponse("error", "Failed to change permissions");
-        }
-    }
-
-    private StandardResponse getMembershipDB(String email) {
-        Connection c = JDBC.connect();
-        PreparedStatement st = null;
-        try {
-            st = c.prepareStatement("SELECT groupname, admin, coach FROM groups WHERE email = ?;");
-            st.setString(1, email);
-
-            ResultSet rs = st.executeQuery();
-            List<MembershipResponse> md = new ArrayList<MembershipResponse>();
-            while (rs.next()) {
-                String groupName = rs.getString("groupname");
-                int admin = rs.getInt("admin");
-                int coach = rs.getInt("coach");
-                MembershipResponse mr = new MembershipResponse(groupName, admin, coach);
-                md.add(mr);
-            }
-            st.close();
-            rs.close();
-
-            if  (md.size() == 0) {
-                return new StandardResponse("success", "not in any groups", md);
-            }
-            return new StandardResponse("success", "Successfully fetched groups", md);
-
-        } catch (Exception f) {
-            return new StandardResponse("error", "Failed to check group membership");
-        }
-    }
 
     private StandardResponse getAllGroupsDB(String email) {
         Connection c = JDBC.connect();

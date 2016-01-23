@@ -13,13 +13,14 @@ import requestdata.group.CreateGroupRequest;
 import responses.StandardResponse;
 import responses.data.group.CreateGroupData;
 import responses.data.group.MembershipGroupData;
+import responses.data.group.PublicGroupData;
 import rowcord.data.MembershipGroup;
+import rowcord.data.PublicGroup;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -92,5 +93,21 @@ public class GroupService {
                     }
                 });
         return new StandardResponse(false, "Successfully retrieved membership groups", new MembershipGroupData(groups));
+    }
+
+    public StandardResponse getPublics() {
+        List<PublicGroup> groups = jt.query(
+                "SELECT group_id, group_name, description, createdate FROM groups WHERE public_bool = true",
+                new RowMapper<PublicGroup>() {
+                    public PublicGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        PublicGroup group = new PublicGroup();
+                        group.setGroupId(rs.getInt("group_id"));
+                        group.setGroupName(rs.getString("group_name"));
+                        group.setDescription(rs.getString("description"));
+                        group.setCreateDate(rs.getTimestamp("createdate"));
+                        return group;
+                    }
+                });
+        return new StandardResponse(false, "Successfully retrieved public groups", new PublicGroupData(groups));
     }
 }

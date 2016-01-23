@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import responses.StandardResponse;
-import responses.data.Token;
+import responses.data.auth.Token;
 import rowcord.data.User;
 import utilities.PasswordHash;
 import utilities.TokenCreator;

@@ -23,6 +23,7 @@
 * 1501 - email does not exist
 * 1502 - application does not exist
 * 1503 - member is not in the group (change role)
+* 1504 - member is not in the group (kick)
 
 ## Database errors
 
@@ -38,4 +39,4 @@
 * 3004 - not authorized to view applications
 * 3005 - not authorized to accept applications
 * 3006 - not authorized to change roles
-
+* 3007 - not authorized to kick user

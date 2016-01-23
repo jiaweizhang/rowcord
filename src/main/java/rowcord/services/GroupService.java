@@ -10,10 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import requestdata.group.AcceptRequest;
-import requestdata.group.CreateGroupRequest;
-import requestdata.group.GroupApplicationRequest;
-import requestdata.group.RoleRequest;
+import requestdata.group.*;
 import responses.StandardResponse;
 import responses.data.group.*;
 import rowcord.data.*;
@@ -277,6 +274,28 @@ public class GroupService {
                 false);
 
         return new StandardResponse(false, 0, "successfully accepted");
+    }
+
+    public StandardResponse kick(KickRequest req, int userId) {
+        int inGroup = jt.queryForObject(
+                "SELECT COUNT(*) FROM groupmembers WHERE group_id = ? AND user_id =? AND admin_bool = true;", Integer.class, req.getGroupId(), userId);
+
+        if (inGroup != 1) {
+            return new StandardResponse(true, 3007, "You can't kick because you're either not an admin or not in the group");
+        }
+
+        int memberExists = jt.queryForObject(
+                "SELECT COUNT(*) FROM groupmembers WHERE group_id = ? AND user_id =?;", Integer.class, req.getGroupId(), req.getUserId());
+
+        if (memberExists != 1) {
+            return new StandardResponse(true, 1504, "Member does not exist");
+        }
+
+        jt.update("DELETE FROM groupmembers WHERE group_id = ? AND user_id = ?;",
+                req.getGroupId(),
+                req.getUserId());
+
+        return new StandardResponse(false, 0, "successfully kicked member");
     }
 
     public StandardResponse changeRole(RoleRequest req, int userId) {

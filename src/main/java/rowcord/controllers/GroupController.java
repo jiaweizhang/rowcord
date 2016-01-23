@@ -7,10 +7,7 @@ package rowcord.controllers;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import requestdata.group.AcceptRequest;
-import requestdata.group.CreateGroupRequest;
-import requestdata.group.GroupApplicationRequest;
-import requestdata.group.RoleRequest;
+import requestdata.group.*;
 import responses.StandardResponse;
 import rowcord.services.GroupService;
 
@@ -109,6 +106,20 @@ public class GroupController {
         int userId =  Integer.parseInt(claims.get("userId").toString());
         if (req.isValid()) {
             return groupService.accept(req, userId);
+        }
+        return new StandardResponse(true, 1000, "json is not valid");
+    }
+
+    @RequestMapping(
+            value = "/kick",
+            method = RequestMethod.DELETE,
+            headers = {"Content-type=application/json"})
+    @ResponseBody
+    public StandardResponse kick(@RequestBody final KickRequest req, final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        int userId =  Integer.parseInt(claims.get("userId").toString());
+        if (req.isValid()) {
+            return groupService.kick(req, userId);
         }
         return new StandardResponse(true, 1000, "json is not valid");
     }

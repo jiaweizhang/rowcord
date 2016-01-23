@@ -50,7 +50,7 @@ public class AuthenticationService {
                 new RowMapper<User>() {
                     public User mapRow(ResultSet rs, int rowNum) throws SQLException {
                         User user = new User();
-                        user.setUser_id(rs.getInt("user_id"));
+                        user.setUserId(rs.getInt("user_id"));
                         user.setPasshash(rs.getString("passhash"));
                         return user;
                     }
@@ -60,7 +60,7 @@ public class AuthenticationService {
         }
         try {
             if (PasswordHash.validatePassword(password, users.get(0).getPasshash())) {
-                Token token = new Token(TokenCreator.generateToken(users.get(0).getUser_id()));
+                Token token = new Token(TokenCreator.generateToken(users.get(0).getUserId()));
                 return new StandardResponse(false, "Successfully authenticated.", null, token);
             }
         } catch (Exception e) {

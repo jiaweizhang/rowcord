@@ -4,6 +4,7 @@ package rowcord.controllers;
  * Created by jiawe on 1/18/2016.
  */
 import io.jsonwebtoken.Claims;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import requestdata.group.*;
 import responses.StandardResponse;
@@ -11,6 +12,7 @@ import responses.subresponses.ApplicationResponse;
 import responses.subresponses.GroupDetailResponse;
 import responses.subresponses.GroupResponse;
 import responses.subresponses.MembershipResponse;
+import rowcord.services.GroupService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Connection;
@@ -19,128 +21,41 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-/*
+
 @RestController
 @RequestMapping("/api/groups")
 public class GroupController {
+
+    @Autowired
+    private GroupService groupService;
+
     @RequestMapping(
-            method = RequestMethod.GET)
+            value = "",
+            method = RequestMethod.POST,
+            headers = {"Content-type=application/json"})
     @ResponseBody
-    public StandardResponse getGroups(final HttpServletRequest request) {
+    public StandardResponse createGroup(@RequestBody final CreateGroupRequest req, final HttpServletRequest request) {
         final Claims claims = (Claims) request.getAttribute("claims");
-        String email = claims.getSubject();
-        return getAllGroupsDB(email);
+        int userId =  Integer.parseInt(claims.get("userId").toString());
+        if (req.isValid()) {
+            return groupService.createGroup(req, userId);
+        }
+        return new StandardResponse(true, "json is not valid");
     }
 
-
+    /*
     @RequestMapping(
             value = "/memberships",
             method = RequestMethod.GET)
     @ResponseBody
-    public StandardResponse getMembership(final HttpServletRequest request) {
+    public StandardResponse getMemberships(final HttpServletRequest request) {
         final Claims claims = (Claims) request.getAttribute("claims");
-        String email = claims.getSubject();
-        return getMembershipDB(email);
+        int userId =  Integer.parseInt(claims.get("userId").toString());
+        return groupService.getMemberships(userId);
     }
+    */
 
-
-    @RequestMapping(
-            value = "/groupdetail",
-            method = RequestMethod.POST,
-            headers = {"Content-type=application/json"})
-    @ResponseBody
-    public StandardResponse getGroupDetail(@RequestBody final GroupDetailData gd, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        String email = claims.getSubject();
-        String groupName = gd.getGroupName();
-        groupName = groupName.replaceAll("\\+", " ");
-        return getGroupDetailDB(email, groupName);
-    }
-
-
-    @RequestMapping(
-            value = "/create",
-            method = RequestMethod.POST,
-            headers = {"Content-type=application/json"})
-    @ResponseBody
-    public StandardResponse createGroup(@RequestBody final CreateGroupData gd, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        String email = claims.getSubject();
-        String groupName = gd.getGroupName();
-        String groupDescription = gd.getGroupDescription();
-        return createGroupDB(email, groupName, groupDescription);
-    }
-
-    @RequestMapping(
-            value = "/changerole",
-            method = RequestMethod.POST,
-            headers = {"Content-type=application/json"})
-    @ResponseBody
-    public StandardResponse changeRole(@RequestBody final ChangeRoleData rd, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        String email = claims.getSubject();
-        String otherEmail = rd.getEmail();
-        if (otherEmail == null) {
-            otherEmail = email;
-        }
-        String groupName = rd.getGroupName();
-        int admin = rd.getAdmin();
-        int coach = rd.getCoach();
-        return changeRoleDB( email, otherEmail, groupName,  admin,  coach);
-    }
-
-    @RequestMapping(
-            value = "/apply",
-            method = RequestMethod.POST,
-            headers = {"Content-type=application/json"})
-    @ResponseBody
-    public StandardResponse apply(@RequestBody final ApplyData ad, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        String email = claims.getSubject();
-        String groupName = ad.getGroupName();
-
-        return applyDB(email, groupName);
-    }
-
-    @RequestMapping(
-            value = "/applications",
-            method = RequestMethod.GET)
-    @ResponseBody
-    public StandardResponse applications(final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        String email = claims.getSubject();
-
-        return applicationsDB(email);
-    }
-
-    @RequestMapping(
-            value = "/applicationaccept",
-            method = RequestMethod.POST,
-            headers = {"Content-type=application/json"})
-    @ResponseBody
-    public StandardResponse applicationAccept(@RequestBody final AcceptData rd, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        String email = claims.getSubject();
-        String acceptedEmail = rd.getEmail();
-        String groupName = rd.getGroupName();
-        return applicationAcceptDB(email, acceptedEmail, groupName);
-    }
-
-    @RequestMapping(
-            value = "/invite",
-            method = RequestMethod.POST,
-            headers = {"Content-type=application/json"})
-    @ResponseBody
-    public StandardResponse invite(@RequestBody final InviteData rd, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        String email = claims.getSubject();
-        String invitedEmail = rd.getEmail();
-        String groupName = rd.getGroupName();
-        /**
-         * TODO
-         *//*
-        return new StandardResponse("error", "invite not implemented");
-    }
+/*
 
     private StandardResponse createGroupDB(String email, String groupName, String groupDescription) {
         Connection c = JDBC.connect();
@@ -425,6 +340,5 @@ public class GroupController {
         } catch (Exception e) {
             return false;
         }
-    }
+    }*/
 }
-*/

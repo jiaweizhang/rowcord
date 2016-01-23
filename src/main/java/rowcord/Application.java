@@ -1,8 +1,8 @@
 package rowcord;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
@@ -11,6 +11,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
 import rowcord.filters.JwtFilter;
+
+/**
+ * Created by jiaweizhang on 1/16/16.
+ */
 
 @EnableAutoConfiguration
 @ComponentScan
@@ -27,8 +31,6 @@ public class Application extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
-
-        //SpringApplication.run(Application.class, args);
 
         ApplicationContext ctx = SpringApplication.run(Application.class, args);
         DispatcherServlet dispatcherServlet = (DispatcherServlet)ctx.getBean("dispatcherServlet");

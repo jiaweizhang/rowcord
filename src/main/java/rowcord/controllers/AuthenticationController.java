@@ -6,10 +6,12 @@ package rowcord.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import requestdata.auth.UserRequest;
-import responses.StandardResponse;;
+import requestdata.auth.LoginRequest;
+import requestdata.auth.RegisterRequest;
+import responses.StandardResponse;
 import rowcord.services.AuthenticationService;
+
+;
 
 
 @RestController
@@ -23,11 +25,11 @@ public class AuthenticationController {
             method = RequestMethod.POST,
             headers = {"Content-type=application/json"})
     @ResponseBody
-    public StandardResponse register(@RequestBody final UserRequest req) {
+    public StandardResponse register(@RequestBody final RegisterRequest req) {
         if (req.isValid()) {
-            return authenticationService.register(req.getEmail(), req.getPassword());
+            return authenticationService.register(req.getEmail(), req.getPassword(), req.getFirstName(), req.getLastName());
         }
-        return new StandardResponse(true, "json not valid");
+        return new StandardResponse(true, 1000, "json not valid");
     }
 
 
@@ -35,12 +37,12 @@ public class AuthenticationController {
             method = RequestMethod.POST,
             headers = {"Content-type=application/json"})
     @ResponseBody
-    public StandardResponse login(@RequestBody final UserRequest req) {
+    public StandardResponse login(@RequestBody final LoginRequest req) {
         if (req.isValid()) {
             return authenticationService.login(req.getEmail(), req.getPassword());
 
         }
-        return new StandardResponse(true, "json not valid");
+        return new StandardResponse(true, 1000, "json not valid");
     }
 
 }

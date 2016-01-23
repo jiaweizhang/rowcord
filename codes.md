@@ -40,3 +40,4 @@
 * 3005 - not authorized to accept applications
 * 3006 - not authorized to change roles
 * 3007 - not authorized to kick user
+* 3008 - not authorized to create subgroup

@@ -1,4 +1,4 @@
-package rowcord;
+package rowcord.filters;
 
 import java.io.IOException;
 import java.util.Date;

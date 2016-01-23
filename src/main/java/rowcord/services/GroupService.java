@@ -3,6 +3,7 @@ package rowcord.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -10,11 +11,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import requestdata.group.CreateGroupRequest;
 import responses.StandardResponse;
-import responses.data.group.CreateGroup;
+import responses.data.group.CreateGroupData;
+import responses.data.group.MembershipGroupData;
+import rowcord.data.MembershipGroup;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by jiaweizhang on 1/22/16.
@@ -62,6 +68,29 @@ public class GroupService {
                 true,
                 false);
 
-        return new StandardResponse(false, "Successfully created group", new CreateGroup(groupId, req.getGroupName(), req.getDescription(), req.getPublicBool()));
+        return new StandardResponse(false, "Successfully created group", new CreateGroupData(groupId, req.getGroupName(), req.getDescription(), req.getPublicBool()));
+    }
+
+    public StandardResponse getMemberships(int userId) {
+        List<MembershipGroup> groups = jt.query(
+                "SELECT groups.group_id, groups.group_name, groupmembers.admin_bool, groupmembers.coach_bool, groupmembers.joindate " +
+                        "FROM groups " +
+                        "INNER JOIN groupmembers " +
+                        "ON groups.group_id=groupmembers.group_id " +
+                        "WHERE groupmembers.user_id = ? " +
+                        "ORDER BY groups.group_name ASC;",
+                new Object[]{userId},
+                new RowMapper<MembershipGroup>() {
+                    public MembershipGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        MembershipGroup group = new MembershipGroup();
+                        group.setGroupId(rs.getInt("group_id"));
+                        group.setGroupName(rs.getString("group_name"));
+                        group.setAdminBool(rs.getBoolean("admin_bool"));
+                        group.setCoachBool(rs.getBoolean("coach_bool"));
+                        group.setJoinDate(rs.getTimestamp("joindate"));
+                        return group;
+                    }
+                });
+        return new StandardResponse(false, "Successfully retrieved membership groups", new MembershipGroupData(groups));
     }
 }

@@ -3,13 +3,13 @@ package responses.data.group;
 /**
  * Created by jiaweizhang on 1/23/16.
  */
-public class CreateGroup {
+public class CreateGroupData {
     private int groupId;
     private String groupName;
     private String description;
     private boolean publicBool;
 
-    public CreateGroup(int groupId, String groupName, String description, boolean publicBool) {
+    public CreateGroupData(int groupId, String groupName, String description, boolean publicBool) {
         this.groupId = groupId;
         this.groupName = groupName;
         this.description = description;

@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import requestdata.group.AcceptRequest;
 import requestdata.group.CreateGroupRequest;
 import requestdata.group.GroupApplicationRequest;
 import responses.StandardResponse;
@@ -246,5 +247,33 @@ public class GroupService {
                     }
                 });
         return new StandardResponse(false, 0, "successfully retrieved applications", new ApplicationData(apps));
+    }
+
+    public StandardResponse accept(AcceptRequest req, int userId) {
+        int inGroup = jt.queryForObject(
+                "SELECT COUNT(*) FROM groupmembers WHERE group_id = ? AND user_id =? AND admin_bool = true;", Integer.class, req.getGroupId(), userId);
+
+        if (inGroup != 1) {
+            return new StandardResponse(true, 3005, "You can't accept because you're either not an admin or not in the group");
+        }
+
+        int appExists = jt.queryForObject(
+                "SELECT COUNT(*) FROM groupapplications WHERE group_id = ? AND user_id =?;", Integer.class, req.getGroupId(), req.getUserId());
+
+        if (appExists != 1) {
+            return new StandardResponse(true, 1502, "Application does not exist");
+        }
+
+        jt.update("DELETE FROM groupapplications WHERE group_id = ? AND user_id = ?;",
+                req.getGroupId(),
+                req.getUserId());
+
+        jt.update("INSERT INTO groupmembers (group_id, user_id, admin_bool, coach_bool) VALUES (?, ?, ?, ?);",
+                req.getGroupId(),
+                req.getUserId(),
+                false,
+                false);
+
+        return new StandardResponse(false, 0, "successfully accepted");
     }
 }

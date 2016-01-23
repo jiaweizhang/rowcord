@@ -7,6 +7,8 @@ import java.util.Date;
  */
 public class Member {
     private int userId;
+    private String firstName;
+    private String lastName;
     private boolean adminBool;
     private boolean coachBool;
     private Date joinDate;
@@ -17,6 +19,22 @@ public class Member {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public boolean isAdminBool() {

@@ -7,10 +7,14 @@ create table users (
 	user_id serial primary key not null,
 	email varchar(255) unique not null,
 	passhash varchar(255) not null,
+  first_name varchar(255) not null,
+  last_name varchar(255) not null,
+  verified boolean not null,
 	joindate timestamp default current_timestamp
 );
 
-INSERT INTO users (email, passhash) VALUES ('admin@admin.com', '1000:b80b084e592ead78a94324c8adf58466b14265b2df4fdd1e:17010407d54439f13d7b4058bef6ee5e8d528c8a41999b43');
+INSERT INTO users (email, passhash, first_name, last_name, verified)
+VALUES ('admin@admin.com', '1000:b80b084e592ead78a94324c8adf58466b14265b2df4fdd1e:17010407d54439f13d7b4058bef6ee5e8d528c8a41999b43', 'Jiawei', 'Zhang', true);
 
 create table groups (
   group_id serial primary key not null,

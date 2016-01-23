@@ -1,27 +1,16 @@
 package rowcord.controllers;
 
 /**
- * Created by jiawe on 1/18/2016.
+ * Created by jiaweizhang on 1/18/2016.
  */
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import requestdata.group.*;
 import responses.StandardResponse;
-import responses.subresponses.ApplicationResponse;
-import responses.subresponses.GroupDetailResponse;
-import responses.subresponses.GroupResponse;
-import responses.subresponses.MembershipResponse;
 import rowcord.services.GroupService;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.websocket.server.PathParam;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/groups")
@@ -75,58 +64,6 @@ public class GroupController {
 
 
 /*
-
-    private StandardResponse getGroupDetailDB(String email, String groupName) {
-        Connection c = JDBC.connect();
-        PreparedStatement st = null;
-        try {
-            st = c.prepareStatement("SELECT description, createdate FROM groupdetails WHERE groupname = ?;");
-            st.setString(1, groupName);
-
-            ResultSet rs = st.executeQuery();
-            String groupDescription;
-            Date createDate;
-
-            if (rs.next()) {
-                groupDescription = rs.getString("description");
-                createDate = rs.getDate("createdate");
-                st.close();
-                rs.close();
-            } else {
-                st.close();
-                rs.close();
-                return new StandardResponse("error", "group not found");
-            }
-
-            st = c.prepareStatement("SELECT email, admin FROM groups WHERE groupname = ?;");
-            st.setString(1, groupName);
-
-            rs = st.executeQuery();
-            List<String> admins = new ArrayList<String>();
-            List<String> members = new ArrayList<String>();
-            boolean isAdmin = false;
-
-            while (rs.next()) {
-                String currentEmail = rs.getString("email");
-                int admin = rs.getInt("admin");
-                members.add(currentEmail);
-                if (admin == 1) {
-                    admins.add(currentEmail);
-                    if (currentEmail.equals(email)) {
-                        isAdmin = true;
-                    }
-                }
-            }
-            st.close();
-            rs.close();
-            return new StandardResponse("success", "Successfully fetched group detail",
-                    new GroupDetailResponse(groupName, groupDescription, createDate, admins, isAdmin, members));
-
-        } catch (Exception f) {
-            f.printStackTrace();
-            return new StandardResponse("error", "Failed to fetch group detail");
-        }
-    }
 
     private StandardResponse applyDB(String email, String groupName) {
         Connection c = JDBC.connect();
@@ -209,25 +146,5 @@ public class GroupController {
             return new StandardResponse("error", "Failed to add member to group - already in group");
         }
     }
-
-    private boolean validateAdmin(String email, String groupName, Connection c) {
-        PreparedStatement st = null;
-        try {
-            st = c.prepareStatement("SELECT 1 FROM groups WHERE groupname = ? AND email = ? AND admin = 1;");
-            st.setString(1, groupName);
-            st.setString(2, email);
-
-            ResultSet rs = st.executeQuery();
-            if (!rs.next()) {
-                st.close();
-                rs.close();
-                return false;
-            }
-            st.close();
-            rs.close();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }*/
+    */
 }

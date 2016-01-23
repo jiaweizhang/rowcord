@@ -43,7 +43,7 @@ public class GroupController {
         return new StandardResponse(true, "json is not valid");
     }
 
-    /*
+
     @RequestMapping(
             value = "/memberships",
             method = RequestMethod.GET)
@@ -53,7 +53,7 @@ public class GroupController {
         int userId =  Integer.parseInt(claims.get("userId").toString());
         return groupService.getMemberships(userId);
     }
-    */
+
 
 /*
 

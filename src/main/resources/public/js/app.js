@@ -1,5 +1,5 @@
 /**
- * Created by jiawe on 1/18/2016.
+ * Created by jiaweizhang on 1/18/2016.
  */
 
 var myApp = angular
@@ -41,16 +41,47 @@ myApp.config(function ($routeProvider) {
         .when('/groups/group/:groupName', {
             templateUrl: 'pages/groupdetail.html',
             controller: 'groupdetailController'
+        })
+
+
+        .otherwise( {
+            redirectTo: "/"
         });
+})
+    .run(function($rootScope, $location) {
+    $rootScope.$on( "$routeChangeStart", function(event, next, current) {
+        if ($rootScope.loggedInUser == null) {
+            // no logged user, redirect to /login
+            if ( next.templateUrl === "partials/login.html") {
+            } else {
+                $location.path("/login");
+            }
+        }
+    });
 });
+
 
 myApp.controller('mainController', ['httpService', '$scope', '$http', '$window', '$cookies', function (httpService, $scope, $http, $window, $cookies) {
     console.log("mainController");
+
     $scope.logout = function () {
         //$window.sessionStorage.removeItem("accessToken");
         $cookies.remove("Authorization");
     }
+
 }]);
+
+/*myApp.config( ['$routeProvider', function($routeProvider) {'myApp', ['ngRoute', 'ngCookies']}] )
+    .run( function($rootScope, $location) {
+
+        // register listener to watch route changes
+        $rootScope.$on( "$routeChangeStart", function(event, next, current) {
+            if ( $rootScope.loggedUser == null ) {
+                $location.path( "/login" );
+
+            }
+        });
+    });*/
 
 myApp.service('httpService', function ($http, $window, $cookies) {
     return {

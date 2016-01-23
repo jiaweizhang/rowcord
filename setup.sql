@@ -1,4 +1,5 @@
 
+drop table groupapplications;
 drop table groupmembers;
 drop table groups;
 drop table users;
@@ -32,4 +33,12 @@ create table groupmembers (
   joindate timestamp default current_timestamp,
   unique (group_id, user_id)
 );
+
+create table groupapplications (
+  group_id int not null references groups(group_id) on delete cascade,
+  user_id int not null references users(user_id) on delete cascade,
+  applydate timestamp default current_timestamp,
+  unique (group_id, user_id)
+);
+
 

@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import requestdata.group.CreateGroupRequest;
+import requestdata.group.GroupApplicationRequest;
 import responses.StandardResponse;
 import responses.data.group.ByIdGroupData;
 import responses.data.group.CreateGroupData;
@@ -166,5 +167,28 @@ public class GroupService {
                 });
 
         return new StandardResponse(false, 0, "Successfully retrieved public groups", new ByIdGroupData(group, members));
+    }
+
+    public StandardResponse apply(GroupApplicationRequest req, int userId) {
+
+        int inGroup = jt.queryForObject(
+                "SELECT COUNT(*) FROM groupmembers WHERE group_id = ? AND user_id =?;", Integer.class, req.getGroupId(), userId);
+
+        if (inGroup == 1) {
+            return new StandardResponse(true, 1003, "already in group");
+        }
+
+        int inApp = jt.queryForObject(
+                "SELECT COUNT(*) FROM groupapplications WHERE group_id = ? AND user_id =?;", Integer.class, req.getGroupId(), userId);
+
+        if (inApp == 1) {
+            return new StandardResponse(true, 1004, "already applied");
+        }
+
+        jt.update("INSERT INTO groupapplications (group_id, user_id) VALUES (?, ?);",
+                req.getGroupId(),
+                userId);
+        return new StandardResponse(false, 0, "successfully applied");
+
     }
 }

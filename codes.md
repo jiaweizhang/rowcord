@@ -20,6 +20,7 @@
 
 
 * 1501 - email does not exist
+* 1502 - application does not exist
 
 ## Database errors
 
@@ -33,3 +34,4 @@
 * 3002 - failed password validation
 * 3003 - not authorized to access group
 * 3004 - not authorized to view applications
+* 3005 - not authorized to accept applications

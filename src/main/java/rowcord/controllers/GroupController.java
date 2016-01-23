@@ -95,6 +95,20 @@ public class GroupController {
         return groupService.getApplications(userId, groupId);
     }
 
+    @RequestMapping(
+            value = "/accept",
+            method = RequestMethod.POST,
+            headers = {"Content-type=application/json"})
+    @ResponseBody
+    public StandardResponse accept(@RequestBody final AcceptRequest req, final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        int userId =  Integer.parseInt(claims.get("userId").toString());
+        if (req.isValid()) {
+            return groupService.accept(req, userId);
+        }
+        return new StandardResponse(true, 1000, "json is not valid");
+    }
+
 
 /*
 

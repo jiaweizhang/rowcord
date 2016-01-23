@@ -145,12 +145,19 @@ public class GroupService {
                 });
 
         List<Member> members = jt.query(
-                "SELECT user_id, admin_bool, coach_bool, joindate FROM groupmembers WHERE group_id = ?;",
+                "SELECT groupmembers.user_id, groupmembers.admin_bool, groupmembers.coach_bool, groupmembers.joindate, users.first_name, users.last_name " +
+                        "FROM users " +
+                        "INNER JOIN groupmembers " +
+                        "ON users.user_id=groupmembers.user_id " +
+                        "WHERE groupmembers.group_id = ? " +
+                        "ORDER BY groupmembers.joindate ASC;",
                 new Object[]{groupId},
                 new RowMapper<Member>() {
                     public Member mapRow(ResultSet rs, int rowNum) throws SQLException {
                         Member member = new Member();
                         member.setUserId(rs.getInt("user_id"));
+                        member.setFirstName(rs.getString("first_name"));
+                        member.setLastName(rs.getString("last_name"));
                         member.setAdminBool(rs.getBoolean("admin_bool"));
                         member.setCoachBool(rs.getBoolean("coach_bool"));
                         member.setJoinDate(rs.getTimestamp("joindate"));

@@ -6,11 +6,12 @@ package rowcord.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import requestdata.auth.LoginRequest;
 import requestdata.auth.RegisterRequest;
-import responses.StandardResponse;;
+import responses.StandardResponse;
 import rowcord.services.AuthenticationService;
+
+;
 
 
 @RestController

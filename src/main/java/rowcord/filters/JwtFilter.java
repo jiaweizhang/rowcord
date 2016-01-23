@@ -1,22 +1,19 @@
 package rowcord.filters;
 
-import java.io.IOException;
-import java.util.Date;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureException;
+import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.web.filter.GenericFilterBean;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureException;
+import java.io.IOException;
 
 /**
- * Created by jiawe on 1/17/2016.
+ * Created by jiaweizhang on 1/17/2016.
  */
 public class JwtFilter extends GenericFilterBean {
 
@@ -36,9 +33,6 @@ public class JwtFilter extends GenericFilterBean {
         try {
             final Claims claims = Jwts.parser().setSigningKey("secretkey")
                     .parseClaimsJws(token).getBody();
-            /*if (claims.getExpiration().before(new Date())) {
-                throw new ServletException("Expired token");
-            }*/
             request.setAttribute("claims", claims);
         }
         catch (final SignatureException e) {

@@ -1,4 +1,4 @@
-package responses.data;
+package responses.data.auth;
 
 /**
  * Created by jiaweizhang on 1/22/16.

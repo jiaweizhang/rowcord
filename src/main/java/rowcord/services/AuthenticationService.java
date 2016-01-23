@@ -30,17 +30,17 @@ public class AuthenticationService {
         try {
             passwordHash = PasswordHash.createHash(password);
         } catch (Exception f) {
-            return new StandardResponse(true, "Failed during password hashing.");
+            return new StandardResponse(true, 3001, "Failed during password hashing.");
         }
         int exists = jt.queryForObject(
                 "SELECT COUNT(*) FROM users WHERE email = ?;", Integer.class, email);
         if (exists != 0) {
-            return new StandardResponse(true, "Email already exists");
+            return new StandardResponse(true, 1001, "Email already exists");
         }
         int returnedValue = jt.update(
                 "INSERT INTO users (email, passhash) VALUES (?, ?);",
                 email, passwordHash);
-        return new StandardResponse(false, "Successfully registered.");
+        return new StandardResponse(false, 0, "Successfully registered.");
     }
 
     public StandardResponse login(String email, char[] password) {
@@ -56,16 +56,16 @@ public class AuthenticationService {
                     }
                 });
         if (users.size() != 1) {
-            return new StandardResponse(true, "Email does not exist");
+            return new StandardResponse(true, 1501, "Email does not exist");
         }
         try {
             if (PasswordHash.validatePassword(password, users.get(0).getPasshash())) {
                 Token token = new Token(TokenCreator.generateToken(users.get(0).getUserId()));
-                return new StandardResponse(false, "Successfully authenticated.", null, token);
+                return new StandardResponse(false, 0, "Successfully authenticated.", token);
             }
         } catch (Exception e) {
-            return new StandardResponse(true, "Failed to validate password.");
+            return new StandardResponse(true, 3002, "Failed to validate password.");
         }
-        return new StandardResponse(true, "Failed to validate password.");
+        return new StandardResponse(true, 3002, "Failed to validate password.");
     }
 }

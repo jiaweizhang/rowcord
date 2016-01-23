@@ -27,7 +27,7 @@ public class AuthenticationController {
         if (req.isValid()) {
             return authenticationService.register(req.getEmail(), req.getPassword());
         }
-        return new StandardResponse(true, "json not valid");
+        return new StandardResponse(true, 1000, "json not valid");
     }
 
 
@@ -40,7 +40,7 @@ public class AuthenticationController {
             return authenticationService.login(req.getEmail(), req.getPassword());
 
         }
-        return new StandardResponse(true, "json not valid");
+        return new StandardResponse(true, 1000, "json not valid");
     }
 
 }

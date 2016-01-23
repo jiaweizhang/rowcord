@@ -85,25 +85,20 @@ public class GroupController {
         return new StandardResponse(true, 1000, "json is not valid");
     }
 
+    @RequestMapping(
+            value = "/apply/{groupId}",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public StandardResponse getApplications(@PathVariable int groupId, final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        int userId =  Integer.parseInt(claims.get("userId").toString());
+        return groupService.getApplications(userId, groupId);
+    }
+
 
 /*
 
-    private StandardResponse applyDB(String email, String groupName) {
-        Connection c = JDBC.connect();
-        PreparedStatement st = null;
-        try {
-            st = c.prepareStatement("INSERT INTO groupapplications (email, groupname, applydate) "+
-                    "VALUES (?, ?, ?);");
-            st.setString(1, email);
-            st.setString(2, groupName);
-            st.setDate(3, new java.sql.Date(new java.util.Date().getTime()));
-            st.executeUpdate();
-            st.close();
-            return new StandardResponse("success", "Successfully applied to group");
-        } catch (Exception f) {
-            return new StandardResponse("error", "Failed to apply to group - already applied");
-        }
-    }
+
 
     private StandardResponse applicationsDB(String email) {
         Connection c = JDBC.connect();
@@ -114,12 +109,12 @@ public class GroupController {
             st.setString(1, email);
 
             ResultSet rs = st.executeQuery();
-            List<ApplicationResponse> md = new ArrayList<ApplicationResponse>();
+            List<ApplicationData> md = new ArrayList<ApplicationData>();
             while (rs.next()) {
                 String applyEmail = rs.getString("email");
                 String groupName = rs.getString("groupname");
                 Date applyDate = rs.getDate("applydate");
-                ApplicationResponse ar = new ApplicationResponse(applyEmail, groupName, applyDate);
+                ApplicationData ar = new ApplicationData(applyEmail, groupName, applyDate);
                 md.add(ar);
             }
             st.close();

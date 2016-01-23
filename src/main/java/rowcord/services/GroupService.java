@@ -12,14 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import requestdata.group.CreateGroupRequest;
 import requestdata.group.GroupApplicationRequest;
 import responses.StandardResponse;
-import responses.data.group.ByIdGroupData;
-import responses.data.group.CreateGroupData;
-import responses.data.group.MembershipGroupData;
-import responses.data.group.PublicGroupData;
-import rowcord.data.ByIdGroup;
-import rowcord.data.Member;
-import rowcord.data.MembershipGroup;
-import rowcord.data.PartGroup;
+import responses.data.group.*;
+import rowcord.data.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -222,5 +216,35 @@ public class GroupService {
                 userId);
         return new StandardResponse(false, 0, "successfully applied");
 
+    }
+
+    public StandardResponse getApplications(int userId, int groupId) {
+        int inGroup = jt.queryForObject(
+                "SELECT COUNT(*) FROM groupmembers WHERE group_id = ? AND user_id =? AND admin_bool = true;", Integer.class, groupId, userId);
+
+        if (inGroup != 1) {
+            return new StandardResponse(true, 3004, "You can't view applications because you're either not an admin or not in the group");
+        }
+
+        List<Application> apps = jt.query(
+                "SELECT groupapplications.user_id, groupapplications.applydate, users.first_name, users.last_name, groupapplications.group_id " +
+                        "FROM users " +
+                        "INNER JOIN groupapplications " +
+                        "ON users.user_id=groupapplications.user_id " +
+                        "WHERE groupapplications.group_id = ? " +
+                        "ORDER BY groupapplications.applydate DESC;",
+                new Object[]{groupId},
+                new RowMapper<Application>() {
+                    public Application mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        Application app = new Application();
+                        app.setUserId(rs.getInt("user_id"));
+                        app.setFirstName(rs.getString("first_name"));
+                        app.setLastName(rs.getString("last_name"));
+                        app.setGroupId(rs.getInt("group_id"));
+                        app.setApplyDate(rs.getTimestamp("applydate"));
+                        return app;
+                    }
+                });
+        return new StandardResponse(false, 0, "successfully retrieved applications", new ApplicationData(apps));
     }
 }

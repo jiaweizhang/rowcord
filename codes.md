@@ -32,4 +32,4 @@
 * 3001 - failed password hashing
 * 3002 - failed password validation
 * 3003 - not authorized to access group
-
+* 3004 - not authorized to view applications

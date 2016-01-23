@@ -3,6 +3,7 @@ package rowcord.controllers;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import requestdata.subgroup.AddToSubgroupRequest;
 import requestdata.subgroup.CreateSubgroupRequest;
 import responses.StandardResponse;
 import rowcord.services.SubgroupService;
@@ -30,6 +31,20 @@ public class SubgroupController {
         int userId =  Integer.parseInt(claims.get("userId").toString());
         if (req.isValid()) {
             return subgroupService.createSubgroup(req, userId);
+        }
+        return new StandardResponse(true, 1000, "json is not valid");
+    }
+
+    @RequestMapping(
+            value = "/members",
+            method = RequestMethod.POST,
+            headers = {"Content-type=application/json"})
+    @ResponseBody
+    public StandardResponse addToSubgroup(@RequestBody final AddToSubgroupRequest req, final HttpServletRequest request) {
+        final Claims claims = (Claims) request.getAttribute("claims");
+        int userId =  Integer.parseInt(claims.get("userId").toString());
+        if (req.isValid()) {
+            return subgroupService.addToSubgroup(req, userId);
         }
         return new StandardResponse(true, 1000, "json is not valid");
     }

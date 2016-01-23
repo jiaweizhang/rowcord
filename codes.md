@@ -41,3 +41,4 @@
 * 3006 - not authorized to change roles
 * 3007 - not authorized to kick user
 * 3008 - not authorized to create subgroup
+* 3009 - not authorized to add to subgroup

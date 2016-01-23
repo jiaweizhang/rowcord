@@ -47,5 +47,11 @@ create table subgroups (
   subgroup_name varchar(255) not null,
   description varchar(2000) not null,
   createdate timestamp default current_timestamp
+);
+
+create table subgroupmembers (
+  subgroup_id int not null references subgroups(subgroup_id) on delete cascade,
+  user_id int not null references users(user_id) on delete cascade,
+  joindate timestamp default current_timestamp
 )
 

@@ -21,15 +21,13 @@ Written by Jiawei Zhang
 * Accept member application as admin
 * Add ability for admin to change members' roles (to/from admin/coach)
 * Add ability to kick member from group
-
+* Add ability for admin to create subgroup (not tested)
+* Add ability for admin to assign group members to subgroup (not tested)
 
 
 ## Future Features
 
 * Add get user profile
-* Add subgroups
-* Add ability for admin to create subgroup
-* Add ability for admin to assign group members to subgroup
 * Add ability for admin to assign what subgroup members can see
 * Add ability to delete group
 

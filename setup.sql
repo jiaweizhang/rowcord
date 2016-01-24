@@ -1,3 +1,7 @@
+
+
+
+drop table subgroupmembers;
 drop table subgroups;
 drop table groupapplications;
 drop table groupmembers;
@@ -43,7 +47,7 @@ create table groupapplications (
 
 create table subgroups (
   subgroup_id serial primary key not null,
-  group_id int not null references group(group_id) on delete cascade,
+  group_id int not null references groups(group_id) on delete cascade,
   subgroup_name varchar(255) not null,
   description varchar(2000) not null,
   createdate timestamp default current_timestamp

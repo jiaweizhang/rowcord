@@ -7,11 +7,14 @@ myApp.controller('loginController', ['httpService', '$scope', '$cookies', '$root
     console.log("logincontroller started");
     $scope.email;
     $scope.password;
+
+
     $scope.login = function () {
         console.log("sending request");
         var data = {
             "email": $scope.email,
             "password": $scope.password
+
         };
         httpService.login(data).then(function (response) {
             console.log(response);

@@ -13,6 +13,11 @@ myApp.config(function ($routeProvider) {
             controller: 'homeController'
         })
 
+        .when('/about', {
+            templateUrl: 'pages/about.html',
+            controller: 'aboutController'
+        })
+
         .when('/register', {
             templateUrl: 'pages/register.html',
             controller: 'registerController'
@@ -48,18 +53,33 @@ myApp.config(function ($routeProvider) {
             redirectTo: "/"
         });
 })
-    .run(function($rootScope, $location) {
-    $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-        if ($rootScope.loggedInUser == null) {
-            // no logged user, redirect to /login
-            if ( next.templateUrl === "partials/login.html") {
-            } else {
-                $location.path("/login");
-            }
+    .run(function($rootScope, $location, $cookies, $http) {
+        console.log("running .run redirect");
+        $rootScope.userAuth = $cookies.get('Authorization');
+        //$rootScope.globals = $cookies.get('globals') || {};
+        console.log("$rootScope.userAuth: "+ $rootScope.userAuth);
+        if ($rootScope.userAuth !== undefined){ // figure out LOGIC
+            console.log("$rootScope.userAuth:"+$rootScope.userAuth);
+            $http.defaults.headers.common['Authorization'] = 'Bearer ' + $rootScope.userAuth;
         }
-    });
+        //if ($rootScope.globals.currentUser) {
+        //    console.log("$rootScope.globals.currentUser.authdata:"+$rootScope.globals.currentUser.authdata);
+        //    $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata; // jshint ignore:line
+        //}
+        $rootScope.$on('$locationChangeStart', function (event, next, current) {
+            console.log("NEW ROUTE CHANGE");
+            // redirect to login page if not logged in and trying to access a restricted page
+            var unrestrictedPages = ['/login', '/register', '/'];
+            var restrictedPage = unrestrictedPages.indexOf($location.path()) === -1;
+            console.log("restpage:" + restrictedPage);
+            //var restrictedPage = $.inArray($location.path(), ['/login', '/register', '/']) === -1;
+            var loggedIn = $rootScope.userAuth !== undefined;
+            console.log("loggedin: "+loggedIn);
+            if (restrictedPage && !loggedIn) {
+                $location.path('/login');
+            }
+        });
 });
-
 
 myApp.controller('mainController', ['httpService', '$scope', '$http', '$window', '$cookies', function (httpService, $scope, $http, $window, $cookies) {
     console.log("mainController");

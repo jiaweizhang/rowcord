@@ -24,6 +24,7 @@
 * 1502 - application does not exist
 * 1503 - member is not in the group (change role)
 * 1504 - member is not in the group (kick)
+* 1505 - user does not exist (add erg workout)
 
 ## Database errors
 

@@ -1,6 +1,6 @@
 
 
-
+drop table workouts;
 drop table subgroupmembers;
 drop table subgroups;
 drop table groupapplications;
@@ -57,5 +57,25 @@ create table subgroupmembers (
   subgroup_id int not null references subgroups(subgroup_id) on delete cascade,
   user_id int not null references users(user_id) on delete cascade,
   joindate timestamp default current_timestamp
-)
+);
+
+create table ergworkouts (
+  ergworkout_id serial primary key not null,
+  user_id int not null references users(user_id) on delete cascade,
+  workoutdate timestamp default current_timestamp,
+  comment varchar(255),
+  device varchar(255) not null,
+  heartrate int,
+  type varchar(255) not null,
+  time int not null,
+  distance int not null,
+  rating int not null,
+  split int not null,
+  format varchar(255) not null,
+  details varchar(255) not null
+);
+
+
+
+
 

@@ -1,6 +1,5 @@
 package rowcord.services;
 
-import com.sun.xml.internal.bind.api.impl.NameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -60,6 +59,8 @@ public class GroupService {
                 keyHolder);
 
         int groupId = keyHolder.getKey().intValue();
+
+        // TODO make sure user exists
 
         jt.update("INSERT INTO groupmembers (group_id, user_id, admin_bool, coach_bool) VALUES (?, ?, ?, ?);",
                 groupId,
@@ -196,6 +197,8 @@ public class GroupService {
     }
 
     public StandardResponse apply(GroupApplicationRequest req, int userId) {
+
+        // make sure group exists and user exists
 
         int inGroup = jt.queryForObject(
                 "SELECT COUNT(*) FROM groupmembers WHERE group_id = ? AND user_id =?;", Integer.class, req.getGroupId(), userId);

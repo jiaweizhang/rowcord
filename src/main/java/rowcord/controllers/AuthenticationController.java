@@ -11,12 +11,10 @@ import requestdata.auth.RegisterRequest;
 import responses.StandardResponse;
 import rowcord.services.AuthenticationService;
 
-;
-
 
 @RestController
 @RequestMapping("/auth/account")
-public class AuthenticationController {
+public class AuthenticationController extends Controller{
 
     @Autowired
     private AuthenticationService authenticationService;

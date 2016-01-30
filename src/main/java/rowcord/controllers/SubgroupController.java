@@ -1,6 +1,5 @@
 package rowcord.controllers;
 
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import requestdata.subgroup.AddToSubgroupRequest;
@@ -16,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/subgroups")
-public class SubgroupController {
+public class SubgroupController extends Controller{
 
     @Autowired
     private SubgroupService subgroupService;
@@ -27,8 +26,7 @@ public class SubgroupController {
             headers = {"Content-type=application/json"})
     @ResponseBody
     public StandardResponse createSubgroup(@RequestBody final CreateSubgroupRequest req, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId =  Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         if (req.isValid()) {
             return subgroupService.createSubgroup(req, userId);
         }
@@ -41,8 +39,7 @@ public class SubgroupController {
             headers = {"Content-type=application/json"})
     @ResponseBody
     public StandardResponse addToSubgroup(@RequestBody final AddToSubgroupRequest req, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId =  Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         if (req.isValid()) {
             return subgroupService.addToSubgroup(req, userId);
         }

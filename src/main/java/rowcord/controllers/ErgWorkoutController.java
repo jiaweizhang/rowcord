@@ -16,7 +16,7 @@ import java.util.Date;
 
 @RestController
 @RequestMapping("/api/ergworkouts")
-public class ErgWorkoutController {
+public class ErgWorkoutController extends Controller{
 
     @Autowired
     private ErgWorkoutService ergWorkoutService;
@@ -27,8 +27,7 @@ public class ErgWorkoutController {
             headers = {"Content-type=application/json"})
     @ResponseBody
     public StandardResponse addWorkout(@RequestBody final ErgWorkoutRequest req, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId = Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         if (req.isValid()) {
             return ergWorkoutService.addWorkout(req, userId);
         }
@@ -41,8 +40,7 @@ public class ErgWorkoutController {
             headers = {"Content-type=application/json"})
     @ResponseBody
     public StandardResponse editWorkout(@RequestBody final ErgWorkoutRequest req, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId = Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         if (req.isValid()) {
             return ergWorkoutService.editWorkout(req, userId);
         }
@@ -54,8 +52,7 @@ public class ErgWorkoutController {
             method = RequestMethod.DELETE)
     @ResponseBody
     public StandardResponse deleteWorkout(@PathVariable int ergworkoutId, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId = Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         return ergWorkoutService.deleteWorkout(ergworkoutId, userId);
     }
 
@@ -64,8 +61,7 @@ public class ErgWorkoutController {
             method = RequestMethod.GET)
     @ResponseBody
     public StandardResponse getById(@PathVariable int ergworkoutId, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId = Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         return ergWorkoutService.getById(ergworkoutId, userId);
     }
 
@@ -89,8 +85,7 @@ public class ErgWorkoutController {
     @ResponseBody
     public StandardResponse getSummary(
             @RequestParam(value = "span", required = false) Integer span, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId = Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         return ergWorkoutService.getSummary(userId);
     }
 }

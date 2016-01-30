@@ -43,3 +43,8 @@
 * 3007 - not authorized to kick user
 * 3008 - not authorized to create subgroup
 * 3009 - not authorized to add to subgroup
+
+* 3999 - not superadmin
+
+
+* 9999 - failed to read sql (superadmin)

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import requestdata.ergworkout.ErgWorkoutRequest;
 import responses.StandardResponse;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 /**

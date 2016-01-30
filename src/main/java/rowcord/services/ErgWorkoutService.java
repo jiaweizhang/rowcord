@@ -4,8 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 import requestdata.ergworkout.ErgWorkoutRequest;
 import responses.StandardResponse;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 /**
  * Created by jiaweizhang on 1/30/16.
@@ -48,7 +52,31 @@ public class ErgWorkoutService {
                 req.getDetails()
         );
 
-       return new StandardResponse(false, 0, "Successfully added workout");
+        return new StandardResponse(false, 0, "Successfully added workout");
     }
 
+    public StandardResponse editWorkout(@RequestBody final ErgWorkoutRequest req, int userId) {
+        // TODO
+        return null;
+    }
+
+    public StandardResponse deleteWorkout(int ergworkoutId, int userId) {
+        // TODO
+        return null;
+    }
+
+    public StandardResponse getById(int ergworkoutId, int userId) {
+        // TODO
+        return null;
+    }
+
+    public StandardResponse complexGet(Date beginDate, Date endDate, int n, String type, String format, int userId) {
+        // TODO
+        return null;
+    }
+
+    public StandardResponse getSummary(int userId) {
+        // TODO
+        return null;
+    }
 }

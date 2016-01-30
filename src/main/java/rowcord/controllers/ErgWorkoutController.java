@@ -86,6 +86,6 @@ public class ErgWorkoutController extends Controller {
     public StandardResponse getSummary(
             @RequestParam(value = "span", required = false) Integer span, final HttpServletRequest request) {
         int userId = getUserId(request);
-        return ergWorkoutService.getSummary(userId);
+        return ergWorkoutService.getSummary(span, userId);
     }
 }

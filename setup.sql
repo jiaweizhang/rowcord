@@ -1,4 +1,4 @@
-DROP TABLE workouts;
+DROP TABLE ergworkouts;
 DROP TABLE subgroupmembers;
 DROP TABLE subgroups;
 DROP TABLE groupapplications;

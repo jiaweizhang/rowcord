@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import responses.StandardResponse;
-import responses.data.auth.Token;
+import responses.data.auth.TokenData;
 import rowcord.data.User;
 import utilities.PasswordHash;
 import utilities.TokenCreator;
@@ -60,7 +60,7 @@ public class AuthenticationService extends rowcord.services.Service {
         }
         try {
             if (PasswordHash.validatePassword(password, users.get(0).getPasshash())) {
-                Token token = new Token(TokenCreator.generateToken(users.get(0).getUserId()));
+                TokenData token = new TokenData(TokenCreator.generateToken(users.get(0).getUserId()));
                 return new StandardResponse(false, 0, "Successfully authenticated.", token);
             }
         } catch (Exception e) {

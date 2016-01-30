@@ -23,7 +23,7 @@ myApp.controller('loginController', ['httpService', '$scope', '$cookies', '$root
             if (token != null) {
                 console.log("redirecting to home");
                 $cookies.put("Authorization", 'Bearer '+token);
-                $rootScope.loggedUser = 1;
+                $rootScope.loggedIn = true;
                 $rootScope.loggedInUser = $scope.email;
                 $scope.email = "";
                 $scope.password = "";

@@ -15,7 +15,7 @@ import java.io.FileReader;
 
 @Transactional
 @Service
-public class AdminService {
+public class AdminService extends rowcord.services.Service {
 
     @Autowired
     private JdbcTemplate jt;

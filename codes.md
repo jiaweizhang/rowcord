@@ -18,6 +18,7 @@
 * 1004 - application failed - already applied
 * 1005 - type of group does not exist
 * 1006 - cannot change to non-admin because there must be an admin
+* 1007 - can't delete a workout that's not your own
 
 
 * 1501 - email does not exist

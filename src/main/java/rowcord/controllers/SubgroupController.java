@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/subgroups")
-public class SubgroupController extends Controller{
+public class SubgroupController extends Controller {
 
     @Autowired
     private SubgroupService subgroupService;

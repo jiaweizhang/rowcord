@@ -26,7 +26,7 @@ import java.util.List;
 
 @Transactional
 @Service
-public class GroupService {
+public class GroupService extends rowcord.services.Service {
 
     @Autowired
     private JdbcTemplate jt;
@@ -49,7 +49,7 @@ public class GroupService {
                 new PreparedStatementCreator() {
                     public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
                         PreparedStatement ps = connection.prepareStatement("INSERT INTO groups (group_name, description, public_bool) VALUES (?, ?, ?);",
-                                new String[] {"group_id"});
+                                new String[]{"group_id"});
                         ps.setString(1, req.getGroupName());
                         ps.setString(2, req.getDescription());
                         ps.setBoolean(3, req.getPublicBool());

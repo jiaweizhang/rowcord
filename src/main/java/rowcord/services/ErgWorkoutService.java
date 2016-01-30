@@ -16,7 +16,7 @@ import java.util.Date;
 
 @Transactional
 @Service
-public class ErgWorkoutService {
+public class ErgWorkoutService extends rowcord.services.Service {
 
     @Autowired
     private JdbcTemplate jt;
@@ -24,10 +24,7 @@ public class ErgWorkoutService {
     public StandardResponse addWorkout(ErgWorkoutRequest req, int userId) {
         // check if user exists
 
-        int usersWithId = jt.queryForObject(
-                "SELECT COUNT(*) FROM users WHERE user_id = ?;", Integer.class, userId);
-
-        if (usersWithId != 1) {
+        if (!userExists(userId)) {
             return new StandardResponse(true, 1505, "User does not exist");
         }
 
@@ -55,13 +52,20 @@ public class ErgWorkoutService {
     }
 
     public StandardResponse editWorkout(@RequestBody final ErgWorkoutRequest req, int userId) {
-        // TODO
+        // TODO validation
         return null;
     }
 
     public StandardResponse deleteWorkout(int ergworkoutId, int userId) {
-        // TODO
-        return null;
+        int workouts = jt.queryForObject(
+                "SELECT COUNT(*) FROM ergworkouts WHERE user_id = ? AND ergworkout_id = ?;", Integer.class, userId, ergworkoutId);
+
+        if (workouts != 1) {
+            return new StandardResponse(true, 1007, "can't delete workout that's not your own");
+        }
+
+        jt.update("DELETE FROM ergworkouts WHERE ergworkout_id = ?", ergworkoutId);
+        return new StandardResponse(false, 0, "successfully deleted workout");
     }
 
     public StandardResponse getById(int ergworkoutId, int userId) {

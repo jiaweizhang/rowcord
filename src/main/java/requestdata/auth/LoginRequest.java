@@ -11,7 +11,7 @@ public class LoginRequest {
         return email != null && password != null;
     }
 
-    public String getEmail(){
+    public String getEmail() {
         return email;
     }
 

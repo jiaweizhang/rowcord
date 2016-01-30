@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/groups")
-public class GroupController extends Controller{
+public class GroupController extends Controller {
 
     @Autowired
     private GroupService groupService;

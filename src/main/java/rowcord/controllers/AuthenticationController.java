@@ -14,7 +14,7 @@ import rowcord.services.AuthenticationService;
 
 @RestController
 @RequestMapping("/auth/account")
-public class AuthenticationController extends Controller{
+public class AuthenticationController extends Controller {
 
     @Autowired
     private AuthenticationService authenticationService;

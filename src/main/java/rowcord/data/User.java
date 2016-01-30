@@ -4,8 +4,8 @@ package rowcord.data;
  * Created by jiaweizhang on 1/22/16.
  */
 public class User {
-        private int userId;
-        private String passhash;
+    private int userId;
+    private String passhash;
 
     public int getUserId() {
         return userId;

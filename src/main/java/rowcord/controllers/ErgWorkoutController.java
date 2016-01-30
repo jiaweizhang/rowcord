@@ -16,7 +16,7 @@ import java.util.Date;
 
 @RestController
 @RequestMapping("/api/ergworkouts")
-public class ErgWorkoutController extends Controller{
+public class ErgWorkoutController extends Controller {
 
     @Autowired
     private ErgWorkoutService ergWorkoutService;
@@ -48,7 +48,7 @@ public class ErgWorkoutController extends Controller{
     }
 
     @RequestMapping(
-            value = "{ergworkoutId",
+            value = "{ergworkoutId}",
             method = RequestMethod.DELETE)
     @ResponseBody
     public StandardResponse deleteWorkout(@PathVariable int ergworkoutId, final HttpServletRequest request) {
@@ -65,7 +65,7 @@ public class ErgWorkoutController extends Controller{
         return ergWorkoutService.getById(ergworkoutId, userId);
     }
 
-    @RequestMapping(value="",
+    @RequestMapping(value = "",
             method = RequestMethod.GET)
     public StandardResponse complexGet(
             @RequestParam(value = "begin", required = false) Date beginDate,

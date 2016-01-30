@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/admin")
-public class AdminController extends Controller{
+public class AdminController extends Controller {
     @Autowired
     private AdminService adminService;
 

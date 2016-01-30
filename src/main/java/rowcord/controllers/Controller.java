@@ -18,6 +18,6 @@ public class Controller {
 
     protected boolean isSuperAdmin(HttpServletRequest request) {
         int userId = getUserId(request);
-        return userId==1;
+        return userId == 1;
     }
 }

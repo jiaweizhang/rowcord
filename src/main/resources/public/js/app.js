@@ -6,59 +6,59 @@ var myApp = angular
     .module('myApp', ['ngRoute', 'ngCookies']);
 
 myApp.config(function ($routeProvider) {
-    $routeProvider
+        $routeProvider
 
-        .when('/', {
-            templateUrl: 'pages/home.html',
-            controller: 'homeController'
-        })
+            .when('/', {
+                templateUrl: 'pages/home.html',
+                controller: 'homeController'
+            })
 
-        .when('/register', {
-            templateUrl: 'pages/register.html',
-            controller: 'registerController'
-        })
+            .when('/register', {
+                templateUrl: 'pages/register.html',
+                controller: 'registerController'
+            })
 
-        .when('/login', {
-            templateUrl: 'pages/login.html',
-            controller: 'loginController'
-        })
+            .when('/login', {
+                templateUrl: 'pages/login.html',
+                controller: 'loginController'
+            })
 
-        .when('/groups', {
-            templateUrl: 'pages/groups.html',
-            controller: 'groupsController'
-        })
+            .when('/groups', {
+                templateUrl: 'pages/groups.html',
+                controller: 'groupsController'
+            })
 
-        .when('/groups/create', {
-            templateUrl: 'pages/groupcreate.html',
-            controller: 'groupcreateController'
-        })
+            .when('/groups/create', {
+                templateUrl: 'pages/groupcreate.html',
+                controller: 'groupcreateController'
+            })
 
-        .when('/groups/mygroups', {
-            templateUrl: 'pages/mygroups.html',
-            controller: 'mygroupsController'
-        })
+            .when('/groups/mygroups', {
+                templateUrl: 'pages/mygroups.html',
+                controller: 'mygroupsController'
+            })
 
-        .when('/groups/group/:groupName', {
-            templateUrl: 'pages/groupdetail.html',
-            controller: 'groupdetailController'
-        })
+            .when('/groups/group/:groupName', {
+                templateUrl: 'pages/groupdetail.html',
+                controller: 'groupdetailController'
+            })
 
 
-        .otherwise( {
-            redirectTo: "/"
-        });
-})
-    .run(function($rootScope, $location) {
-    $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-        if ($rootScope.loggedInUser == null) {
-            // no logged user, redirect to /login
-            if ( next.templateUrl === "partials/login.html") {
-            } else {
-                $location.path("/login");
+            .otherwise({
+                redirectTo: "/"
+            });
+    })
+    .run(function ($rootScope, $location) {
+        $rootScope.$on("$routeChangeStart", function (event, next, current) {
+            if ($rootScope.loggedInUser == null) {
+                // no logged user, redirect to /login
+                if (next.templateUrl === "partials/login.html") {
+                } else {
+                    $location.path("/login");
+                }
             }
-        }
+        });
     });
-});
 
 
 myApp.controller('mainController', ['httpService', '$scope', '$http', '$window', '$cookies', function (httpService, $scope, $http, $window, $cookies) {
@@ -72,16 +72,16 @@ myApp.controller('mainController', ['httpService', '$scope', '$http', '$window',
 }]);
 
 /*myApp.config( ['$routeProvider', function($routeProvider) {'myApp', ['ngRoute', 'ngCookies']}] )
-    .run( function($rootScope, $location) {
+ .run( function($rootScope, $location) {
 
-        // register listener to watch route changes
-        $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-            if ( $rootScope.loggedUser == null ) {
-                $location.path( "/login" );
+ // register listener to watch route changes
+ $rootScope.$on( "$routeChangeStart", function(event, next, current) {
+ if ( $rootScope.loggedUser == null ) {
+ $location.path( "/login" );
 
-            }
-        });
-    });*/
+ }
+ });
+ });*/
 
 myApp.service('httpService', function ($http, $window, $cookies) {
     return {

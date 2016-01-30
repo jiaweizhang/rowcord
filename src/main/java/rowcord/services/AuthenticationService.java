@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Transactional
 @Service
-public class AuthenticationService {
+public class AuthenticationService extends rowcord.services.Service {
 
     @Autowired
     private JdbcTemplate jt;

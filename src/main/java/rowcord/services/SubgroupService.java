@@ -18,7 +18,7 @@ import java.util.List;
 
 @Transactional
 @Service
-public class SubgroupService {
+public class SubgroupService extends rowcord.services.Service {
 
     @Autowired
     private JdbcTemplate jt;
@@ -47,7 +47,7 @@ public class SubgroupService {
 
         List<Object[]> batch = new ArrayList<Object[]>();
         for (int user : req.getMembers()) {
-            Object[] values = new Object[] {
+            Object[] values = new Object[]{
                     req.getSubgroupId(),
                     user};
             batch.add(values);
@@ -55,7 +55,7 @@ public class SubgroupService {
         int[] updateCounts = jt.batchUpdate(
                 "INSERT INTO subgroupmembers (subgroup_id, user_id) VALUES (?, ?);",
                 batch);
-        System.out.println("number of users added to subgroupo: "+updateCounts);
+        System.out.println("number of users added to subgroupo: " + updateCounts);
         return new StandardResponse(false, 0, "successfully added members to subgroup");
     }
 

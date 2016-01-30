@@ -27,7 +27,10 @@ myApp.config(function ($routeProvider) {
             templateUrl: 'pages/login.html',
             controller: 'loginController'
         })
-
+        .when('/logout', {
+            templateUrl: 'pages/logout.html'
+            //controller: 'logoutController'
+        })
         .when('/groups', {
             templateUrl: 'pages/groups.html',
             controller: 'groupsController'
@@ -54,11 +57,11 @@ myApp.config(function ($routeProvider) {
         });
 })
     .run(function($rootScope, $location, $cookies, $http) {
+        //$rootScope.loggedIn = false;
         console.log("running .run redirect");
-        $rootScope.userAuth = $cookies.get('Authorization');
         //$rootScope.globals = $cookies.get('globals') || {};
         console.log("$rootScope.userAuth: "+ $rootScope.userAuth);
-        if ($rootScope.userAuth !== undefined){ // figure out LOGIC
+        if ($rootScope.loggedIn){ // figure out LOGIC
             console.log("$rootScope.userAuth:"+$rootScope.userAuth);
             $http.defaults.headers.common['Authorization'] = 'Bearer ' + $rootScope.userAuth;
         }
@@ -69,24 +72,27 @@ myApp.config(function ($routeProvider) {
         $rootScope.$on('$locationChangeStart', function (event, next, current) {
             console.log("NEW ROUTE CHANGE");
             // redirect to login page if not logged in and trying to access a restricted page
-            var unrestrictedPages = ['/login', '/register', '/'];
+            var unrestrictedPages = ['/login', '/register', '/', '/logout'];
             var restrictedPage = unrestrictedPages.indexOf($location.path()) === -1;
             console.log("restpage:" + restrictedPage);
             //var restrictedPage = $.inArray($location.path(), ['/login', '/register', '/']) === -1;
-            var loggedIn = $rootScope.userAuth !== undefined;
-            console.log("loggedin: "+loggedIn);
-            if (restrictedPage && !loggedIn) {
+            console.log("loggedin: "+$rootScope.loggedIn);
+            if (restrictedPage && !$rootScope.loggedIn) {
                 $location.path('/login');
             }
         });
 });
 
-myApp.controller('mainController', ['httpService', '$scope', '$http', '$window', '$cookies', function (httpService, $scope, $http, $window, $cookies) {
+myApp.controller('mainController', ['httpService', '$scope', '$http', '$window', '$cookies', '$rootScope', '$location',
+    function (httpService, $scope, $http, $window, $cookies, $rootScope, $location) {
     console.log("mainController");
 
     $scope.logout = function () {
+        console.log("logging out");
         //$window.sessionStorage.removeItem("accessToken");
         $cookies.remove("Authorization");
+        $rootScope.loggedIn = false;
+        $location.path('/logout');
     }
 
 }]);

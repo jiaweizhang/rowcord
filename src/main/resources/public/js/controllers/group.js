@@ -4,7 +4,7 @@
 
 myApp.controller('groupsController', ['httpService', '$scope', '$http', function (httpService, $scope, $http) {
 
-    console.log("groups controller inistialized");
+    console.log("groups controller initialized");
     httpService.getGroups().then(function (response) {
         console.log(response);
         $scope.groups = response.data.data;
@@ -16,19 +16,25 @@ myApp.controller('groupsController', ['httpService', '$scope', '$http', function
 }]);
 
 myApp.controller('groupcreateController', ['httpService', '$scope', '$http', function (httpService, $scope, $http) {
+    console.log("Group Create Controller");
     $scope.groupName;
-    $scope.groupDescription;
+    $scope.description;
+    $scope.publicBool;
     $scope.create = function () {
-        console.log("sending request");
+        console.log("sending group create request");
+        console.log("$scope.groupName: "+$scope.groupName);
+        console.log("$scope.description: "+$scope.description);
+        console.log("$scope.publicBool: "+$scope.publicBool);
+
         var data = {
             "groupName": $scope.groupName,
-            "groupDescription": $scope.groupDescription
+            "description": $scope.description,
+            "publicBool": $scope.publicBool
         };
-        console.log(data.toString());
         httpService.createGroup(data).then(function (response) {
             console.log(response);
             $scope.groupName = "";
-            $scope.groupDescription = "";
+            $scope.description = "";
         })
     }
 

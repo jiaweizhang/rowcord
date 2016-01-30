@@ -51,7 +51,6 @@ myApp.config(function ($routeProvider) {
             controller: 'groupdetailController'
         })
 
-
         .otherwise( {
             redirectTo: "/"
         });
@@ -142,7 +141,7 @@ myApp.service('httpService', function ($http, $window, $cookies) {
 
         createGroup: function (data) {
             return $http({
-                url: "api/groups/create",
+                url: "api/groups",
                 method: "POST",
                 data: data,
                 headers: {

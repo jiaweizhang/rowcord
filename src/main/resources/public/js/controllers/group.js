@@ -19,6 +19,10 @@ myApp.controller('groupsController', ['httpService', '$scope', '$http', function
         return groupName.replace(/\s+/g, '+');
     };
 
+    $scope.replaceSpaces = function(str) {
+        return str.split(' ').join('+');
+    };
+
     $scope.unixTimeConvert = function (unix_timestamp){
         // Create a new JavaScript Date object based on the timestamp
         // multiplied by 1000 so that the argument is in milliseconds, not seconds.
@@ -121,10 +125,10 @@ myApp.controller('groupdetailController', ['httpService', '$scope', '$http', '$r
     console.log("sending request");
     console.log($routeParams);
     var data = {
-        "groupId": $routeParams.groupId
+        "groupName": $routeParams.groupName
     };
     console.log(data.toString());
-    httpService.getGroupById(data.groupId).then(function (response) {
+    httpService.getGroupById(data.groupName).then(function (response) {
         console.log(response);
         $scope.group = response.data.data.group;
         $scope.members = response.data.data.members;

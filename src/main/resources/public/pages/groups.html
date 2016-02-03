@@ -53,8 +53,8 @@
     </thead>
     <tbody>
     <tr ng-repeat="x in groups | orderBy:sortType:sortReverse | filter:searchNames">
-        <td><a ng-bind="x.groupId" ng-href="#/groups/group/{{x.groupId}}"></a></td>
-        <td><a ng-bind="x.groupName"></a></td>
+        <td ng-bind="x.groupId"></td>
+        <td><a ng-bind="x.groupName" ng-href="#/groups/group/{{replaceSpaces(x.groupName)}}"></a></td>
         <td>{{unixTimeConvert(x.createDate)}}</td>
         <td ng-bind="x.description"></td>
     </tr>

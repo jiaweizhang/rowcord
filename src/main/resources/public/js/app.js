@@ -46,7 +46,7 @@ myApp.config(function ($routeProvider) {
             controller: 'mygroupsController'
         })
 
-        .when('/groups/group/:groupName', {
+        .when('/groups/group/:groupId', {
             templateUrl: 'pages/groupdetail.html',
             controller: 'groupdetailController'
         })
@@ -180,19 +180,32 @@ myApp.service('httpService', function ($http, $window, $cookies) {
             });
         },
 
-        getGroupDetail: function (data) {
+        getGroupById: function (groupId) {
             return $http({
-                url: "api/groups/groupdetail",
-                method: "POST",
-                data: data,
+                url: "api/groups/"+groupId,
+                method: "GET",
                 headers: {
-                    "Content-Type": "application/json",
                     "Authorization": $cookies.get("Authorization")
                 }
             }).success(function (data, status) {
                 console.log(data);
                 return data;
-            });
-        }
+            })
+        },
+
+        //getGroupDetail: function (data) {
+        //    return $http({
+        //        url: "api/groups/groupdetail",
+        //        method: "POST",
+        //        data: data,
+        //        headers: {
+        //            "Content-Type": "application/json",
+        //            "Authorization": $cookies.get("Authorization")
+        //        }
+        //    }).success(function (data, status) {
+        //        console.log(data);
+        //        return data;
+        //    });
+        //}
     };
 });

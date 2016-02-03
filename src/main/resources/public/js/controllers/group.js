@@ -114,18 +114,39 @@ myApp.controller('mygroupsController', ['httpService', '$scope', '$http', functi
 
 
 myApp.controller('groupdetailController', ['httpService', '$scope', '$http', '$routeParams', function (httpService, $scope, $http, $routeParams) {
+    $scope.sortType = 'lastName';
+    $scope.sortReverse = false;
 
     console.log('groupdetailcontroller initialized');
     console.log("sending request");
     console.log($routeParams);
     var data = {
-        "groupName": $routeParams.groupName
+        "groupId": $routeParams.groupId
     };
     console.log(data.toString());
-    httpService.getGroupDetail(data).then(function (response) {
+    httpService.getGroupById(data.groupId).then(function (response) {
         console.log(response);
-        $scope.group = response.data.data;
-    })
+        $scope.group = response.data.data.group;
+        $scope.members = response.data.data.members;
+    });
+
+    $scope.unixTimeConvert = function (unix_timestamp){
+        // Create a new JavaScript Date object based on the timestamp
+        // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+        var date = new Date(unix_timestamp);
+        // Hours part from the timestamp
+        var hours = date.getHours();
+        // Minutes part from the timestamp
+        var minutes = "0" + date.getMinutes();
+        // Seconds part from the timestamp
+        var seconds = "0" + date.getSeconds();
+
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var year = date.getFullYear();
+        var month = months[date.getMonth()];
+        var day = date.getDate();
+        return day + ' ' + month + ' ' + year + ' ' + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+    }
 }]);
 
 

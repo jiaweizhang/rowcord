@@ -10,13 +10,6 @@
     <thead>
     <tr>
         <th>
-            <a href="#groups/mygroups" ng-click="sortType = 'groupId'; sortReverse = !sortReverse" >
-                Group ID
-                <span ng-show="sortType == 'groupId' && !sortReverse" class="fa fa-caret-down"></span>
-                <span ng-show="sortType == 'groupId' && sortReverse" class="fa fa-caret-up"></span>
-            </a>
-        </th>
-        <th>
             <a href="#groups/mygroups" ng-click="sortType = 'groupName'; sortReverse = !sortReverse">
                 Group Name
                 <span ng-show="sortType == 'groupName' && !sortReverse" class="fa fa-caret-down"></span>
@@ -48,7 +41,6 @@
     </thead>
     <tbody>
     <tr ng-repeat="x in groups | orderBy:sortType:sortReverse">
-        <td ng-bind="x.groupId"></td>
         <td><a ng-bind="x.groupName"></a></td>
         <td>{{unixTimeConvert(x.joinDate)}}</td>
         <td ng-bind="x.adminBool"></td>

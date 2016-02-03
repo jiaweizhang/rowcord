@@ -69,6 +69,7 @@ myApp.controller('groupcreateController', ['httpService', '$scope', '$http', fun
 }]);
 
 myApp.controller('mygroupsController', ['httpService', '$scope', '$http', function (httpService, $scope, $http) {
+    console.log("Enter mygroupsController");
     //$scope.groupName;
     //$scope.groupID;
     //$scope.joinDate;
@@ -91,9 +92,13 @@ myApp.controller('mygroupsController', ['httpService', '$scope', '$http', functi
         });
     };
 
-
     $scope.urlEncode = function (groupName) {
         return groupName.replace(/\s+/g, '+');
+    };
+
+    $scope.replaceSpaces = function(str) {
+        console.log("Replacing spaces.");
+        return str.split(' ').join('+');
     };
 
     $scope.unixTimeConvert = function (unix_timestamp){

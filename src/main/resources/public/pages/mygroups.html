@@ -41,7 +41,7 @@
     </thead>
     <tbody>
     <tr ng-repeat="x in groups | orderBy:sortType:sortReverse">
-        <td><a ng-bind="x.groupName"></a></td>
+        <td><a ng-bind="x.groupName" ng-href="#/groups/group/{{replaceSpaces(x.groupName)}}"></a></td>
         <td>{{unixTimeConvert(x.joinDate)}}</td>
         <td ng-bind="x.adminBool"></td>
         <td ng-bind="x.coachBool"></td>

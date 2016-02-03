@@ -69,31 +69,25 @@ myApp.controller('groupcreateController', ['httpService', '$scope', '$http', fun
 }]);
 
 myApp.controller('mygroupsController', ['httpService', '$scope', '$http', function (httpService, $scope, $http) {
-    //$scope.groupName;
-    //$scope.groupID;
-    //$scope.joinDate;
-    //$scope.isAdmin;
-    //$scope.isCoach;
-    //$scope.groups;
+    console.log("Enter mygroupsController");
+
     $scope.sortType = 'groupName';
     $scope.sortReverse = false;
 
-    $scope.membership = function () {
-        httpService.getMembership().then(function (response) {
-            console.log(response.message);
-            $scope.groups = response.data.data.groups;
-            console.log("$scope.groups: "+$scope.groups);
-            //$scope.groupName = response.data.group.groupName;
-            //$scope.groupID = response.data.group.groupID;
-            //$scope.joinDate = response.data.group.joinDate;
-            //$scope.isAdmin = response.data.group.adminBool;
-            //$scope.isCoach = response.data.group.coachBool;
-        });
-    };
+    httpService.getMembership().then(function (response) {
+        console.log(response.message);
+        $scope.groups = response.data.data.groups;
+        console.log("$scope.groups: "+$scope.groups);
+    });
 
 
     $scope.urlEncode = function (groupName) {
         return groupName.replace(/\s+/g, '+');
+    };
+
+    $scope.replaceSpaces = function(str) {
+        console.log("Replacing spaces.");
+        return str.split(' ').join('+');
     };
 
     $scope.unixTimeConvert = function (unix_timestamp){

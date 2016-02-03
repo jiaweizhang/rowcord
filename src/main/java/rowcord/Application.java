@@ -21,6 +21,13 @@ import rowcord.filters.JwtFilter;
 @Configuration
 @SpringBootApplication
 public class Application extends SpringBootServletInitializer {
+    public static void main(String[] args) {
+
+        ApplicationContext ctx = SpringApplication.run(Application.class, args);
+        DispatcherServlet dispatcherServlet = (DispatcherServlet) ctx.getBean("dispatcherServlet");
+        dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
+    }
+
     @Bean
     public FilterRegistrationBean jwtFilter() {
         final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
@@ -28,12 +35,5 @@ public class Application extends SpringBootServletInitializer {
         registrationBean.addUrlPatterns("/api/*");
 
         return registrationBean;
-    }
-
-    public static void main(String[] args) {
-
-        ApplicationContext ctx = SpringApplication.run(Application.class, args);
-        DispatcherServlet dispatcherServlet = (DispatcherServlet)ctx.getBean("dispatcherServlet");
-        dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
     }
 }

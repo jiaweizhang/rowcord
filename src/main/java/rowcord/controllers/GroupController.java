@@ -4,7 +4,6 @@ package rowcord.controllers;
  * Created by jiaweizhang on 1/18/2016.
  */
 
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import requestdata.group.*;
@@ -15,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/groups")
-public class GroupController {
+public class GroupController extends Controller {
 
     @Autowired
     private GroupService groupService;
@@ -26,8 +25,7 @@ public class GroupController {
             headers = {"Content-type=application/json"})
     @ResponseBody
     public StandardResponse createGroup(@RequestBody final CreateGroupRequest req, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId =  Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         if (req.isValid()) {
             return groupService.createGroup(req, userId);
         }
@@ -40,8 +38,7 @@ public class GroupController {
             method = RequestMethod.GET)
     @ResponseBody
     public StandardResponse getMemberships(final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId =  Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         return groupService.getMemberships(userId);
     }
 
@@ -67,9 +64,17 @@ public class GroupController {
             method = RequestMethod.GET)
     @ResponseBody
     public StandardResponse getGroupById(@PathVariable int groupId, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId =  Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         return groupService.getGroupById(userId, groupId);
+    }
+
+    @RequestMapping(
+            value = "/group/{groupName}",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public StandardResponse getGroupByName(@PathVariable String groupName, final HttpServletRequest request) {
+        int userId = getUserId(request);
+        return groupService.getGroupByName(userId, groupName);
     }
 
     @RequestMapping(
@@ -78,8 +83,7 @@ public class GroupController {
             headers = {"Content-type=application/json"})
     @ResponseBody
     public StandardResponse apply(@RequestBody final GroupApplicationRequest req, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId =  Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         if (req.isValid()) {
             return groupService.apply(req, userId);
         }
@@ -91,8 +95,7 @@ public class GroupController {
             method = RequestMethod.GET)
     @ResponseBody
     public StandardResponse getApplications(@PathVariable int groupId, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId =  Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         return groupService.getApplications(userId, groupId);
     }
 
@@ -102,8 +105,7 @@ public class GroupController {
             headers = {"Content-type=application/json"})
     @ResponseBody
     public StandardResponse accept(@RequestBody final AcceptRequest req, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId =  Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         if (req.isValid()) {
             return groupService.accept(req, userId);
         }
@@ -116,8 +118,7 @@ public class GroupController {
             headers = {"Content-type=application/json"})
     @ResponseBody
     public StandardResponse kick(@RequestBody final KickRequest req, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId =  Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         if (req.isValid()) {
             return groupService.kick(req, userId);
         }
@@ -130,8 +131,7 @@ public class GroupController {
             headers = {"Content-type=application/json"})
     @ResponseBody
     public StandardResponse changeRole(@RequestBody final RoleRequest req, final HttpServletRequest request) {
-        final Claims claims = (Claims) request.getAttribute("claims");
-        int userId =  Integer.parseInt(claims.get("userId").toString());
+        int userId = getUserId(request);
         if (req.isValid()) {
             return groupService.changeRole(req, userId);
         }

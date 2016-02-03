@@ -15,7 +15,7 @@ myApp.controller('groupsController', ['httpService', '$scope', '$http', function
         $scope.groups = response.data.data.groups;
     });
 
-    $scope.urlEncode = function(groupName) {
+    $scope.urlEncode = function (groupName) {
         return groupName.replace(/\s+/g, '+');
     };
 
@@ -88,7 +88,7 @@ myApp.controller('mygroupsController', ['httpService', '$scope', '$http', functi
     };
 
 
-    $scope.urlEncode = function(groupName) {
+    $scope.urlEncode = function (groupName) {
         return groupName.replace(/\s+/g, '+');
     };
 

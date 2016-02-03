@@ -10,15 +10,33 @@ myApp.controller('groupsController', ['httpService', '$scope', '$http', function
     $scope.sortReverse = false;
     $scope.searchName = '';
 
-
     httpService.getGroups().then(function (response) {
         console.log(response);
-        $scope.groups = response.data.data;
+        $scope.groups = response.data.data.groups;
     });
 
     $scope.urlEncode = function(groupName) {
         return groupName.replace(/\s+/g, '+');
+    };
+
+    $scope.unixTimeConvert = function (unix_timestamp){
+        // Create a new JavaScript Date object based on the timestamp
+        // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+        var date = new Date(unix_timestamp);
+        // Hours part from the timestamp
+        var hours = date.getHours();
+        // Minutes part from the timestamp
+        var minutes = "0" + date.getMinutes();
+        // Seconds part from the timestamp
+        var seconds = "0" + date.getSeconds();
+
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var year = date.getFullYear();
+        var month = months[date.getMonth()];
+        var day = date.getDate();
+        return day + ' ' + month + ' ' + year + ' ' + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
     }
+
 }]);
 
 myApp.controller('groupcreateController', ['httpService', '$scope', '$http', function (httpService, $scope, $http) {
@@ -58,7 +76,6 @@ myApp.controller('mygroupsController', ['httpService', '$scope', '$http', functi
 
     $scope.membership = function () {
         httpService.getMembership().then(function (response) {
-            console.log("Error + code: " + response.error + " + " + response.code);
             console.log(response.message);
             $scope.groups = response.data.data.groups;
             console.log("$scope.groups: "+$scope.groups);
@@ -78,7 +95,7 @@ myApp.controller('mygroupsController', ['httpService', '$scope', '$http', functi
     $scope.unixTimeConvert = function (unix_timestamp){
         // Create a new JavaScript Date object based on the timestamp
     // multiplied by 1000 so that the argument is in milliseconds, not seconds.
-        var date = new Date(unix_timestamp*1000);
+        var date = new Date(unix_timestamp);
     // Hours part from the timestamp
         var hours = date.getHours();
     // Minutes part from the timestamp

@@ -169,7 +169,7 @@ myApp.service('httpService', function ($http, $window, $cookies) {
 
         getGroups: function () {
             return $http({
-                url: "api/groups",
+                url: "api/groups/type=all",
                 method: "GET",
                 headers: {
                     "Authorization": $cookies.get("Authorization")

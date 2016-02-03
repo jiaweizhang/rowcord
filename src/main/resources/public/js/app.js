@@ -74,6 +74,10 @@ myApp.config(function ($routeProvider) {
             var unrestrictedPages = ['/login', '/register', '/', '/logout'];
             var restrictedPage = unrestrictedPages.indexOf($location.path()) === -1;
             console.log("restpage:" + restrictedPage);
+            if ($cookies.get("Authorization") != null) {
+                // check for begins with 'Bearer ' and validate Authorization header eventually
+                $rootScope.loggedIn = true;
+            }
             //var restrictedPage = $.inArray($location.path(), ['/login', '/register', '/']) === -1;
             console.log("loggedin: "+$rootScope.loggedIn);
             if (restrictedPage && !$rootScope.loggedIn) {

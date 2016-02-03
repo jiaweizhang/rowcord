@@ -18,12 +18,15 @@
 * 1004 - application failed - already applied
 * 1005 - type of group does not exist
 * 1006 - cannot change to non-admin because there must be an admin
+* 1007 - can't delete a workout that's not your own
+* 1008 - invalid groupname
 
 
 * 1501 - email does not exist
 * 1502 - application does not exist
 * 1503 - member is not in the group (change role)
 * 1504 - member is not in the group (kick)
+* 1505 - user does not exist (add erg workout)
 
 ## Database errors
 
@@ -42,3 +45,8 @@
 * 3007 - not authorized to kick user
 * 3008 - not authorized to create subgroup
 * 3009 - not authorized to add to subgroup
+
+* 3999 - not superadmin
+
+
+* 9999 - failed to read sql (superadmin)

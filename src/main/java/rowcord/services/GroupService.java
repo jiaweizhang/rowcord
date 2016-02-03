@@ -1,6 +1,5 @@
 package rowcord.services;
 
-import com.sun.xml.internal.bind.api.impl.NameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -27,7 +26,7 @@ import java.util.List;
 
 @Transactional
 @Service
-public class GroupService {
+public class GroupService extends rowcord.services.Service {
 
     @Autowired
     private JdbcTemplate jt;
@@ -50,7 +49,7 @@ public class GroupService {
                 new PreparedStatementCreator() {
                     public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
                         PreparedStatement ps = connection.prepareStatement("INSERT INTO groups (group_name, description, public_bool) VALUES (?, ?, ?);",
-                                new String[] {"group_id"});
+                                new String[]{"group_id"});
                         ps.setString(1, req.getGroupName());
                         ps.setString(2, req.getDescription());
                         ps.setBoolean(3, req.getPublicBool());
@@ -60,6 +59,8 @@ public class GroupService {
                 keyHolder);
 
         int groupId = keyHolder.getKey().intValue();
+
+        // TODO make sure user exists
 
         jt.update("INSERT INTO groupmembers (group_id, user_id, admin_bool, coach_bool) VALUES (?, ?, ?, ?);",
                 groupId,
@@ -192,10 +193,26 @@ public class GroupService {
                     }
                 });
 
-        return new StandardResponse(false, 0, "Successfully retrieved public groups", new ByIdGroupData(group, members));
+        return new StandardResponse(false, 0, "Successfully retrieved group", new ByIdGroupData(group, members));
+    }
+
+    public StandardResponse getGroupByName(int userId, String groupName) {
+        groupName = groupName.replaceAll("\\+", " ");
+        List<Integer> groupIds = jt.queryForList(
+                "SELECT group_id FROM groups WHERE group_name = ?;",
+                new Object[]{groupName},
+                Integer.class);
+
+        if (groupIds.size()!=1) {
+            return new StandardResponse(true, 1008, "Groupname does not exist");
+        }
+
+        return getGroupById(userId, groupIds.get(0));
     }
 
     public StandardResponse apply(GroupApplicationRequest req, int userId) {
+
+        // make sure group exists and user exists
 
         int inGroup = jt.queryForObject(
                 "SELECT COUNT(*) FROM groupmembers WHERE group_id = ? AND user_id =?;", Integer.class, req.getGroupId(), userId);

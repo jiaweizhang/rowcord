@@ -19,7 +19,7 @@ angular.module('myApp', [])
                 method: "POST",
                 data: data,
                 headers: {
-                    "Content-Type":"application/json"
+                    "Content-Type": "application/json"
                 }
             }).success(function (data, status) {
                 console.log(data);
@@ -40,7 +40,7 @@ angular.module('myApp', [])
                 method: "POST",
                 data: data,
                 headers: {
-                    "Content-Type":"application/json"
+                    "Content-Type": "application/json"
                 }
             }).success(function (data, status) {
                 console.log(data);

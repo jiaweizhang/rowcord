@@ -45,9 +45,26 @@ myApp.controller('groupsController', ['httpService', '$scope', '$http', function
 
 myApp.controller('groupcreateController', ['httpService', '$scope', '$http', function (httpService, $scope, $http) {
     console.log("Group Create Controller");
-    $scope.groupName;
-    $scope.description;
-    $scope.publicBool;
+
+    $scope.publicBool = true; //initialize public bool to true
+
+    $scope.entities = [{
+        name: 'Public',
+        checked: true
+    }, {
+        name: 'Private',
+        checked: false
+    }
+    ];
+
+    $scope.updateSelection = function(position, entities) {
+        angular.forEach(entities, function(subscription, index) {
+            if (position != index)
+                subscription.checked = false;
+        });
+        $scope.publicBool = $scope.entities[0].checked;
+    };
+
     $scope.create = function () {
         console.log("sending group create request");
         console.log("$scope.groupName: "+$scope.groupName);
@@ -64,7 +81,7 @@ myApp.controller('groupcreateController', ['httpService', '$scope', '$http', fun
             $scope.groupName = "";
             $scope.description = "";
         })
-    }
+    };
 
 }]);
 

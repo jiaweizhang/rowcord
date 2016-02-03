@@ -69,6 +69,15 @@ public class GroupController extends Controller {
     }
 
     @RequestMapping(
+            value = "/group/{groupName}",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public StandardResponse getGroupByName(@PathVariable String groupName, final HttpServletRequest request) {
+        int userId = getUserId(request);
+        return groupService.getGroupByName(userId, groupName);
+    }
+
+    @RequestMapping(
             value = "/apply",
             method = RequestMethod.POST,
             headers = {"Content-type=application/json"})

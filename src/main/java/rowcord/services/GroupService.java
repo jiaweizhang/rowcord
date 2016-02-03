@@ -193,7 +193,21 @@ public class GroupService extends rowcord.services.Service {
                     }
                 });
 
-        return new StandardResponse(false, 0, "Successfully retrieved group by id", new ByIdGroupData(group, members));
+        return new StandardResponse(false, 0, "Successfully retrieved group", new ByIdGroupData(group, members));
+    }
+
+    public StandardResponse getGroupByName(int userId, String groupName) {
+        groupName = groupName.replaceAll("\\+", " ");
+        List<Integer> groupIds = jt.queryForList(
+                "SELECT group_id FROM groups WHERE group_name = ?;",
+                new Object[]{groupName},
+                Integer.class);
+
+        if (groupIds.size()!=1) {
+            return new StandardResponse(true, 1008, "Groupname does not exist");
+        }
+
+        return getGroupById(userId, groupIds.get(0));
     }
 
     public StandardResponse apply(GroupApplicationRequest req, int userId) {

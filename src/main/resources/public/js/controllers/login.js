@@ -7,11 +7,14 @@ myApp.controller('loginController', ['httpService', '$scope', '$cookies', '$root
         console.log("logincontroller started");
         $scope.email;
         $scope.password;
+
+
         $scope.login = function () {
             console.log("sending request");
             var data = {
                 "email": $scope.email,
                 "password": $scope.password
+
             };
             httpService.login(data).then(function (response) {
                 console.log(response);
@@ -20,7 +23,7 @@ myApp.controller('loginController', ['httpService', '$scope', '$cookies', '$root
                 if (token != null) {
                     console.log("redirecting to home");
                     $cookies.put("Authorization", 'Bearer ' + token);
-                    $rootScope.loggedUser = 1;
+                    $rootScope.loggedIn = true;
                     $rootScope.loggedInUser = $scope.email;
                     $scope.email = "";
                     $scope.password = "";
@@ -30,5 +33,4 @@ myApp.controller('loginController', ['httpService', '$scope', '$cookies', '$root
                 }
             })
         }
-
     }]);

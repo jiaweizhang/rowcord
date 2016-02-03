@@ -193,7 +193,7 @@ public class GroupService extends rowcord.services.Service {
                     }
                 });
 
-        return new StandardResponse(false, 0, "Successfully retrieved public groups", new ByIdGroupData(group, members));
+        return new StandardResponse(false, 0, "Successfully retrieved group by id", new ByIdGroupData(group, members));
     }
 
     public StandardResponse apply(GroupApplicationRequest req, int userId) {

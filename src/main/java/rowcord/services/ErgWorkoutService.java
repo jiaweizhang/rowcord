@@ -9,6 +9,7 @@ import requestdata.ergworkout.ErgWorkoutRequest;
 import responses.StandardResponse;
 import responses.data.ergworkout.SummaryData;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -30,14 +31,21 @@ public class ErgWorkoutService extends rowcord.services.Service {
         }
 
         // check if timestamp is null and if it is, use current timestamp
-        // TODO - currently database is hardcoded to use default timestamp
+        Timestamp workoutDate;
+        if (req.getWorkoutdate() == null) {
+            workoutDate = new Timestamp(System.currentTimeMillis());
+        } else {
+            Date tempDate = new Date(req.getWorkoutdate());
+            workoutDate = new Timestamp(tempDate.getTime());
+        }
 
         // TODO validate all fields
 
         jt.update(
-                "INSERT INTO ergworkouts (user_id, comment, device, heartrate, \"type\", \"time\", distance, rating, split, format, details) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+                "INSERT INTO ergworkouts (user_id, comment, workoutdate, device, heartrate, \"type\", \"time\", distance, rating, split, format, details) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
                 userId,
                 req.getComment(),
+                workoutDate,
                 req.getDevice(),
                 req.getHeartrate(),
                 req.getType(),

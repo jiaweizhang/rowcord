@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  */
 
 public class ErgWorkoutRequest {
-    private Timestamp workoutdate; // change to timestamp
+    private Long workoutdate; // change to timestamp
     private String comment;
     private String device;
     private Integer heartrate;
@@ -23,7 +23,7 @@ public class ErgWorkoutRequest {
         return device != null && heartrate != null && type != null && time != null && distance != null && rating != null && split != null && format != null && details != null;
     }
 
-    public Timestamp getWorkoutdate() {
+    public Long getWorkoutdate() {
         return workoutdate;
     }
 

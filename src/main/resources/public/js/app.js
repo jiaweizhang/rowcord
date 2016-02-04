@@ -46,7 +46,7 @@ myApp.config(function ($routeProvider) {
             controller: 'mygroupsController'
         })
 
-        .when('/groups/group/:groupId', {
+        .when('/groups/group/:groupName', {
             templateUrl: 'pages/groupdetail.html',
             controller: 'groupdetailController'
         })
@@ -64,12 +64,20 @@ myApp.config(function ($routeProvider) {
             console.log("$rootScope.userAuth:"+$rootScope.userAuth);
             $http.defaults.headers.common['Authorization'] = 'Bearer ' + $rootScope.userAuth;
         }
+        //if ($rootScope.globals.currentUser) {
+        //    console.log("$rootScope.globals.currentUser.authdata:"+$rootScope.globals.currentUser.authdata);
+        //    $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata; // jshint ignore:line
+        //}
         $rootScope.$on('$locationChangeStart', function (event, next, current) {
             console.log("NEW ROUTE CHANGE");
             // redirect to login page if not logged in and trying to access a restricted page
             var unrestrictedPages = ['/login', '/register', '/', '/logout'];
             var restrictedPage = unrestrictedPages.indexOf($location.path()) === -1;
             console.log("restpage:" + restrictedPage);
+            if ($cookies.get("Authorization") != null) {
+                // check for begins with 'Bearer ' and validate Authorization header eventually
+                $rootScope.loggedIn = true;
+            }
             //var restrictedPage = $.inArray($location.path(), ['/login', '/register', '/']) === -1;
             console.log("loggedin: "+$rootScope.loggedIn);
             if (restrictedPage && !$rootScope.loggedIn) {
@@ -164,9 +172,11 @@ myApp.service('httpService', function ($http, $window, $cookies) {
             });
         },
 
-        getGroupById: function (groupId) {
+
+        getGroupById: function (groupName) {
+            groupName = groupName.split(' ').join('+');
             return $http({
-                url: "api/groups/"+groupId,
+                url: "api/groups/group/"+groupName,
                 method: "GET",
                 headers: {
                     "Authorization": $cookies.get("Authorization")
@@ -174,22 +184,8 @@ myApp.service('httpService', function ($http, $window, $cookies) {
             }).success(function (data, status) {
                 console.log(data);
                 return data;
-            })
-        },
+            });
+        }
 
-        //getGroupDetail: function (data) {
-        //    return $http({
-        //        url: "api/groups/groupdetail",
-        //        method: "POST",
-        //        data: data,
-        //        headers: {
-        //            "Content-Type": "application/json",
-        //            "Authorization": $cookies.get("Authorization")
-        //        }
-        //    }).success(function (data, status) {
-        //        console.log(data);
-        //        return data;
-        //    });
-        //}
     };
 });

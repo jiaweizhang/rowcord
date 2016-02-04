@@ -19,6 +19,10 @@ myApp.controller('groupsController', ['httpService', '$scope', '$http', function
         return groupName.replace(/\s+/g, '+');
     };
 
+    $scope.replaceSpaces = function(str) {
+        return str.split(' ').join('+');
+    };
+
     $scope.unixTimeConvert = function (unix_timestamp){
         // Create a new JavaScript Date object based on the timestamp
         // multiplied by 1000 so that the argument is in milliseconds, not seconds.
@@ -41,9 +45,25 @@ myApp.controller('groupsController', ['httpService', '$scope', '$http', function
 
 myApp.controller('groupcreateController', ['httpService', '$scope', '$http', function (httpService, $scope, $http) {
     console.log("Group Create Controller");
-    $scope.groupName;
-    $scope.description;
-    $scope.publicBool;
+
+    $scope.publicBool = true; //initialize public bool to true
+
+    $scope.entities = [{
+        name: 'Public',
+        checked: true
+    }, {
+        name: 'Private',
+        checked: false
+    }
+    ];
+
+    $scope.updateSelection = function(position, entities) {
+        angular.forEach(entities, function(subscription, index) {
+            if (position != index)
+                subscription.checked = false;
+        });
+        $scope.publicBool = $scope.entities[0].checked;
+    };
     $scope.create = function () {
         console.log("sending group create request");
         console.log("$scope.groupName: "+$scope.groupName);
@@ -60,36 +80,30 @@ myApp.controller('groupcreateController', ['httpService', '$scope', '$http', fun
             $scope.groupName = "";
             $scope.description = "";
         })
-    }
+    };
 
 }]);
 
 myApp.controller('mygroupsController', ['httpService', '$scope', '$http', function (httpService, $scope, $http) {
-    //$scope.groupName;
-    //$scope.groupID;
-    //$scope.joinDate;
-    //$scope.isAdmin;
-    //$scope.isCoach;
-    //$scope.groups;
+
+    console.log("Enter mygroupsController");
+
     $scope.sortType = 'groupName';
     $scope.sortReverse = false;
 
-    $scope.membership = function () {
-        httpService.getMembership().then(function (response) {
-            console.log(response.message);
-            $scope.groups = response.data.data.groups;
-            console.log("$scope.groups: "+$scope.groups);
-            //$scope.groupName = response.data.group.groupName;
-            //$scope.groupID = response.data.group.groupID;
-            //$scope.joinDate = response.data.group.joinDate;
-            //$scope.isAdmin = response.data.group.adminBool;
-            //$scope.isCoach = response.data.group.coachBool;
-        });
-    };
-
+    httpService.getMembership().then(function (response) {
+        console.log(response.message);
+        $scope.groups = response.data.data.groups;
+        console.log("$scope.groups: "+$scope.groups);
+    });
 
     $scope.urlEncode = function (groupName) {
         return groupName.replace(/\s+/g, '+');
+    };
+
+    $scope.replaceSpaces = function(str) {
+        console.log("Replacing spaces.");
+        return str.split(' ').join('+');
     };
 
     $scope.unixTimeConvert = function (unix_timestamp){
@@ -121,10 +135,10 @@ myApp.controller('groupdetailController', ['httpService', '$scope', '$http', '$r
     console.log("sending request");
     console.log($routeParams);
     var data = {
-        "groupId": $routeParams.groupId
+        "groupName": $routeParams.groupName
     };
     console.log(data.toString());
-    httpService.getGroupById(data.groupId).then(function (response) {
+    httpService.getGroupById(data.groupName).then(function (response) {
         console.log(response);
         $scope.group = response.data.data.group;
         $scope.members = response.data.data.members;

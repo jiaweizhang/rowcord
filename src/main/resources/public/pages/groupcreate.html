@@ -17,10 +17,13 @@
             <input type="text" class="form-control" id="groupdescription" placeholder="Enter group description" ng-model="description">
         </div>
     </div>
-    <label>Public?
-        <input type="checkbox" ng-model="publicBool"
-               [ng-true-value="true"] [ng-false-value="false"]>
-    </label><br/>
+    <table>
+        <tr ng-repeat="subscription in entities">
+            <td>{{subscription.name}}
+                <input type="checkbox" ng-model="subscription.checked" ng-click="updateSelection($index, entities)" />
+            </td>
+        </tr>
+    </table>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             <button type="submit" class="btn btn-default">Submit</button>

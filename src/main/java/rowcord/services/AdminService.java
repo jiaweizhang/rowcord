@@ -32,7 +32,7 @@ public class AdminService extends rowcord.services.Service {
             in.close();
 
             query = sb.toString();
-            System.out.println(query);
+            //System.out.println(query);
         } catch (Exception e) {
             e.printStackTrace();
             return new StandardResponse(false, 9999, "failed to read .sql");

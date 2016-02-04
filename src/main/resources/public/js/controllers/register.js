@@ -3,6 +3,7 @@
  */
 myApp.controller('registerController', ['httpService', '$scope', '$http', '$location',
     function (httpService, $scope, $http, $location) {
+    $scope.emailTaken = false;
     $scope.register = function () {
         console.log("sending request");
         var data = {
@@ -15,6 +16,9 @@ myApp.controller('registerController', ['httpService', '$scope', '$http', '$loca
         httpService.register(data).then(function (response) {
             console.log(response);
             console.log("response.data.error: "+response.data.error);
+            if(response.data.code === 1001){
+                $scope.emailTaken = true;
+            }
             if(!response.data.error){
                 $location.path('/login');
             }

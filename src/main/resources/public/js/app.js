@@ -64,10 +64,6 @@ myApp.config(function ($routeProvider) {
             console.log("$rootScope.userAuth:"+$rootScope.userAuth);
             $http.defaults.headers.common['Authorization'] = 'Bearer ' + $rootScope.userAuth;
         }
-        //if ($rootScope.globals.currentUser) {
-        //    console.log("$rootScope.globals.currentUser.authdata:"+$rootScope.globals.currentUser.authdata);
-        //    $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata; // jshint ignore:line
-        //}
         $rootScope.$on('$locationChangeStart', function (event, next, current) {
             console.log("NEW ROUTE CHANGE");
             // redirect to login page if not logged in and trying to access a restricted page
@@ -95,18 +91,6 @@ myApp.controller('mainController', ['httpService', '$scope', '$http', '$window',
     }
 
 }]);
-
-/*myApp.config( ['$routeProvider', function($routeProvider) {'myApp', ['ngRoute', 'ngCookies']}] )
- .run( function($rootScope, $location) {
-
- // register listener to watch route changes
- $rootScope.$on( "$routeChangeStart", function(event, next, current) {
- if ( $rootScope.loggedUser == null ) {
- $location.path( "/login" );
-
- }
- });
- });*/
 
 myApp.service('httpService', function ($http, $window, $cookies) {
     return {

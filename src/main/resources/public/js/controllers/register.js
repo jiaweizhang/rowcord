@@ -1,11 +1,8 @@
 /**
  * Created by jiawe on 1/18/2016.
  */
-myApp.controller('registerController', ['httpService', '$scope', '$http', function (httpService, $scope, $http) {
-    $scope.email;
-    $scope.password;
-    $scope.firstName;
-    $scope.lastName;
+myApp.controller('registerController', ['httpService', '$scope', '$http', '$location',
+    function (httpService, $scope, $http, $location) {
     $scope.register = function () {
         console.log("sending request");
         var data = {
@@ -17,8 +14,10 @@ myApp.controller('registerController', ['httpService', '$scope', '$http', functi
         console.log(data);
         httpService.register(data).then(function (response) {
             console.log(response);
-            $scope.email = "";
-            $scope.password = "";
+            console.log("response.data.error: "+response.data.error);
+            if(!response.data.error){
+                $location.path('/login');
+            }
         })
     }
 }]);

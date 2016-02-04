@@ -25,10 +25,7 @@ public class AdminController extends Controller {
             method = RequestMethod.GET)
     @ResponseBody
     public StandardResponse init(final HttpServletRequest request) {
-        if (isSuperAdmin(request)) {
-            return adminService.init();
-        }
-        return new StandardResponse(true, 3999, "not superadmin");
+        return adminService.init();
     }
 
 }

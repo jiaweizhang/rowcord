@@ -1,0 +1,48 @@
+@()
+<!doctype html>
+<html lang="en" data-framework="angular2">
+    <head>
+        @* in this version of the application the typescript compilation is done in the browser *@
+    <meta charset="utf-8">
+    <title>App Title</title>
+    <script src='@routes.Assets.versioned("lib/angular2/bundles/angular2-polyfills.js")'></script>
+    <script src='@routes.Assets.versioned("lib/systemjs/dist/system.js")'></script>
+    <script src='@routes.Assets.versioned("lib/typescript/lib/typescript.js")'></script>
+    <script src='@routes.Assets.versioned("lib/rxjs/bundles/Rx.js")'></script>
+    <script src='@routes.Assets.versioned("lib/angular2/bundles/angular2.dev.js")'></script>
+
+    </head>
+    <body>
+        <app></app>
+        <footer class="info">
+            <p>Rowcord</p>
+            <p>
+				Created by <a href="http://github.com/jiaweizhang">Jiawei Zhang</a>
+			</p>
+        </footer>
+        <script>
+        @* typescript is async downloaded by SystemJs and transpiled to Javascript in the browser *@
+			System.config({
+                transpiler: 'typescript',
+                typescriptOptions: {
+                               @* these settings of the typescript compiler are required for angular2 *@
+                                emitDecoratorMetadata: true,
+                                experimentalDecorators: true
+                            },
+                            packages: {
+                                'assets/app': {
+                                    defaultExtension: 'ts' @* the modules of our app are to be downloaded as typescript *@
+                                },
+                                'assets/lib': {
+                                    defaultExtension: 'js' @* the libs we depend on are javascript *@
+                                }
+                            },
+                            map: {
+                                'app' : 'assets/app' @* play standardly publishes our asset files under /assets *@
+                            }
+                        });
+                        System.import('app/bootstrap')
+                                .then(null, console.error.bind(console));
+                    </script>
+    </body>
+</html>

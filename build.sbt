@@ -18,7 +18,13 @@ libraryDependencies ++= Seq(
   "org.webjars.npm" % "zone.js" % "0.6.12",
   "org.webjars.npm" % "typescript" % "1.9.0-dev.20160516",
 
-  //tslint dependency
+  // databases
+  jdbc,
+  "org.postgresql" % "postgresql" % "9.4-1201-jdbc41",
+  evolutions,
+  "com.typesafe.play" %% "anorm" % "2.5.0",
+
+//tslint dependency
   "org.webjars.npm" % "tslint-eslint-rules" % "1.2.0",
   "org.webjars.npm" % "codelyzer" % "0.0.19",
 

@@ -34,8 +34,8 @@ class UserController @Inject()(us: UserService) extends Controller {
         BadRequest(Json.obj("status" -> "Bad", "message" -> JsError.toJson(errors)))
       },
       login => {
-        us.doLogin(login)
-        Ok(Json.obj("status" -> "Ok", "message" -> "Successfully logged in"))
+        val (success, response) = us.doLogin(login)
+        if (success) Ok(response) else BadRequest(response)
       }
     )
   }

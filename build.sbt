@@ -20,11 +20,14 @@ libraryDependencies ++= Seq(
 
   // databases
   jdbc,
-  "org.postgresql" % "postgresql" % "9.4-1201-jdbc41",
   evolutions,
+  "org.postgresql" % "postgresql" % "9.4-1201-jdbc41",
   "com.typesafe.play" %% "anorm" % "2.5.0",
 
-//tslint dependency
+  // password hashing
+  "org.mindrot" % "jbcrypt" % "0.3m",
+
+  //tslint dependency
   "org.webjars.npm" % "tslint-eslint-rules" % "1.2.0",
   "org.webjars.npm" % "codelyzer" % "0.0.19",
 
@@ -44,6 +47,6 @@ typingsFile := Some(baseDirectory.value / "typings" / "index.d.ts")
 resolveFromWebjarsNodeModulesDir := true
 
 // use the combined tslint and eslint rules plus ng2 lint rules
-(rulesDirectories in tslint) := Some(List(tslintEslintRulesDir.value,ng2LintRulesDir.value))
+(rulesDirectories in tslint) := Some(List(tslintEslintRulesDir.value, ng2LintRulesDir.value))
 
 routesGenerator := InjectedRoutesGenerator

@@ -1,6 +1,5 @@
 package controllers
 
-import play.api._
 import play.api.mvc._
 
 class Application extends Controller {
@@ -17,5 +16,4 @@ class Application extends Controller {
   def api = Action {
     Ok("this is the api")
   }
-
 }

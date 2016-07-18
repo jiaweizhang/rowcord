@@ -1,17 +1,17 @@
 @()
 <!doctype html>
 <html lang="en" data-framework="angular2">
-    <head>
-        @* In this version of the application the typescript compilation is done by the play framework.
-           The browser downloads .js files. *@
-        <meta charset="utf-8">
-        <title>App Title</title>
-        <script src='@routes.Assets.versioned("lib/angular2/bundles/angular2-polyfills.js")'></script>
-        <script src='@routes.Assets.versioned("lib/systemjs/dist/system.js")'></script>
-        <script src='@routes.Assets.versioned("lib/rxjs/bundles/Rx.js")'></script>
-        <script src='@routes.Assets.versioned("lib/angular2/bundles/angular2.dev.js")'></script>
-        <script>    @* our app is downloaded as individual javascript files by SystemJs
-                     after compilation by sbt-typescript*@
+	<head>
+		@* In this version of the application the typescript compilation is done by the play framework.
+		The browser downloads .js files. *@
+		<meta charset="utf-8">
+		<title>App Title</title>
+		<script src='@routes.Assets.versioned("lib/angular2/bundles/angular2-polyfills.js")'></script>
+		<script src='@routes.Assets.versioned("lib/systemjs/dist/system.js")'></script>
+		<script src='@routes.Assets.versioned("lib/rxjs/bundles/Rx.js")'></script>
+		<script src='@routes.Assets.versioned("lib/angular2/bundles/angular2.dev.js")'></script>
+		<script>    @* our app is downloaded as individual javascript files by SystemJs
+					after compilation by sbt-typescript*@
                 System.config({
                     packages: {
                         'assets/app': {
@@ -31,14 +31,14 @@
             System.import('app/bootstrap')
                     .catch(console.error.bind(console));
 		</script>
-    </head>
-    <body>
-        <app></app>
-        <footer class="info">
-            <p>Rowcord</p>
-            <p>
-                Created by <a href="http://github.com/jiaweizhang">Jiawei Zhang</a>
-            </p>
-        </footer>
-    </body>
+	</head>
+	<body>
+		<app></app>
+		<footer class="info">
+			<p>Rowcord</p>
+			<p>
+				Created by <a href="http://github.com/jiaweizhang">Jiawei Zhang</a>
+			</p>
+		</footer>
+	</body>
 </html>

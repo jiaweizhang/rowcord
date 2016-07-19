@@ -27,6 +27,9 @@ libraryDependencies ++= Seq(
   // password hashing
   "org.mindrot" % "jbcrypt" % "0.3m",
 
+  // jwt
+  "io.igl" %% "jwt" % "1.2.0",
+
   //tslint dependency
   "org.webjars.npm" % "tslint-eslint-rules" % "1.2.0",
   "org.webjars.npm" % "codelyzer" % "0.0.19",

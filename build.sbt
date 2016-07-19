@@ -30,6 +30,13 @@ libraryDependencies ++= Seq(
   // jwt
   "io.igl" %% "jwt" % "1.2.0",
 
+  // mocking
+  "org.mockito" % "mockito-all" % "2.0.2-beta",
+
+  // scala test
+  "org.scalactic" %% "scalactic" % "2.2.6",
+  "org.scalatest" %% "scalatest" % "2.2.6" % "test",
+
   //tslint dependency
   "org.webjars.npm" % "tslint-eslint-rules" % "1.2.0",
   "org.webjars.npm" % "codelyzer" % "0.0.19",

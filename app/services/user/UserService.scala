@@ -2,7 +2,9 @@ package services.user
 
 import javax.inject.Inject
 
+import anorm.SqlParser.{long, str}
 import anorm._
+import io.igl.jwt._
 import models.user.UserModel.{Login, Register}
 import org.mindrot.jbcrypt.BCrypt
 import play.api.db._
@@ -64,20 +66,30 @@ class UserService @Inject()(db: Database) {
           "message" -> "Invalid email"
         ))
       }
-      val passhash: String =
-        SQL("SELECT u.passhash " +
-          "FROM users u " +
-          "WHERE u.email = {email}")
-          .on(
-            'email -> login.email)
-          .as(SqlParser.str("passhash").single)
-      if (BCrypt.checkpw(login.password, passhash)) {
+
+      case class UserIdPasshash(userId: Long, passhash: String)
+
+      val parser: RowParser[UserIdPasshash] =
+        long("userId") ~ str("passhash") map {
+          case userId ~ passhash => UserIdPasshash(userId, passhash)
+        }
+
+      val userIdPasshash = SQL("SELECT u.userId, u.passhash " +
+        "FROM users u " +
+        "WHERE u.email = {email}")
+        .on(
+          'email -> login.email)
+        .as(parser.single)
+
+      if (BCrypt.checkpw(login.password, userIdPasshash.passhash)) {
+        // generate JWT from userId
+        val preJwt = new DecodedJwt(Seq(Alg(Algorithm.HS256), Typ("JWT")), Seq(Sub(userIdPasshash.userId.toString)))
+        val jwt = preJwt.encodedAndSigned("top secret string goes here")
         (true, Json.obj(
           "status" -> "Ok",
           "message" -> "Successfully logged in",
           "data" -> Json.obj(
-            // TODO add authentication token
-            "token" -> "some token here"
+            "token" -> jwt
           )
         ))
       } else {

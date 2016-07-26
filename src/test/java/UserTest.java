@@ -5,7 +5,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import rowcord.Application;
 import rowcord.models.RegistrationRequest;
-import rowcord.models.RegistrationResponse;
+import rowcord.models.StdResponse;
 import rowcord.services.UserService;
 
 
@@ -23,7 +23,7 @@ public class UserTest {
     @Test
     public void TestUserRegistration() {
         RegistrationRequest registrationRequest = new RegistrationRequest();
-        RegistrationResponse registrationResponse = userService.register(registrationRequest);
-        assert (registrationResponse == null);
+        StdResponse stdResponse = userService.register(registrationRequest);
+        assert (stdResponse == null);
     }
 }

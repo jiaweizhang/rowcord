@@ -1,4 +1,4 @@
-package rowcord;
+package rowcord.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,7 +21,7 @@ public class Controller {
     @ResponseBody
     public StdResponse exception(Exception ex, HttpServletResponse response) {
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        return new StdResponse("Bad", "Internal server error");
+        return new StdResponse("Bad", "Internal server error: " + ex.getMessage());
     }
 
 }

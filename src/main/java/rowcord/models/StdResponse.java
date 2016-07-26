@@ -6,15 +6,12 @@ package rowcord.models;
 public class StdResponse {
     public String status;
     public String message;
-    public Object data;
 
-    public StdResponse(String status, String message, Object data) {
-        this.status = status;
-        this.message = message;
-        this.data = data;
+    public StdResponse() {
     }
 
     public StdResponse(String status, String message) {
-        this(status, message, null);
+        this.status = status;
+        this.message = message;
     }
 }

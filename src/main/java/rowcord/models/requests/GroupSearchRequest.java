@@ -6,6 +6,9 @@ package rowcord.models.requests;
 public class GroupSearchRequest {
     public String search;
 
+    public GroupSearchRequest() {
+    }
+
     public GroupSearchRequest(String search) {
         this.search = search;
     }

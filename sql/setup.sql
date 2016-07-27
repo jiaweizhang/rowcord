@@ -70,5 +70,16 @@ CREATE TABLE IF NOT EXISTS groups (
 CREATE TABLE IF NOT EXISTS groupMembers (
   groupId BIGINT NOT NULL,
   userId  BIGINT NOT NULL,
-  CONSTRAINT PK_groupMembers PRIMARY KEY (groupId, userId)
+  CONSTRAINT PK_groupMembers PRIMARY KEY (groupId, userId),
+  CONSTRAINT FK_groupMembers_groupId FOREIGN KEY (groupId) REFERENCES groups (groupId),
+  CONSTRAINT FK_groupMembers_userId FOREIGN KEY (userId) REFERENCES users (userId)
+);
+
+/* Group invitations table */
+CREATE TABLE IF NOT EXISTS groupInvitations (
+  groupId BIGINT NOT NULL,
+  userId BIGINT NOT NULL,
+  CONSTRAINT PK_groupInvitations PRIMARY KEY (groupId, userId),
+  CONSTRAINT FK_groupInvitations_groupId FOREIGN KEY (groupId) REFERENCES groups (groupId),
+  CONSTRAINT FK_groupInvitations_userId FOREIGN KEY (userId) REFERENCES users (userId)
 );

@@ -3,9 +3,9 @@ package rowcord.services;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Transactional;
-import rowcord.models.requests.AddMemberRequest;
 import rowcord.models.requests.GroupCreationRequest;
 import rowcord.models.requests.GroupSearchRequest;
+import rowcord.models.requests.InviteUserRequest;
 import rowcord.models.responses.GroupCreationResponse;
 import rowcord.models.responses.GroupSearchResponse;
 import rowcord.models.responses.StdResponse;
@@ -54,43 +54,50 @@ public class GroupService extends Service {
         return new GroupCreationResponse("Ok", "Successfully created group", keyHolder.getKey().longValue());
     }
 
-    public StdResponse addMembers(AddMemberRequest req) {
+    public StdResponse inviteUsers(InviteUserRequest req) {
         // validate list
-        if (req.members.size() == 0) {
+        if (req.userIds.size() == 0) {
             return new StdResponse("Bad", "Cannot add empty member list");
         }
 
-        if (!req.members.stream().allMatch(new HashSet<>()::add)) {
+        if (!req.userIds.stream().allMatch(new HashSet<>()::add)) {
             // duplicates exist
-            return new StdResponse("Bad", "Cannot add duplicate members");
+            return new StdResponse("Bad", "Cannot add duplicate userIds");
         }
 
         if (!groupExists(req.groupId)) {
             return new StdResponse("Bad", "Group does not exist");
         }
 
-        for (long m : req.members) {
+        for (long m : req.userIds) {
             if (!userExists(m)) {
                 return new StdResponse("Bad", "User " + m + " does not exist");
             }
             if (memberIsInGroup(m, req.groupId)) {
                 return new StdResponse("Bad", "User " + m + " is already in the group");
             }
+            if (memberHasInvitation(m, req.groupId)) {
+                return new StdResponse("Bad", "User " + m + " is already has an invitation");
+            }
         }
-        ;
 
         List<Object[]> batch = new ArrayList<Object[]>();
-        for (long m : req.members) {
+        for (long m : req.userIds) {
             batch.add(new Object[]{m, req.groupId});
         }
-        int[] updateCounts = this.jt.batchUpdate("INSERT INTO groupMembers (userId, groupId) VALUES (?, ?)", batch);
+        int[] updateCounts = this.jt.batchUpdate("INSERT INTO groupInvitations (userId, groupId) VALUES (?, ?)", batch);
         long totalUpdateCounts = IntStream.of(updateCounts).sum();
-        return new StdResponse("Ok", totalUpdateCounts + " members added to group");
+        return new StdResponse("Ok", totalUpdateCounts + " userIds added to group");
     }
 
     private boolean memberIsInGroup(long userId, long groupId) {
         boolean isInGroup = this.jt.queryForObject("SELECT EXISTS(SELECT 1 FROM groupMembers WHERE userId = ? AND groupId = ?)", new Object[]{userId, groupId}, Boolean.class);
         return isInGroup;
+    }
+
+    private boolean memberHasInvitation(long userId, long groupId) {
+        boolean hasInvitation = this.jt.queryForObject("SELECT EXISTS(SELECT 1 FROM groupInvitations WHERE userId = ? AND groupId = ?)", new Object[]{userId, groupId}, Boolean.class);
+        return hasInvitation;
     }
 
     private boolean userExists(long userId) {

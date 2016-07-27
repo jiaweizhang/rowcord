@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 
 @org.springframework.stereotype.Service
-public class Service {
+class Service {
 
     @Autowired
     JdbcTemplate jt;

@@ -76,7 +76,7 @@ public class GroupTest {
 
         GroupSearchRequest s = new GroupSearchRequest();
         s.search = groupName;
-        GroupSearchResponse searchResponse = (GroupSearchResponse) groupService.searchGroups(s);
+        GroupSearchResponse searchResponse = groupService.searchGroups(s);
         assert (searchResponse.searchResults.keySet().size() == 3);
     }
 }

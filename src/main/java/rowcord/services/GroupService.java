@@ -51,7 +51,7 @@ public class GroupService extends Service {
     }
 
     public GroupSearchResponse searchGroups(GroupSearchRequest req) {
-        List<Map<String, Object>> results = this.jt.queryForList("SELECT groupId, groupName FROM groups WHERE groupName LIKE ? LIMIT 12", req.search + "%");
+        List<Map<String, Object>> results = this.jt.queryForList("SELECT groupId, groupName FROM groups WHERE groupName LIKE ? ORDER BY groupName LIMIT 12", req.search + "%");
         Map<Long, String> response = results.stream().collect(Collectors.toMap(r -> (long) r.get("groupId"), r -> (String) r.get("groupName")));
         return new GroupSearchResponse("Ok", "Successfully searched groupNames", response);
     }

@@ -1,4 +1,4 @@
--- Users table
+/* Users table */
 CREATE TABLE IF NOT EXISTS users (
   userId   BIGSERIAL    NOT NULL,
   email    VARCHAR(255) NOT NULL,
@@ -7,15 +7,15 @@ CREATE TABLE IF NOT EXISTS users (
   CONSTRAINT UQ_users_email UNIQUE (email)
 );
 
--- GroupType table
+/* GroupType table */
 CREATE TABLE IF NOT EXISTS groupTypes (
   groupTypeId          INT          NOT NULL,
   groupTypeName        VARCHAR(255) NOT NULL,
   groupTypeDescription VARCHAR(255) NOT NULL,
-  CONSTRAINT PK_groupTypes PRIMARY KEY (groupTypeId, groupTypeName)
+  CONSTRAINT PK_groupTypes PRIMARY KEY (groupTypeId)
 );
 
--- Fill groupType table
+/* Fill groupType table */
 INSERT INTO groupTypes
 (groupTypeId, groupTypeName, groupTypeDescription)
   SELECT
@@ -55,7 +55,7 @@ INSERT INTO groupTypes
         WHERE groupTypeId = 3
     );
 
--- Groups table
+/* Groups table */
 CREATE TABLE IF NOT EXISTS groups (
   groupId          BIGSERIAL     NOT NULL,
   groupName        VARCHAR(255)  NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS groups (
   CONSTRAINT FK_groups_groupTypeId FOREIGN KEY (groupTypeId) REFERENCES groupTypes (groupTypeId)
 );
 
--- Groupmembers table
+/* Groupmembers table */
 CREATE TABLE IF NOT EXISTS groupMembers (
   groupId BIGINT NOT NULL,
   userId  BIGINT NOT NULL,

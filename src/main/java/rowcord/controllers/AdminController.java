@@ -5,10 +5,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import rowcord.models.StdResponse;
+import rowcord.models.responses.StdResponse;
 import rowcord.services.AdminService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 /**
  * Created by jiaweizhang on 7/26/2016.
@@ -24,14 +25,14 @@ public class AdminController extends Controller {
     @RequestMapping(value = "/dbup",
             method = RequestMethod.GET)
     @ResponseBody
-    public StdResponse dbup(final HttpServletRequest request) {
+    public StdResponse dbup(final HttpServletRequest request) throws IOException {
         return adminService.upgradeDb();
     }
 
     @RequestMapping(value = "/dbdown",
             method = RequestMethod.GET)
     @ResponseBody
-    public StdResponse dbdown(final HttpServletRequest request) {
+    public StdResponse dbdown(final HttpServletRequest request) throws IOException {
         return adminService.tearDown();
     }
 }

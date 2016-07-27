@@ -4,10 +4,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rowcord.models.*;
+import rowcord.models.requests.LoginRequest;
+import rowcord.models.requests.RegistrationRequest;
+import rowcord.models.responses.LoginResponse;
+import rowcord.models.responses.RegistrationResponse;
+import rowcord.models.responses.StdResponse;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +25,7 @@ public class UserService extends rowcord.services.Service {
 
     private BCryptPasswordEncoder passwordEncoder;
 
-    public UserService () {
+    public UserService() {
         passwordEncoder = new BCryptPasswordEncoder();
     }
 
@@ -38,7 +41,7 @@ public class UserService extends rowcord.services.Service {
         // persist in database
 
         this.jt.update(
-                "INSERT INTO users (email, passhash) values (?, ?)",
+                "INSERT INTO users (email, passhash) VALUES (?, ?)",
                 registrationRequest.email, hashedPassword);
         return new RegistrationResponse("Ok", "Successfully registered", "jwt here");
     }

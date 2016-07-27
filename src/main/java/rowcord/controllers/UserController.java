@@ -2,9 +2,9 @@ package rowcord.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import rowcord.models.LoginRequest;
-import rowcord.models.RegistrationRequest;
-import rowcord.models.StdResponse;
+import rowcord.models.requests.LoginRequest;
+import rowcord.models.requests.RegistrationRequest;
+import rowcord.models.responses.StdResponse;
 import rowcord.services.UserService;
 
 import javax.servlet.http.HttpServletRequest;

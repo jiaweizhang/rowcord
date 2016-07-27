@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import rowcord.models.StdResponse;
+import rowcord.models.responses.StdResponse;
 
 import javax.servlet.http.HttpServletRequest;
 

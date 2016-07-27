@@ -1,4 +1,4 @@
-package rowcord.models;
+package rowcord.models.responses;
 
 /**
  * Created by jiaweizhang on 7/26/2016.

@@ -3,6 +3,7 @@ package rowcord.services;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Transactional;
+import rowcord.models.requests.AddMemberRequest;
 import rowcord.models.requests.GroupCreationRequest;
 import rowcord.models.requests.GroupSearchRequest;
 import rowcord.models.responses.GroupCreationResponse;
@@ -10,9 +11,12 @@ import rowcord.models.responses.GroupSearchResponse;
 import rowcord.models.responses.StdResponse;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by Jiawei on 7/26/2016.
@@ -50,8 +54,57 @@ public class GroupService extends Service {
         return new GroupCreationResponse("Ok", "Successfully created group", keyHolder.getKey().longValue());
     }
 
+    public StdResponse addMembers(AddMemberRequest req) {
+        // validate list
+        if (req.members.size() == 0) {
+            return new StdResponse("Bad", "Cannot add empty member list");
+        }
+
+        if (!req.members.stream().allMatch(new HashSet<>()::add)) {
+            // duplicates exist
+            return new StdResponse("Bad", "Cannot add duplicate members");
+        }
+
+        if (!groupExists(req.groupId)) {
+            return new StdResponse("Bad", "Group does not exist");
+        }
+
+        for (long m : req.members) {
+            if (!userExists(m)) {
+                return new StdResponse("Bad", "User " + m + " does not exist");
+            }
+            if (memberIsInGroup(m, req.groupId)) {
+                return new StdResponse("Bad", "User " + m + " is already in the group");
+            }
+        }
+        ;
+
+        List<Object[]> batch = new ArrayList<Object[]>();
+        for (long m : req.members) {
+            batch.add(new Object[]{m, req.groupId});
+        }
+        int[] updateCounts = this.jt.batchUpdate("INSERT INTO groupMembers (userId, groupId) VALUES (?, ?)", batch);
+        long totalUpdateCounts = IntStream.of(updateCounts).sum();
+        return new StdResponse("Ok", totalUpdateCounts + " members added to group");
+    }
+
+    private boolean memberIsInGroup(long userId, long groupId) {
+        boolean isInGroup = this.jt.queryForObject("SELECT EXISTS(SELECT 1 FROM groupMembers WHERE userId = ? AND groupId = ?)", new Object[]{userId, groupId}, Boolean.class);
+        return isInGroup;
+    }
+
+    private boolean userExists(long userId) {
+        boolean userExists = this.jt.queryForObject("SELECT EXISTS(SELECT 1 FROM users WHERE userId = ?)", new Object[]{userId}, Boolean.class);
+        return userExists;
+    }
+
+    private boolean groupExists(long groupId) {
+        boolean groupExists = this.jt.queryForObject("SELECT EXISTS(SELECT 1 FROM groups WHERE groupId = ?)", new Object[]{groupId}, Boolean.class);
+        return groupExists;
+    }
+
     public GroupSearchResponse searchGroups(GroupSearchRequest req) {
-        List<Map<String, Object>> results = this.jt.queryForList("SELECT groupId, groupName FROM groups WHERE groupName LIKE ? ORDER BY groupName LIMIT 12", req.search + "%");
+        List<Map<String, Object>> results = this.jt.queryForList("SELECT groupId, groupName FROM groups WHERE groupName LIKE ? AND groupTypeId IN (1, 2) ORDER BY groupName LIMIT 12", req.search + "%");
         Map<Long, String> response = results.stream().collect(Collectors.toMap(r -> (long) r.get("groupId"), r -> (String) r.get("groupName")));
         return new GroupSearchResponse("Ok", "Successfully searched groupNames", response);
     }

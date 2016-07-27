@@ -2,6 +2,7 @@ package rowcord.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import rowcord.models.requests.AddMemberRequest;
 import rowcord.models.requests.GroupCreationRequest;
 import rowcord.models.requests.GroupSearchRequest;
 import rowcord.models.responses.StdResponse;
@@ -26,6 +27,14 @@ public class GroupController extends Controller {
     @ResponseBody
     public StdResponse createGroup(@RequestBody final GroupCreationRequest req, final HttpServletRequest request) {
         return groupService.createGroup(req);
+    }
+
+    @RequestMapping(value = "/members",
+            method = RequestMethod.POST,
+            headers = {"Content-type=application/json"})
+    @ResponseBody
+    public StdResponse addMembers(@RequestBody final AddMemberRequest req, final HttpServletRequest request) {
+        return groupService.addMembers(req);
     }
 
     @RequestMapping(value = "/search",

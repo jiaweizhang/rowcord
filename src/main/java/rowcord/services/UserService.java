@@ -2,7 +2,8 @@ package rowcord.services;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,8 +13,8 @@ import rowcord.models.responses.LoginResponse;
 import rowcord.models.responses.RegistrationResponse;
 import rowcord.models.responses.StdResponse;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.util.Map;
 
 /**
  * Created by jiaweizhang on 7/26/2016.
@@ -38,40 +39,35 @@ public class UserService extends rowcord.services.Service {
         }
 
         String hashedPassword = passwordEncoder.encode(registrationRequest.password);
-        // persist in database
 
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         this.jt.update(
-                "INSERT INTO users (email, passhash) VALUES (?, ?)",
-                registrationRequest.email, hashedPassword);
-        return new RegistrationResponse("Ok", "Successfully registered", "jwt here");
+                connection -> {
+                    PreparedStatement ps = connection.prepareStatement(
+                            "INSERT INTO users (email, passhash) VALUES (?, ?)",
+                            new String[]{"userid"});
+                    ps.setString(1, registrationRequest.email);
+                    ps.setString(2, hashedPassword);
+                    return ps;
+                },
+                keyHolder);
+
+        return new RegistrationResponse("Ok", "Successfully registered", keyHolder.getKey().longValue());
     }
 
     public StdResponse login(LoginRequest loginRequest) {
-        LoginModel loginModel = this.jt.queryForObject(
+        Map<String, Object> loginModel = this.jt.queryForMap(
                 "SELECT passhash, userId FROM users WHERE email = ?",
-                new Object[]{loginRequest.email},
-                new RowMapper<LoginModel>() {
-                    public LoginModel mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        LoginModel loginModel = new LoginModel();
-                        loginModel.passhash = rs.getString("passhash");
-                        loginModel.userId = rs.getLong("userId");
-                        return loginModel;
-                    }
-                });
+                new Object[]{loginRequest.email});
 
-        if (passwordEncoder.matches(loginRequest.password, loginModel.passhash)) {
+        if (passwordEncoder.matches(loginRequest.password, (String) loginModel.get("passhash"))) {
             String compactJws = Jwts.builder()
-                    .setSubject(Long.toString(loginModel.userId))
+                    .setSubject(Long.toString((long) loginModel.get("userId")))
                     .signWith(SignatureAlgorithm.HS512, "secret key")
                     .compact();
             return new LoginResponse("Ok", "Successfully logged in", compactJws);
         }
 
         return new StdResponse("Bad", "Invalid password");
-    }
-
-    private class LoginModel {
-        private String passhash;
-        private long userId;
     }
 }

@@ -6,4 +6,9 @@ package rowcord.models.requests;
 public class RegistrationRequest {
     public String email;
     public String password;
+
+    public RegistrationRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }

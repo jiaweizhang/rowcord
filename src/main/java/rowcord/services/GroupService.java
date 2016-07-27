@@ -4,10 +4,15 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Transactional;
 import rowcord.models.requests.GroupCreationRequest;
+import rowcord.models.requests.GroupSearchRequest;
 import rowcord.models.responses.GroupCreationResponse;
+import rowcord.models.responses.GroupSearchResponse;
 import rowcord.models.responses.StdResponse;
 
 import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by Jiawei on 7/26/2016.
@@ -43,5 +48,11 @@ public class GroupService extends Service {
                 keyHolder);
 
         return new GroupCreationResponse("Ok", "Successfully created group", keyHolder.getKey().longValue());
+    }
+
+    public GroupSearchResponse searchGroups(GroupSearchRequest req) {
+        List<Map<String, Object>> results = this.jt.queryForList("SELECT groupId, groupName FROM groups WHERE groupName LIKE ? LIMIT 12", req.search + "%");
+        Map<Long, String> response = results.stream().collect(Collectors.toMap(r -> (long) r.get("groupId"), r -> (String) r.get("groupName")));
+        return new GroupSearchResponse("Ok", "Successfully searched groupNames", response);
     }
 }

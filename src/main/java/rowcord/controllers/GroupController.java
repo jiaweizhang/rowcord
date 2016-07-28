@@ -3,6 +3,7 @@ package rowcord.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rowcord.exceptions.JwtAuthException;
 import rowcord.models.requests.GroupCreationRequest;
 import rowcord.models.requests.GroupSearchRequest;
 import rowcord.models.requests.InviteUserRequest;

@@ -26,15 +26,11 @@ public class UserTest {
     @Test
     public void TestUserRegistration() {
         String email = "registration" + UUID.randomUUID().toString() + "@gmail.com";
-        RegistrationRequest registrationRequest = new RegistrationRequest();
-        registrationRequest.email = email;
-        registrationRequest.password = "registrationPassword";
+        RegistrationRequest registrationRequest = new RegistrationRequest(email, "registrationPassword");
         StdResponse stdResponse = userService.register(registrationRequest);
         assert (stdResponse.status.equals("Ok"));
 
-        RegistrationRequest failedRegistrationRequest = new RegistrationRequest();
-        failedRegistrationRequest.email = email;
-        failedRegistrationRequest.password = "registrationPassword";
+        RegistrationRequest failedRegistrationRequest = new RegistrationRequest(email, "registrationPassword");
         StdResponse failedStdResponse = userService.register(failedRegistrationRequest);
         assert (failedStdResponse.status.equals("Bad"));
     }
@@ -42,21 +38,15 @@ public class UserTest {
     @Test
     public void TestUserLogin() {
         String email = "login" + UUID.randomUUID().toString() + "@gmail.com";
-        RegistrationRequest registrationRequest = new RegistrationRequest();
-        registrationRequest.email = email;
-        registrationRequest.password = "loginPassword";
+        RegistrationRequest registrationRequest = new RegistrationRequest(email, "loginPassword");
         StdResponse stdResponse = userService.register(registrationRequest);
         assert (stdResponse.status.equals("Ok"));
 
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.email = email;
-        loginRequest.password = "loginPassword";
+        LoginRequest loginRequest = new LoginRequest(email, "loginPassword");
         StdResponse loginResponse = userService.login(loginRequest);
         assert (loginResponse.status.equals("Ok"));
 
-        LoginRequest failedLoginRequest = new LoginRequest();
-        failedLoginRequest.email = email;
-        failedLoginRequest.password = "incorrectLoginPassword";
+        LoginRequest failedLoginRequest = new LoginRequest(email, "incorrectLoginPassword");
         StdResponse failedLoginResponse = userService.login(failedLoginRequest);
         assert (failedLoginResponse.status.equals("Bad"));
     }

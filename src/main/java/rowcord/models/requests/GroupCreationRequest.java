@@ -7,4 +7,10 @@ public class GroupCreationRequest {
     public String groupName;
     public String groupDescription;
     public int groupTypeId;
+
+    public GroupCreationRequest(String groupName, String groupDescription, int groupTypeId) {
+        this.groupName = groupName;
+        this.groupDescription = groupDescription;
+        this.groupTypeId = groupTypeId;
+    }
 }

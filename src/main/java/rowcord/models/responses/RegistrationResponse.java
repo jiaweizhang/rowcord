@@ -5,11 +5,10 @@ package rowcord.models.responses;
  */
 public class RegistrationResponse extends StdResponse {
     public long userId;
-    public String jwt;
 
-    public RegistrationResponse(String status, String message, String jwt) {
+    public RegistrationResponse(String status, String message, long userId) {
         this.status = status;
         this.message = message;
-        this.jwt = jwt;
+        this.userId = userId;
     }
 }

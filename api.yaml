@@ -1,0 +1,111 @@
+swagger: "2.0"
+info:
+  version: 0.0.0
+  title: Rowcord API
+  description: Rowcord API
+host: localhost:8080
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /api/users/register:
+    post:
+      summary: Create an account
+      parameters:
+        - name: body
+          in: body
+          schema:
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      x-examples:
+        application/json: |-
+          {
+            "email": "email@provider.com",
+            "password": "mypassword"
+          }
+      responses:
+        201:
+          description: Account created
+        default:
+          description: Account creation failed
+  /api/users/login:
+    post:
+      summary: Logs into account
+      parameters:
+        - name: body
+          in: body
+          schema:
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      x-examples:
+         application/json: |-
+          {
+            "email": "email@provider.com",
+            "password": "mypassword"
+          }
+      responses:
+        201:
+          description: Logged in
+        default:
+          description: Account login failed
+  /api/groups:
+    post:
+      summary: Creates a group
+      parameters:
+        - name: body
+          in: body
+          schema:
+            properties:
+              groupName:
+                type: string
+              groupDescription:
+                type: string
+              groupTypeId:
+                type: number
+                enum: [ 1, 2, 3 ]
+      responses:
+        201:
+          description: Group created
+        default:
+          description: Group creation failed
+  /api/groups/search:
+    post:
+      summary: Searches for a group by groupName
+      parameters:
+        - name: body
+          in: body
+          schema:
+            properties:
+              search:
+                type: string
+      responses:
+        201:
+          description: Successfully searched
+  /api/groups/invite:
+    post:
+      summary: Invite users to group
+      parameters:
+        - name: body
+          in: body
+          schema:
+            properties:
+              groupId:
+                type: number
+              userIds:
+                type: array
+                items:
+                  type: number
+      responses:
+        201:
+          description: Successfully invited
+        default:
+          description: Failed to invite

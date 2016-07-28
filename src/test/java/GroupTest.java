@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import rowcord.Application;
-import rowcord.models.requests.AddMemberRequest;
 import rowcord.models.requests.GroupCreationRequest;
 import rowcord.models.requests.GroupSearchRequest;
+import rowcord.models.requests.InviteUserRequest;
 import rowcord.models.requests.RegistrationRequest;
 import rowcord.models.responses.GroupCreationResponse;
 import rowcord.models.responses.GroupSearchResponse;
@@ -51,7 +51,7 @@ public class GroupTest {
     }
 
     @Test
-    public void TestAddMembers() {
+    public void TestInviteMembers() {
         String email = "email" + UUID.randomUUID().toString() + "@gmail.com";
         RegistrationRequest r1 = new RegistrationRequest(email, "password");
         RegistrationResponse registerResponse = (RegistrationResponse) userService.register(r1);
@@ -60,17 +60,17 @@ public class GroupTest {
         GroupCreationResponse successResponse = (GroupCreationResponse) groupService.createGroup(r);
         assert (successResponse.status.equals("Ok"));
 
-        AddMemberRequest am = new AddMemberRequest(successResponse.groupId, Collections.singletonList(registerResponse.userId));
-        StdResponse successAddResponse = groupService.addMembers(am);
+        InviteUserRequest am = new InviteUserRequest(successResponse.groupId, Collections.singletonList(registerResponse.userId));
+        StdResponse successAddResponse = groupService.inviteUsers(am);
         assert (successAddResponse.status.equals("Ok"));
 
-        AddMemberRequest am2 = new AddMemberRequest(successResponse.groupId, Collections.singletonList((long) 1000000));
-        StdResponse invalidUserId = groupService.addMembers(am2);
+        InviteUserRequest am2 = new InviteUserRequest(successResponse.groupId, Collections.singletonList((long) 1000000));
+        StdResponse invalidUserId = groupService.inviteUsers(am2);
         assert (invalidUserId.message.equals("User 1000000 does not exist"));
 
-        AddMemberRequest am3 = new AddMemberRequest(successResponse.groupId, Collections.singletonList(registerResponse.userId));
-        StdResponse duplicateAddResponse = groupService.addMembers(am3);
-        assert (duplicateAddResponse.message.equals("User " + registerResponse.userId + " is already in the group"));
+        InviteUserRequest am3 = new InviteUserRequest(successResponse.groupId, Collections.singletonList(registerResponse.userId));
+        StdResponse duplicateAddResponse = groupService.inviteUsers(am3);
+        assert (duplicateAddResponse.message.equals("User " + registerResponse.userId + " is already has an invitation"));
     }
 
     @Test

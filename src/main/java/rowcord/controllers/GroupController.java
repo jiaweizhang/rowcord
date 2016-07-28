@@ -1,11 +1,11 @@
 package rowcord.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import rowcord.models.requests.AddMemberRequest;
 import rowcord.models.requests.GroupCreationRequest;
 import rowcord.models.requests.GroupSearchRequest;
-import rowcord.models.responses.StdResponse;
+import rowcord.models.requests.InviteUserRequest;
 import rowcord.services.GroupService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,23 +25,23 @@ public class GroupController extends Controller {
             method = RequestMethod.POST,
             headers = {"Content-type=application/json"})
     @ResponseBody
-    public StdResponse createGroup(@RequestBody final GroupCreationRequest req, final HttpServletRequest request) {
-        return groupService.createGroup(req);
+    public ResponseEntity createGroup(@RequestBody final GroupCreationRequest req, final HttpServletRequest request) {
+        return wrap(groupService.createGroup(req));
     }
 
-    @RequestMapping(value = "/members",
+    @RequestMapping(value = "/invite",
             method = RequestMethod.POST,
             headers = {"Content-type=application/json"})
     @ResponseBody
-    public StdResponse addMembers(@RequestBody final AddMemberRequest req, final HttpServletRequest request) {
-        return groupService.addMembers(req);
+    public ResponseEntity inviteUsers(@RequestBody final InviteUserRequest req, final HttpServletRequest request) {
+        return wrap(groupService.inviteUsers(req));
     }
 
     @RequestMapping(value = "/search",
             method = RequestMethod.POST,
             headers = {"Content-type=application/json"})
     @ResponseBody
-    public StdResponse searchGroups(@RequestBody final GroupSearchRequest req, final HttpServletRequest request) {
-        return groupService.searchGroups(req);
+    public ResponseEntity searchGroups(@RequestBody final GroupSearchRequest req, final HttpServletRequest request) {
+        return wrap(groupService.searchGroups(req));
     }
 }

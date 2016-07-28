@@ -3,6 +3,7 @@ package rowcord.controllers;
 import org.postgresql.util.PSQLException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import rowcord.models.responses.StdResponse;
@@ -13,7 +14,15 @@ import java.sql.SQLException;
 /**
  * Created by jiaweizhang on 7/26/2016.
  */
-public class Controller {
+
+class Controller {
+
+    ResponseEntity wrap(StdResponse stdResponse) {
+        if (stdResponse.status.equals("Bad")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(stdResponse);
+        }
+        return ResponseEntity.ok(stdResponse);
+    }
 
     @ExceptionHandler(PSQLException.class)
     @ResponseBody

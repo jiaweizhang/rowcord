@@ -90,6 +90,5 @@ CREATE TABLE IF NOT EXISTS loginLogs (
   isSuccess BOOLEAN                                                        NOT NULL,
   timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() AT TIME ZONE 'utc') NOT NULL,
   ip        INET                                                           NOT NULL,
-  CONSTRAINT PK_loginLogs PRIMARY KEY (userId),
   CONSTRAINT FK_loginLogs_userId FOREIGN KEY (userId) REFERENCES users (userId)
 );

@@ -43,11 +43,11 @@ public class UserTest {
         assert (stdResponse.status.equals("Ok"));
 
         LoginRequest loginRequest = new LoginRequest(email, "loginPassword");
-        StdResponse loginResponse = userService.login(loginRequest);
+        StdResponse loginResponse = userService.login(loginRequest, "127.0.0.1");
         assert (loginResponse.status.equals("Ok"));
 
         LoginRequest failedLoginRequest = new LoginRequest(email, "incorrectLoginPassword");
-        StdResponse failedLoginResponse = userService.login(failedLoginRequest);
+        StdResponse failedLoginResponse = userService.login(failedLoginRequest, "127.0.0.1");
         assert (failedLoginResponse.status.equals("Bad"));
     }
 }

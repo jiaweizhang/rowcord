@@ -14,6 +14,7 @@ import rowcord.models.responses.RegistrationResponse;
 import rowcord.models.responses.StdResponse;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,19 +56,30 @@ public class UserService extends rowcord.services.Service {
         return new RegistrationResponse("Ok", "Successfully registered", keyHolder.getKey().longValue());
     }
 
-    public StdResponse login(LoginRequest loginRequest) {
-        Map<String, Object> loginModel = this.jt.queryForMap(
+    public StdResponse login(LoginRequest loginRequest, String ip) {
+        List<Map<String, Object>> loginModels = this.jt.queryForList(
                 "SELECT passhash, userId FROM users WHERE email = ?",
                 new Object[]{loginRequest.email});
+
+        if (loginModels.size() == 0) {
+            return new StdResponse("Bad", "Invalid email");
+        }
+        Map<String, Object> loginModel = loginModels.get(0);
 
         if (passwordEncoder.matches(loginRequest.password, (String) loginModel.get("passhash"))) {
             String compactJws = Jwts.builder()
                     .setSubject(Long.toString((long) loginModel.get("userId")))
                     .signWith(SignatureAlgorithm.HS512, "secret key")
                     .compact();
+            logLogin((long) loginModel.get("userId"), true, ip);
             return new LoginResponse("Ok", "Successfully logged in", compactJws);
         }
-
+        logLogin((long) loginModel.get("userId"), false, ip);
         return new StdResponse("Bad", "Invalid password");
+    }
+
+    private void logLogin(long userId, boolean isSuccess, String ip) {
+        this.jt.update("INSERT INTO loginLogs (userId, isSuccess, ip) VALUES (?, ?, ?::INET)",
+                userId, isSuccess, ip);
     }
 }

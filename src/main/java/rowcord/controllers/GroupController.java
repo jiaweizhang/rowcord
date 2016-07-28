@@ -26,6 +26,7 @@ public class GroupController extends Controller {
             headers = {"Content-type=application/json"})
     @ResponseBody
     public ResponseEntity createGroup(@RequestBody final GroupCreationRequest req, final HttpServletRequest request) {
+        pre(req, request);
         return wrap(groupService.createGroup(req));
     }
 
@@ -34,6 +35,7 @@ public class GroupController extends Controller {
             headers = {"Content-type=application/json"})
     @ResponseBody
     public ResponseEntity inviteUsers(@RequestBody final InviteUserRequest req, final HttpServletRequest request) {
+        pre(req, request);
         return wrap(groupService.inviteUsers(req));
     }
 

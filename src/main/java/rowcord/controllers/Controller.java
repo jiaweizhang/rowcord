@@ -1,21 +1,29 @@
 package rowcord.controllers;
 
-import org.postgresql.util.PSQLException;
-import org.springframework.dao.DataIntegrityViolationException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import rowcord.models.requests.StdRequest;
 import rowcord.models.responses.StdResponse;
 
-import javax.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by jiaweizhang on 7/26/2016.
  */
 
+@org.springframework.stereotype.Controller
 class Controller {
+
+    void pre(StdRequest stdRequest, HttpServletRequest httpServletRequest) {
+        String jwt = httpServletRequest.getHeader("Authorization");
+        Claims claims = Jwts.parser().setSigningKey("secret key").parseClaimsJws(jwt).getBody();
+        stdRequest.userId = Long.parseLong(claims.getSubject());
+    }
 
     ResponseEntity wrap(StdResponse stdResponse) {
         switch (stdResponse.status) {
@@ -30,32 +38,15 @@ class Controller {
         }
     }
 
-    @ExceptionHandler(PSQLException.class)
-    @ResponseBody
-    public StdResponse psqlException(Exception ex, HttpServletResponse response) {
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        return new StdResponse("Internal", "A database error has occurred. The error has been logged and will be forwarded to the development team.");
+    @ResponseStatus(value=HttpStatus.CONFLICT,
+            reason="Data integrity violation")  // 409
+    @ExceptionHandler(IllegalArgumentException.class)
+    public void conflict() {
+        // Nothing to do
     }
 
-    @ExceptionHandler(SQLException.class)
-    @ResponseBody
-    public StdResponse sqlException(Exception ex, HttpServletResponse response) {
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        return new StdResponse("Internal", "A database error has occurred. The error has been logged and will be forwarded to the development team.");
+    @ExceptionHandler(IllegalArgumentException.class)
+    public String handleError(HttpServletRequest req, Exception ex) {
+        return "something: "+ex.toString();
     }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseBody
-    public StdResponse dataIntegrityViolationException(Exception ex, HttpServletResponse response) {
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        return new StdResponse("Internal", "A database error has occurred. The error has been logged and will be forwarded to the development team.");
-    }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseBody
-    public StdResponse exception(Exception ex, HttpServletResponse response) {
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        return new StdResponse("Internal", "Generic internal server error: " + ex.getLocalizedMessage());
-    }
-
 }

@@ -36,7 +36,7 @@ public class UserService extends rowcord.services.Service {
                 "SELECT COUNT(*) FROM users WHERE email = ?",
                 new Object[]{registrationRequest.email}, Integer.class);
         if (emailCount != 0) {
-            return new StdResponse(200, "Email already exists");
+            return new StdResponse(200, true, "Email already exists");
         }
 
         String hashedPassword = passwordEncoder.encode(registrationRequest.password);
@@ -53,7 +53,7 @@ public class UserService extends rowcord.services.Service {
                 },
                 keyHolder);
 
-        return new RegistrationResponse(200, "Successfully registered", keyHolder.getKey().longValue());
+        return new RegistrationResponse(200, false, "Successfully registered", keyHolder.getKey().longValue());
     }
 
     public StdResponse login(LoginRequest loginRequest, String ip) {
@@ -62,7 +62,7 @@ public class UserService extends rowcord.services.Service {
                 new Object[]{loginRequest.email});
 
         if (loginModels.size() == 0) {
-            return new StdResponse(200, "Invalid email");
+            return new StdResponse(200, true, "Invalid email");
         }
         Map<String, Object> loginModel = loginModels.get(0);
 
@@ -72,10 +72,10 @@ public class UserService extends rowcord.services.Service {
                     .signWith(SignatureAlgorithm.HS512, "secret key")
                     .compact();
             logLogin((long) loginModel.get("userId"), true, ip);
-            return new LoginResponse(200, "Successfully logged in", compactJws);
+            return new LoginResponse(200, false, "Successfully logged in", compactJws);
         }
         logLogin((long) loginModel.get("userId"), false, ip);
-        return new StdResponse(200, "Invalid password");
+        return new StdResponse(200, true, "Invalid password");
     }
 
     private void logLogin(long userId, boolean isSuccess, String ip) {

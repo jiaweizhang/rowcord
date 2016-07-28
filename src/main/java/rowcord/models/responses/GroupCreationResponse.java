@@ -7,8 +7,9 @@ public class GroupCreationResponse extends StdResponse {
 
     public long groupId;
 
-    public GroupCreationResponse(int status, String message, long groupId) {
+    public GroupCreationResponse(int status, boolean error, String message, long groupId) {
         this.status = status;
+        this.error = error;
         this.message = message;
         this.groupId = groupId;
     }

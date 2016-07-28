@@ -26,9 +26,9 @@ public class TestController extends Controller {
             method = RequestMethod.GET)
     @ResponseBody
     public StdResponse register(final HttpServletRequest request) {
-        //if (1 == 1) throw new JwtAuthException();
-        if (1==1) jt.execute("INSERT INTO badTable VALUES (1, 2)");
-        return new StdResponse(200, "Successful get");
+        if (1 == 1) throw new JwtAuthException();
+        if (1 == 1) jt.execute("INSERT INTO badTable VALUES (1, 2)");
+        return new StdResponse(200, false, "Successful get");
     }
 
 }

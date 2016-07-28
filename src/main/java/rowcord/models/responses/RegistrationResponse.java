@@ -6,8 +6,9 @@ package rowcord.models.responses;
 public class RegistrationResponse extends StdResponse {
     public long userId;
 
-    public RegistrationResponse(int status, String message, long userId) {
+    public RegistrationResponse(int status, boolean error, String message, long userId) {
         this.status = status;
+        this.error = error;
         this.message = message;
         this.userId = userId;
     }

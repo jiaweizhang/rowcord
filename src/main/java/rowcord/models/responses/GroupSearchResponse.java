@@ -8,8 +8,9 @@ import java.util.Map;
 public class GroupSearchResponse extends StdResponse {
     public Map<Long, String> searchResults;
 
-    public GroupSearchResponse(int status, String message, Map<Long, String> searchResults) {
+    public GroupSearchResponse(int status, boolean error, String message, Map<Long, String> searchResults) {
         this.status = status;
+        this.error = error;
         this.message = message;
         this.searchResults = searchResults;
     }

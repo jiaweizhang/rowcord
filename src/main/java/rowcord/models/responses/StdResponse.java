@@ -5,15 +5,15 @@ package rowcord.models.responses;
  */
 public class StdResponse {
     public int status;
-    public boolean error;
+    public boolean success;
     public String message;
 
     public StdResponse() {
     }
 
-    public StdResponse(int status, boolean error, String message) {
+    public StdResponse(int status, boolean success, String message) {
         this.status = status;
-        this.error = error;
+        this.success = success;
         this.message = message;
     }
 }

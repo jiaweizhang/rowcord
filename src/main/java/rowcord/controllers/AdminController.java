@@ -29,10 +29,4 @@ public class AdminController extends Controller {
         return adminService.upgradeDb();
     }
 
-    @RequestMapping(value = "/dbdown",
-            method = RequestMethod.GET)
-    @ResponseBody
-    public StdResponse dbdown(final HttpServletRequest request) throws IOException {
-        return adminService.tearDown();
-    }
 }

@@ -37,16 +37,16 @@ public class GroupTest {
         String groupName = "groupName" + UUID.randomUUID().toString();
         GroupCreationRequest r = new GroupCreationRequest(groupName, "desc", 1);
         StdResponse successResponse = groupService.createGroup(r);
-        assert (successResponse.error == false);
+        assert (successResponse.success);
 
         GroupCreationRequest r2 = new GroupCreationRequest(groupName, "desc", 1);
         StdResponse duplicateResponse = groupService.createGroup(r2);
-        assert (duplicateResponse.error == true);
+        assert (!duplicateResponse.success);
         assert (duplicateResponse.message.equals("Group name already exists"));
 
         GroupCreationRequest r3 = new GroupCreationRequest(groupName + "1", "desc", 4);
         StdResponse invalidGroupTypeIdResponse = groupService.createGroup(r3);
-        assert (invalidGroupTypeIdResponse.error == true);
+        assert (!invalidGroupTypeIdResponse.success);
         assert (invalidGroupTypeIdResponse.message.equals("Group type not valid"));
     }
 
@@ -58,11 +58,11 @@ public class GroupTest {
         String groupName = "groupName" + UUID.randomUUID().toString();
         GroupCreationRequest r = new GroupCreationRequest(groupName, "desc", 1);
         GroupCreationResponse successResponse = (GroupCreationResponse) groupService.createGroup(r);
-        assert (successResponse.error == false);
+        assert (successResponse.success);
 
         InviteUserRequest am = new InviteUserRequest(successResponse.groupId, Collections.singletonList(registerResponse.userId));
         StdResponse successAddResponse = groupService.inviteUsers(am);
-        assert (successAddResponse.error == false);
+        assert (successAddResponse.success);
 
         InviteUserRequest am2 = new InviteUserRequest(successResponse.groupId, Collections.singletonList((long) 1000000));
         StdResponse invalidUserId = groupService.inviteUsers(am2);
@@ -80,17 +80,17 @@ public class GroupTest {
         // open group
         GroupCreationRequest r = new GroupCreationRequest(groupName + "1", "desc", 1);
         StdResponse successResponse = groupService.createGroup(r);
-        assert (successResponse.error == false);
+        assert (successResponse.success);
 
         // closed group
         GroupCreationRequest r2 = new GroupCreationRequest(groupName + "2", "desc", 2);
         StdResponse successResponse2 = groupService.createGroup(r2);
-        assert (successResponse2.error == false);
+        assert (successResponse2.success);
 
         // this one will not be found because it is a "Secret" group
         GroupCreationRequest r3 = new GroupCreationRequest(groupName + "3", "desc", 3);
         StdResponse successResponse3 = groupService.createGroup(r3);
-        assert (successResponse3.error == false);
+        assert (successResponse3.success);
 
         GroupSearchRequest s = new GroupSearchRequest(groupName);
         GroupSearchResponse searchResponse = groupService.searchGroups(s);

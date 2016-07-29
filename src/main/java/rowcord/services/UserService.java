@@ -2,8 +2,8 @@ package rowcord.services;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +13,9 @@ import rowcord.models.responses.LoginResponse;
 import rowcord.models.responses.RegistrationResponse;
 import rowcord.models.responses.StdResponse;
 
-import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
+import java.sql.Types;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -31,29 +33,35 @@ public class UserService extends rowcord.services.Service {
         passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    public StdResponse register(RegistrationRequest registrationRequest) {
-        int emailCount = this.jt.queryForObject(
-                "SELECT COUNT(*) FROM users WHERE email = ?",
-                new Object[]{registrationRequest.email}, Integer.class);
-        if (emailCount != 0) {
-            return new StdResponse(200, true, "Email already exists");
-        }
+    public RegistrationResponse register(RegistrationRequest registrationRequest) {
 
-        String hashedPassword = passwordEncoder.encode(registrationRequest.password);
+        List<SqlParameter> paramList = Arrays.asList(
+                new SqlParameter("p_email", Types.VARCHAR),
+                new SqlParameter("p_passhash", Types.VARCHAR),
+                new SqlOutParameter("p_userId", Types.BIGINT),
+                new SqlOutParameter("p_success", Types.BOOLEAN),
+                new SqlOutParameter("p_message", Types.VARCHAR)
+        );
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        this.jt.update(
-                connection -> {
-                    PreparedStatement ps = connection.prepareStatement(
-                            "INSERT INTO users (email, passhash) VALUES (?, ?)",
-                            new String[]{"userid"});
-                    ps.setString(1, registrationRequest.email);
-                    ps.setString(2, hashedPassword);
-                    return ps;
-                },
-                keyHolder);
+        final String procedureCall = "{call sp_register(?, ?, ?, ?, ?)}";
+        Map<String, Object> resultMap = this.jt.call(connection -> {
 
-        return new RegistrationResponse(200, false, "Successfully registered", keyHolder.getKey().longValue());
+            CallableStatement callableStatement = connection.prepareCall(procedureCall);
+            callableStatement.setString(1, registrationRequest.email);
+            callableStatement.setString(2, passwordEncoder.encode(registrationRequest.password));
+            callableStatement.registerOutParameter(3, Types.BIGINT);
+            callableStatement.registerOutParameter(4, Types.BOOLEAN);
+            callableStatement.registerOutParameter(5, Types.VARCHAR);
+            return callableStatement;
+
+        }, paramList);
+
+        return new RegistrationResponse(
+                200,
+                (boolean) resultMap.get("p_success"),
+                (String) resultMap.get("p_message"),
+                (long) resultMap.get("p_userId")
+        );
     }
 
     public StdResponse login(LoginRequest loginRequest, String ip) {
@@ -62,7 +70,7 @@ public class UserService extends rowcord.services.Service {
                 new Object[]{loginRequest.email});
 
         if (loginModels.size() == 0) {
-            return new StdResponse(200, true, "Invalid email");
+            return new StdResponse(200, false, "Invalid email");
         }
         Map<String, Object> loginModel = loginModels.get(0);
 
@@ -72,10 +80,10 @@ public class UserService extends rowcord.services.Service {
                     .signWith(SignatureAlgorithm.HS512, "secret key")
                     .compact();
             logLogin((long) loginModel.get("userId"), true, ip);
-            return new LoginResponse(200, false, "Successfully logged in", compactJws);
+            return new LoginResponse(200, true, "Successfully logged in", compactJws);
         }
         logLogin((long) loginModel.get("userId"), false, ip);
-        return new StdResponse(200, true, "Invalid password");
+        return new StdResponse(200, false, "Invalid password");
     }
 
     private void logLogin(long userId, boolean isSuccess, String ip) {

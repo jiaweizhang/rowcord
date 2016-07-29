@@ -28,11 +28,11 @@ public class UserTest {
         String email = "registration" + UUID.randomUUID().toString() + "@gmail.com";
         RegistrationRequest registrationRequest = new RegistrationRequest(email, "registrationPassword");
         StdResponse stdResponse = userService.register(registrationRequest);
-        assert (stdResponse.error == false);
+        assert (stdResponse.success);
 
         RegistrationRequest failedRegistrationRequest = new RegistrationRequest(email, "registrationPassword");
         StdResponse failedStdResponse = userService.register(failedRegistrationRequest);
-        assert (failedStdResponse.error == true);
+        assert (!failedStdResponse.success);
     }
 
     @Test
@@ -40,14 +40,14 @@ public class UserTest {
         String email = "login" + UUID.randomUUID().toString() + "@gmail.com";
         RegistrationRequest registrationRequest = new RegistrationRequest(email, "loginPassword");
         StdResponse stdResponse = userService.register(registrationRequest);
-        assert (stdResponse.error == false);
+        assert (stdResponse.success);
 
         LoginRequest loginRequest = new LoginRequest(email, "loginPassword");
         StdResponse loginResponse = userService.login(loginRequest, "127.0.0.1");
-        assert (loginResponse.error == false);
+        assert (loginResponse.success);
 
         LoginRequest failedLoginRequest = new LoginRequest(email, "incorrectLoginPassword");
         StdResponse failedLoginResponse = userService.login(failedLoginRequest, "127.0.0.1");
-        assert (failedLoginResponse.error == true);
+        assert (!failedLoginResponse.success);
     }
 }

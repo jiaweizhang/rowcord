@@ -31,11 +31,11 @@ public class GroupService extends Service {
                 "SELECT COUNT(*) FROM groups WHERE groupName = ?",
                 new Object[]{groupCreationRequest.groupName}, Integer.class);
         if (groupNameCount != 0) {
-            return new StdResponse(200, true, "Group name already exists");
+            return new StdResponse(200, false, "Group name already exists");
         }
 
         if (groupCreationRequest.groupTypeId < 1 || groupCreationRequest.groupTypeId > 3) {
-            return new StdResponse(200, true, "Group type not valid");
+            return new StdResponse(200, false, "Group type not valid");
         }
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -51,33 +51,33 @@ public class GroupService extends Service {
                 },
                 keyHolder);
 
-        return new GroupCreationResponse(200, false, "Successfully created group", keyHolder.getKey().longValue());
+        return new GroupCreationResponse(200, true, "Successfully created group", keyHolder.getKey().longValue());
     }
 
     public StdResponse inviteUsers(InviteUserRequest req) {
         // validate list
         if (req.userIds.size() == 0) {
-            return new StdResponse(200, true, "Cannot add empty member list");
+            return new StdResponse(200, false, "Cannot add empty member list");
         }
 
         if (!req.userIds.stream().allMatch(new HashSet<>()::add)) {
             // duplicates exist
-            return new StdResponse(200, true, "Cannot add duplicate userIds");
+            return new StdResponse(200, false, "Cannot add duplicate userIds");
         }
 
         if (!groupExists(req.groupId)) {
-            return new StdResponse(200, true, "Group does not exist");
+            return new StdResponse(200, false, "Group does not exist");
         }
 
         for (long m : req.userIds) {
             if (!userExists(m)) {
-                return new StdResponse(200, true, "User " + m + " does not exist");
+                return new StdResponse(200, false, "User " + m + " does not exist");
             }
             if (memberIsInGroup(m, req.groupId)) {
-                return new StdResponse(200, true, "User " + m + " is already in the group");
+                return new StdResponse(200, false, "User " + m + " is already in the group");
             }
             if (memberHasInvitation(m, req.groupId)) {
-                return new StdResponse(200, true, "User " + m + " is already has an invitation");
+                return new StdResponse(200, false, "User " + m + " is already has an invitation");
             }
         }
 
@@ -87,7 +87,7 @@ public class GroupService extends Service {
         }
         int[] updateCounts = this.jt.batchUpdate("INSERT INTO groupInvitations (userId, groupId) VALUES (?, ?)", batch);
         long totalUpdateCounts = IntStream.of(updateCounts).sum();
-        return new StdResponse(200, false, totalUpdateCounts + " userIds added to group");
+        return new StdResponse(200, true, totalUpdateCounts + " userIds added to group");
     }
 
     private boolean memberIsInGroup(long userId, long groupId) {
@@ -113,6 +113,6 @@ public class GroupService extends Service {
     public GroupSearchResponse searchGroups(GroupSearchRequest req) {
         List<Map<String, Object>> results = this.jt.queryForList("SELECT groupId, groupName FROM groups WHERE groupName LIKE ? AND groupTypeId IN (1, 2) ORDER BY groupName LIMIT 12", req.search + "%");
         Map<Long, String> response = results.stream().collect(Collectors.toMap(r -> (long) r.get("groupId"), r -> (String) r.get("groupName")));
-        return new GroupSearchResponse(200, false, "Successfully searched groupNames", response);
+        return new GroupSearchResponse(200, true, "Successfully searched groupNames", response);
     }
 }

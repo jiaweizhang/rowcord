@@ -19,11 +19,11 @@ public class GlobalExceptionHandler extends Controller {
 
     @ExceptionHandler(JwtAuthException.class)
     public ResponseEntity handleError() {
-        return wrap(new StdResponse(403, true, "Jwt Auth failed"));
+        return wrap(new StdResponse(403, false, "Jwt Auth failed"));
     }
 
     @ExceptionHandler(BadSqlGrammarException.class)
-    public ResponseEntity handleSqlException() {
-        return wrap(new StdResponse(500, true, "Database error"));
+    public ResponseEntity handleSqlException(Exception e) {
+        return wrap(new StdResponse(500, false, "Database error: " + e.getLocalizedMessage()));
     }
 }

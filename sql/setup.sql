@@ -57,11 +57,11 @@ INSERT INTO groupTypes
 
 /* Groups table */
 CREATE TABLE IF NOT EXISTS groups (
-  groupId          BIGSERIAL     NOT NULL,
-  groupName        VARCHAR(255)  NOT NULL,
-  groupDescription VARCHAR(2000) NOT NULL,
-  groupTypeId      INT           NOT NULL,
-  defaultPermissions BIGINT NOT NULL DEFAULT 0,
+  groupId            BIGSERIAL     NOT NULL,
+  groupName          VARCHAR(255)  NOT NULL,
+  groupDescription   VARCHAR(2000) NOT NULL,
+  groupTypeId        INT           NOT NULL,
+  defaultPermissions BIGINT        NOT NULL DEFAULT 0,
   CONSTRAINT PK_groups PRIMARY KEY (groupId),
   CONSTRAINT UX_groups_groupName UNIQUE (groupName),
   CONSTRAINT FK_groups_groupTypeId FOREIGN KEY (groupTypeId) REFERENCES groupTypes (groupTypeId)
@@ -69,8 +69,8 @@ CREATE TABLE IF NOT EXISTS groups (
 
 /* Groupmembers table */
 CREATE TABLE IF NOT EXISTS groupMembers (
-  groupId BIGINT NOT NULL,
-  userId  BIGINT NOT NULL,
+  groupId     BIGINT NOT NULL,
+  userId      BIGINT NOT NULL,
   permissions BIGINT NOT NULL,
   CONSTRAINT PK_groupMembers PRIMARY KEY (groupId, userId),
   CONSTRAINT FK_groupMembers_groupId FOREIGN KEY (groupId) REFERENCES groups (groupId),

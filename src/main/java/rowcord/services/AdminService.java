@@ -31,7 +31,7 @@ public class AdminService extends Service {
             int index;
             // removes single-line comments
             if ((index = str.indexOf("--")) >= 0) {
-                str = str.substring(index + 2);
+                str = str.substring(0, index);
             }
             sb.append(str).append(" ");
         }

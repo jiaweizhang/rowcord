@@ -1,3 +1,7 @@
+/* drop all tables and functions */
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+
 /* Users table */
 CREATE TABLE IF NOT EXISTS users (
   userId   BIGSERIAL    NOT NULL,
@@ -84,13 +88,4 @@ CREATE TABLE IF NOT EXISTS groupInvitations (
   CONSTRAINT PK_groupInvitations PRIMARY KEY (groupId, userId),
   CONSTRAINT FK_groupInvitations_groupId FOREIGN KEY (groupId) REFERENCES groups (groupId),
   CONSTRAINT FK_groupInvitations_userId FOREIGN KEY (userId) REFERENCES users (userId)
-);
-
-/* Login logging */
-CREATE TABLE IF NOT EXISTS loginLogs (
-  userId    BIGINT                                                         NOT NULL,
-  isSuccess BOOLEAN                                                        NOT NULL,
-  timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() AT TIME ZONE 'utc') NOT NULL,
-  ip        INET                                                           NOT NULL,
-  CONSTRAINT FK_loginLogs_userId FOREIGN KEY (userId) REFERENCES users (userId)
 );

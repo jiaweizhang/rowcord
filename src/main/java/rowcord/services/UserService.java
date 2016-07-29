@@ -33,7 +33,7 @@ public class UserService extends rowcord.services.Service {
         passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    public RegistrationResponse register(RegistrationRequest registrationRequest) {
+    public StdResponse register(RegistrationRequest registrationRequest) {
 
         List<SqlParameter> paramList = Arrays.asList(
                 new SqlParameter("p_email", Types.VARCHAR),
@@ -56,38 +56,52 @@ public class UserService extends rowcord.services.Service {
 
         }, paramList);
 
-        return new RegistrationResponse(
-                200,
-                (boolean) resultMap.get("p_success"),
-                (String) resultMap.get("p_message"),
-                (long) resultMap.get("p_userId")
-        );
+        if ((boolean) resultMap.get("p_success")) {
+            return new RegistrationResponse(
+                    200,
+                    true,
+                    (String) resultMap.get("p_message"),
+                    (long) resultMap.get("p_userId")
+            );
+        }
+        return new StdResponse(200, false, (String) resultMap.get("p_message"));
     }
 
     public StdResponse login(LoginRequest loginRequest, String ip) {
-        List<Map<String, Object>> loginModels = this.jt.queryForList(
-                "SELECT passhash, userId FROM users WHERE email = ?",
-                new Object[]{loginRequest.email});
+        List<SqlParameter> paramList = Arrays.asList(
+                new SqlParameter("p_email", Types.VARCHAR),
+                new SqlOutParameter("p_passhash", Types.VARCHAR),
+                new SqlOutParameter("p_userId", Types.BIGINT),
+                new SqlOutParameter("p_success", Types.BOOLEAN),
+                new SqlOutParameter("p_message", Types.VARCHAR)
+        );
 
-        if (loginModels.size() == 0) {
-            return new StdResponse(200, false, "Invalid email");
+        final String procedureCall = "{call sp_login(?, ?, ?, ?, ?)}";
+        Map<String, Object> resultMap = this.jt.call(connection -> {
+
+            CallableStatement callableStatement = connection.prepareCall(procedureCall);
+            callableStatement.setString(1, loginRequest.email);
+            callableStatement.registerOutParameter(2, Types.VARCHAR);
+            callableStatement.registerOutParameter(3, Types.BIGINT);
+            callableStatement.registerOutParameter(4, Types.BOOLEAN);
+            callableStatement.registerOutParameter(5, Types.VARCHAR);
+            return callableStatement;
+
+        }, paramList);
+
+        boolean success = (boolean) resultMap.get("p_success");
+        if (!success) {
+            return new StdResponse(200, false, (String) resultMap.get("p_message"));
         }
-        Map<String, Object> loginModel = loginModels.get(0);
 
-        if (passwordEncoder.matches(loginRequest.password, (String) loginModel.get("passhash"))) {
+        if (passwordEncoder.matches(loginRequest.password, (String) resultMap.get("p_passhash"))) {
             String compactJws = Jwts.builder()
-                    .setSubject(Long.toString((long) loginModel.get("userId")))
+                    .setSubject(Long.toString((long) resultMap.get("p_userId")))
                     .signWith(SignatureAlgorithm.HS512, "secret key")
                     .compact();
-            logLogin((long) loginModel.get("userId"), true, ip);
             return new LoginResponse(200, true, "Successfully logged in", compactJws);
         }
-        logLogin((long) loginModel.get("userId"), false, ip);
         return new StdResponse(200, false, "Invalid password");
     }
 
-    private void logLogin(long userId, boolean isSuccess, String ip) {
-        this.jt.update("INSERT INTO loginLogs (userId, isSuccess, ip) VALUES (?, ?, ?::INET)",
-                userId, isSuccess, ip);
-    }
 }

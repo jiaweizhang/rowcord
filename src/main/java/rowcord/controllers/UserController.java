@@ -33,6 +33,6 @@ public class UserController extends Controller {
             headers = {"Content-type=application/json"})
     @ResponseBody
     public ResponseEntity login(@RequestBody final LoginRequest req, final HttpServletRequest request) {
-        return wrap(userService.login(req));
+        return wrap(userService.login(req, request.getRemoteAddr()));
     }
 }

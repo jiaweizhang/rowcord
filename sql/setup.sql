@@ -78,8 +78,18 @@ CREATE TABLE IF NOT EXISTS groupMembers (
 /* Group invitations table */
 CREATE TABLE IF NOT EXISTS groupInvitations (
   groupId BIGINT NOT NULL,
-  userId BIGINT NOT NULL,
+  userId  BIGINT NOT NULL,
   CONSTRAINT PK_groupInvitations PRIMARY KEY (groupId, userId),
   CONSTRAINT FK_groupInvitations_groupId FOREIGN KEY (groupId) REFERENCES groups (groupId),
   CONSTRAINT FK_groupInvitations_userId FOREIGN KEY (userId) REFERENCES users (userId)
+);
+
+/* Login logging */
+CREATE TABLE IF NOT EXISTS loginLogs (
+  userId    BIGINT                                                         NOT NULL,
+  isSuccess BOOLEAN                                                        NOT NULL,
+  timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() AT TIME ZONE 'utc') NOT NULL,
+  ip        INET                                                           NOT NULL,
+  CONSTRAINT PK_loginLogs PRIMARY KEY (userId),
+  CONSTRAINT FK_loginLogs_userId FOREIGN KEY (userId) REFERENCES users (userId)
 );

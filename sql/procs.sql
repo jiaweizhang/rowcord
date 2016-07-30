@@ -61,3 +61,44 @@ BEGIN
 END; $$
 
 LANGUAGE plpgsql;
+
+/* sp_createGroup */
+DROP FUNCTION IF EXISTS sp_createGroup( CHARACTER VARYING, CHARACTER VARYING, NUMERIC, NUMERIC );
+CREATE OR REPLACE FUNCTION sp_createGroup(
+      p_groupName        VARCHAR,
+      p_groupDescription VARCHAR,
+      p_groupTypeId      INT,
+      p_userId           INT,
+  OUT p_groupId          BIGINT,
+  OUT p_success          BOOLEAN,
+  OUT p_message          VARCHAR
+) AS $$
+BEGIN
+  IF (SELECT count(*)
+      FROM groups g
+      WHERE g.groupName = p_groupName) != 0
+  THEN
+    p_groupId := 0;
+    p_success := FALSE;
+    p_message := 'Group name already exists';
+    RETURN;
+  END IF;
+  IF (p_groupTypeId > 3 OR p_groupTypeId < 1)
+  THEN
+    p_groupId := 0;
+    p_success := FALSE;
+    p_message := 'Group type not valid';
+    RETURN;
+  END IF;
+
+  INSERT INTO groups (groupName, groupDescription, groupTypeId) VALUES (p_groupName, p_groupDescription, p_groupTypeId)
+  RETURNING groupId
+    INTO p_groupId;
+  INSERT INTO groupMembers (groupId, userId, permissions) VALUES (p_groupId, p_userId, 9223372036854775807);
+  p_success := TRUE;
+  p_message := 'Successfully created group';
+  RETURN;
+
+END; $$
+
+LANGUAGE plpgsql;

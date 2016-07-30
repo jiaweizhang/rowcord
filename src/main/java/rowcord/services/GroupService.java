@@ -1,7 +1,7 @@
 package rowcord.services;
 
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.transaction.annotation.Transactional;
 import rowcord.models.requests.GroupCreationRequest;
 import rowcord.models.requests.GroupSearchRequest;
@@ -10,11 +10,9 @@ import rowcord.models.responses.GroupCreationResponse;
 import rowcord.models.responses.GroupSearchResponse;
 import rowcord.models.responses.StdResponse;
 
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.sql.CallableStatement;
+import java.sql.Types;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -27,31 +25,41 @@ import java.util.stream.IntStream;
 public class GroupService extends Service {
 
     public StdResponse createGroup(GroupCreationRequest groupCreationRequest) {
-        int groupNameCount = this.jt.queryForObject(
-                "SELECT COUNT(*) FROM groups WHERE groupName = ?",
-                new Object[]{groupCreationRequest.groupName}, Integer.class);
-        if (groupNameCount != 0) {
-            return new StdResponse(200, false, "Group name already exists");
+
+        List<SqlParameter> paramList = Arrays.asList(
+                new SqlParameter("p_groupName", Types.VARCHAR),
+                new SqlParameter("p_groupDescription", Types.VARCHAR),
+                new SqlParameter("p_groupTypeId", Types.INTEGER),
+                new SqlParameter("p_userId", Types.BIGINT),
+                new SqlOutParameter("p_groupId", Types.BIGINT),
+                new SqlOutParameter("p_success", Types.BOOLEAN),
+                new SqlOutParameter("p_message", Types.VARCHAR)
+        );
+
+        final String procedureCall = "{call sp_createGroup(?, ?, ?, ?, ?, ?, ?)}";
+        Map<String, Object> resultMap = this.jt.call(connection -> {
+
+            CallableStatement callableStatement = connection.prepareCall(procedureCall);
+            callableStatement.setString(1, groupCreationRequest.groupName);
+            callableStatement.setString(2, groupCreationRequest.groupDescription);
+            callableStatement.setInt(3, groupCreationRequest.groupTypeId);
+            callableStatement.setLong(4, groupCreationRequest.userId);
+            callableStatement.registerOutParameter(5, Types.BIGINT);
+            callableStatement.registerOutParameter(6, Types.BOOLEAN);
+            callableStatement.registerOutParameter(7, Types.VARCHAR);
+            return callableStatement;
+
+        }, paramList);
+
+        if ((boolean) resultMap.get("p_success")) {
+            return new GroupCreationResponse(
+                    200,
+                    true,
+                    (String) resultMap.get("p_message"),
+                    (long) resultMap.get("p_groupId")
+            );
         }
-
-        if (groupCreationRequest.groupTypeId < 1 || groupCreationRequest.groupTypeId > 3) {
-            return new StdResponse(200, false, "Group type not valid");
-        }
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        this.jt.update(
-                connection -> {
-                    PreparedStatement ps = connection.prepareStatement(
-                            "INSERT INTO groups (groupName, groupDescription, groupTypeId) VALUES (?, ?, ?)",
-                            new String[]{"groupid"});
-                    ps.setString(1, groupCreationRequest.groupName);
-                    ps.setString(2, groupCreationRequest.groupDescription);
-                    ps.setInt(3, groupCreationRequest.groupTypeId);
-                    return ps;
-                },
-                keyHolder);
-
-        return new GroupCreationResponse(200, true, "Successfully created group", keyHolder.getKey().longValue());
+        return new StdResponse(200, false, (String) resultMap.get("p_message"));
     }
 
     public StdResponse inviteUsers(InviteUserRequest req) {

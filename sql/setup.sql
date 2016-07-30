@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS groups (
   groupName        VARCHAR(255)  NOT NULL,
   groupDescription VARCHAR(2000) NOT NULL,
   groupTypeId      INT           NOT NULL,
+  defaultPermissions BIGINT NOT NULL DEFAULT 0,
   CONSTRAINT PK_groups PRIMARY KEY (groupId),
   CONSTRAINT UX_groups_groupName UNIQUE (groupName),
   CONSTRAINT FK_groups_groupTypeId FOREIGN KEY (groupTypeId) REFERENCES groupTypes (groupTypeId)
@@ -70,6 +71,7 @@ CREATE TABLE IF NOT EXISTS groups (
 CREATE TABLE IF NOT EXISTS groupMembers (
   groupId BIGINT NOT NULL,
   userId  BIGINT NOT NULL,
+  permissions BIGINT NOT NULL,
   CONSTRAINT PK_groupMembers PRIMARY KEY (groupId, userId),
   CONSTRAINT FK_groupMembers_groupId FOREIGN KEY (groupId) REFERENCES groups (groupId),
   CONSTRAINT FK_groupMembers_userId FOREIGN KEY (userId) REFERENCES users (userId)
@@ -90,6 +92,5 @@ CREATE TABLE IF NOT EXISTS loginLogs (
   isSuccess BOOLEAN                                                        NOT NULL,
   timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() AT TIME ZONE 'utc') NOT NULL,
   ip        INET                                                           NOT NULL,
-  CONSTRAINT PK_loginLogs PRIMARY KEY (userId),
   CONSTRAINT FK_loginLogs_userId FOREIGN KEY (userId) REFERENCES users (userId)
 );

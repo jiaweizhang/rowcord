@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by Jiawei on 7/26/2016.
  */
-public class InviteUserRequest {
+public class InviteUserRequest extends StdRequest {
     public long groupId;
     public List<Long> userIds;
 

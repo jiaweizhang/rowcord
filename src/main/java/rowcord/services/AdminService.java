@@ -18,13 +18,13 @@ public class AdminService extends Service {
     public StdResponse upgradeDb() throws IOException {
         String query = readQuery("sql/setup.sql");
         jt.execute(query);
-        return new StdResponse("Ok", "Successfully upgraded database");
+        return new StdResponse(200, false, "Successfully upgraded database");
     }
 
     public StdResponse tearDown() throws IOException {
         String query = readQuery("sql/teardown.sql");
         jt.execute(query);
-        return new StdResponse("Ok", "Successfully tore down database");
+        return new StdResponse(200, false, "Successfully tore down database");
     }
 
     private String readQuery(String file) throws IOException {

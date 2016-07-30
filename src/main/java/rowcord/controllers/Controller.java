@@ -1,55 +1,41 @@
 package rowcord.controllers;
 
-import org.postgresql.util.PSQLException;
-import org.springframework.dao.DataIntegrityViolationException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
+import rowcord.exceptions.JwtAuthException;
+import rowcord.models.requests.StdRequest;
 import rowcord.models.responses.StdResponse;
 
-import javax.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by jiaweizhang on 7/26/2016.
  */
 
-class Controller {
+public class Controller {
 
-    ResponseEntity wrap(StdResponse stdResponse) {
-        if (stdResponse.status.equals("Bad")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(stdResponse);
+    void pre(StdRequest stdRequest, HttpServletRequest httpServletRequest) {
+        String jwt = httpServletRequest.getHeader("Authorization");
+        try {
+            Claims claims = Jwts.parser().setSigningKey("secret key").parseClaimsJws(jwt).getBody();
+            stdRequest.userId = Long.parseLong(claims.getSubject());
+        } catch (Exception e) {
+            throw new JwtAuthException();
         }
-        return ResponseEntity.ok(stdResponse);
     }
 
-    @ExceptionHandler(PSQLException.class)
-    @ResponseBody
-    public StdResponse psqlException(Exception ex, HttpServletResponse response) {
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        return new StdResponse("Bad", "A database error has occurred. The error has been logged and will be forwarded to the development team.");
+    protected ResponseEntity wrap(StdResponse stdResponse) {
+        switch (stdResponse.status) {
+            case 200:
+                return ResponseEntity.status(HttpStatus.OK).body(stdResponse);
+            case 403:
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(stdResponse);
+            case 500:
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(stdResponse);
+            default:
+                return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body(stdResponse);
+        }
     }
-
-    @ExceptionHandler(SQLException.class)
-    @ResponseBody
-    public StdResponse sqlException(Exception ex, HttpServletResponse response) {
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        return new StdResponse("Bad", "A database error has occurred. The error has been logged and will be forwarded to the development team.");
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseBody
-    public StdResponse dataIntegrityViolationException(Exception ex, HttpServletResponse response) {
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        return new StdResponse("Bad", "A database error has occurred. The error has been logged and will be forwarded to the development team.");
-    }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseBody
-    public StdResponse exception(Exception ex, HttpServletResponse response) {
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        return new StdResponse("Bad", "Generic internal server error: " + ex.getLocalizedMessage());
-    }
-
 }

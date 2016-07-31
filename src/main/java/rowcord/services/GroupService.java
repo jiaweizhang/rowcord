@@ -3,6 +3,8 @@ package rowcord.services;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.transaction.annotation.Transactional;
+import rowcord.exceptions.GroupPermissionException;
+import rowcord.models.GroupPermissions;
 import rowcord.models.requests.GroupCreationRequest;
 import rowcord.models.requests.GroupSearchRequest;
 import rowcord.models.requests.InviteUserRequest;
@@ -12,7 +14,10 @@ import rowcord.models.responses.StdResponse;
 
 import java.sql.CallableStatement;
 import java.sql.Types;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -63,24 +68,18 @@ public class GroupService extends Service {
     }
 
     public StdResponse inviteUsers(InviteUserRequest req) {
-        // validate list
-        if (req.userIds.size() == 0) {
-            return new StdResponse(200, false, "Cannot add empty member list");
-        }
+        req.validate();
 
-        if (!req.userIds.stream().allMatch(new HashSet<>()::add)) {
-            // duplicates exist
-            return new StdResponse(200, false, "Cannot add duplicate userIds");
-        }
-
-        if (!groupExists(req.groupId)) {
-            return new StdResponse(200, false, "Group does not exist");
+        GroupPermissions groupPermissions = getGroupPermissionsForUser(req.userId, req.groupId);
+        if (!groupPermissions.isValid) {
+            throw new GroupPermissionException(groupPermissions.message);
         }
 
         for (long m : req.userIds) {
+            /*
             if (!userExists(m)) {
                 return new StdResponse(200, false, "User " + m + " does not exist");
-            }
+            }*/
             if (memberIsInGroup(m, req.groupId)) {
                 return new StdResponse(200, false, "User " + m + " is already in the group");
             }
@@ -106,16 +105,6 @@ public class GroupService extends Service {
     private boolean memberHasInvitation(long userId, long groupId) {
         boolean hasInvitation = this.jt.queryForObject("SELECT EXISTS(SELECT 1 FROM groupInvitations WHERE userId = ? AND groupId = ?)", new Object[]{userId, groupId}, Boolean.class);
         return hasInvitation;
-    }
-
-    private boolean userExists(long userId) {
-        boolean userExists = this.jt.queryForObject("SELECT EXISTS(SELECT 1 FROM users WHERE userId = ?)", new Object[]{userId}, Boolean.class);
-        return userExists;
-    }
-
-    private boolean groupExists(long groupId) {
-        boolean groupExists = this.jt.queryForObject("SELECT EXISTS(SELECT 1 FROM groups WHERE groupId = ?)", new Object[]{groupId}, Boolean.class);
-        return groupExists;
     }
 
     public GroupSearchResponse searchGroups(GroupSearchRequest req) {

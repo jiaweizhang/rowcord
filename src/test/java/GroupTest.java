@@ -1,3 +1,4 @@
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +33,24 @@ public class GroupTest {
     @Autowired
     private UserService userService;
 
+    private long userId1;
+
+    @Before
+    public void Setup() {
+        String email = "email" + UUID.randomUUID().toString() + "@gmail.com";
+        RegistrationRequest r1 = new RegistrationRequest(email, "password");
+        RegistrationResponse registerResponse = (RegistrationResponse) userService.register(r1);
+        userId1 = registerResponse.userId;
+    }
+
     @Test
     public void TestGroupCreation() {
         String groupName = "groupName" + UUID.randomUUID().toString();
         GroupCreationRequest r = new GroupCreationRequest(groupName, "desc", 1);
+        r.userId = userId1;
         StdResponse successResponse = groupService.createGroup(r);
         assert (successResponse.success);
+        // TODO check for insertion status
 
         GroupCreationRequest r2 = new GroupCreationRequest(groupName, "desc", 1);
         StdResponse duplicateResponse = groupService.createGroup(r2);
@@ -52,15 +65,13 @@ public class GroupTest {
 
     @Test
     public void TestInviteMembers() {
-        String email = "email" + UUID.randomUUID().toString() + "@gmail.com";
-        RegistrationRequest r1 = new RegistrationRequest(email, "password");
-        RegistrationResponse registerResponse = (RegistrationResponse) userService.register(r1);
         String groupName = "groupName" + UUID.randomUUID().toString();
         GroupCreationRequest r = new GroupCreationRequest(groupName, "desc", 1);
+        r.userId = userId1;
         GroupCreationResponse successResponse = (GroupCreationResponse) groupService.createGroup(r);
         assert (successResponse.success);
 
-        InviteUserRequest am = new InviteUserRequest(successResponse.groupId, Collections.singletonList(registerResponse.userId));
+        InviteUserRequest am = new InviteUserRequest(successResponse.groupId, Collections.singletonList(userId1));
         StdResponse successAddResponse = groupService.inviteUsers(am);
         assert (successAddResponse.success);
 
@@ -68,9 +79,9 @@ public class GroupTest {
         StdResponse invalidUserId = groupService.inviteUsers(am2);
         assert (invalidUserId.message.equals("User 1000000 does not exist"));
 
-        InviteUserRequest am3 = new InviteUserRequest(successResponse.groupId, Collections.singletonList(registerResponse.userId));
+        InviteUserRequest am3 = new InviteUserRequest(successResponse.groupId, Collections.singletonList(userId1));
         StdResponse duplicateAddResponse = groupService.inviteUsers(am3);
-        assert (duplicateAddResponse.message.equals("User " + registerResponse.userId + " is already has an invitation"));
+        assert (duplicateAddResponse.message.equals("User " + userId1 + " is already has an invitation"));
     }
 
     @Test
@@ -79,16 +90,19 @@ public class GroupTest {
 
         // open group
         GroupCreationRequest r = new GroupCreationRequest(groupName + "1", "desc", 1);
+        r.userId = userId1;
         StdResponse successResponse = groupService.createGroup(r);
         assert (successResponse.success);
 
         // closed group
         GroupCreationRequest r2 = new GroupCreationRequest(groupName + "2", "desc", 2);
+        r2.userId = userId1;
         StdResponse successResponse2 = groupService.createGroup(r2);
         assert (successResponse2.success);
 
         // this one will not be found because it is a "Secret" group
         GroupCreationRequest r3 = new GroupCreationRequest(groupName + "3", "desc", 3);
+        r3.userId = userId1;
         StdResponse successResponse3 = groupService.createGroup(r3);
         assert (successResponse3.success);
 

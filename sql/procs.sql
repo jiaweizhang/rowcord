@@ -63,12 +63,12 @@ END; $$
 LANGUAGE plpgsql;
 
 /* sp_createGroup */
-DROP FUNCTION IF EXISTS sp_createGroup( CHARACTER VARYING, CHARACTER VARYING, NUMERIC, NUMERIC );
+DROP FUNCTION IF EXISTS sp_createGroup( VARCHAR, VARCHAR, INT, BIGINT );
 CREATE OR REPLACE FUNCTION sp_createGroup(
       p_groupName        VARCHAR,
       p_groupDescription VARCHAR,
       p_groupTypeId      INT,
-      p_userId           INT,
+      p_userId           BIGINT,
   OUT p_groupId          BIGINT,
   OUT p_success          BOOLEAN,
   OUT p_message          VARCHAR
@@ -97,6 +97,56 @@ BEGIN
   INSERT INTO groupMembers (groupId, userId, permissions) VALUES (p_groupId, p_userId, 9223372036854775807);
   p_success := TRUE;
   p_message := 'Successfully created group';
+  RETURN;
+
+END; $$
+
+LANGUAGE plpgsql;
+
+/* sp_getGroupPermissions */
+DROP FUNCTION IF EXISTS sp_getGroupPermissions( BIGINT, BIGINT );
+CREATE OR REPLACE FUNCTION sp_getGroupPermissions(
+      p_userId      BIGINT,
+      p_groupId     BIGINT,
+  OUT p_permissions BIGINT,
+  OUT p_success     BOOLEAN,
+  OUT p_message     VARCHAR
+) AS $$
+BEGIN
+  IF (SELECT count(*)
+      FROM users u
+      WHERE u.userId = p_userId) = 0
+  THEN
+    p_permissions := 0;
+    p_success := FALSE;
+    p_message := 'User does not exist';
+    RETURN;
+  END IF;
+  IF (SELECT count(*)
+      FROM groups g
+      WHERE g.groupId = p_groupId) = 0
+  THEN
+    p_permissions := 0;
+    p_success := FALSE;
+    p_message := 'Group does not exist';
+    RETURN;
+  END IF;
+  IF (SELECT count(*)
+      FROM groupMembers gm
+      WHERE gm.groupId = p_groupId AND gm.userId = p_userId) = 0
+  THEN
+    p_permissions := 0;
+    p_success := FALSE;
+    p_message := 'User not in group';
+    RETURN;
+  END IF;
+
+  SELECT permissions
+  FROM groupMembers gm
+  WHERE gm.groupId = p_groupId AND gm.userId = p_userId
+  INTO p_permissions;
+  p_success := TRUE;
+  p_message := 'Successfully retrieved permissions';
   RETURN;
 
 END; $$

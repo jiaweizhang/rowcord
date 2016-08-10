@@ -52,6 +52,6 @@ class Service {
 
         }, paramList);
 
-        return new GroupPermissions((long) resultMap.get("p_permissions"), (boolean) resultMap.get("p_success"), (String) resultMap.get("p_message"))
+        return new GroupPermissions((long) resultMap.get("p_permissions"), (boolean) resultMap.get("p_success"), (String) resultMap.get("p_message"));
     }
 }

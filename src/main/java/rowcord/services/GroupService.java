@@ -75,11 +75,14 @@ public class GroupService extends Service {
             throw new GroupPermissionException(groupPermissions.message);
         }
 
+        if (!groupPermissions.canInvite()) {
+            throw new GroupPermissionException("No invite permission");
+        }
+
         for (long m : req.userIds) {
-            /*
-            if (!userExists(m)) {
+            if (!isValidUser(m)) {
                 return new StdResponse(200, false, "User " + m + " does not exist");
-            }*/
+            }
             if (memberIsInGroup(m, req.groupId)) {
                 return new StdResponse(200, false, "User " + m + " is already in the group");
             }

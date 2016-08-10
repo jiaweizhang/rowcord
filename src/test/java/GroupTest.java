@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import rowcord.Application;
+import rowcord.exceptions.GroupPermissionException;
 import rowcord.models.requests.GroupCreationRequest;
 import rowcord.models.requests.GroupSearchRequest;
 import rowcord.models.requests.InviteUserRequest;
@@ -34,13 +35,17 @@ public class GroupTest {
     private UserService userService;
 
     private long userId1;
+    private long userId2;
 
     @Before
     public void Setup() {
-        String email = "email" + UUID.randomUUID().toString() + "@gmail.com";
-        RegistrationRequest r1 = new RegistrationRequest(email, "password");
+        RegistrationRequest r1 = new RegistrationRequest("email" + UUID.randomUUID().toString() + "@gmail.com", "password");
         RegistrationResponse registerResponse = (RegistrationResponse) userService.register(r1);
         userId1 = registerResponse.userId;
+
+        RegistrationRequest r2 = new RegistrationRequest("email" + UUID.randomUUID().toString() + "@gmail.com", "password");
+        RegistrationResponse registerResponse2 = (RegistrationResponse) userService.register(r2);
+        userId2 = registerResponse2.userId;
     }
 
     @Test
@@ -71,17 +76,26 @@ public class GroupTest {
         GroupCreationResponse successResponse = (GroupCreationResponse) groupService.createGroup(r);
         assert (successResponse.success);
 
-        InviteUserRequest am = new InviteUserRequest(successResponse.groupId, Collections.singletonList(userId1));
+        InviteUserRequest am = new InviteUserRequest(successResponse.groupId, Collections.singletonList(userId2));
+        am.userId = userId1;
         StdResponse successAddResponse = groupService.inviteUsers(am);
         assert (successAddResponse.success);
 
         InviteUserRequest am2 = new InviteUserRequest(successResponse.groupId, Collections.singletonList((long) 1000000));
-        StdResponse invalidUserId = groupService.inviteUsers(am2);
-        assert (invalidUserId.message.equals("User 1000000 does not exist"));
+        am2.userId = userId1;
+        try {
+            StdResponse invalidUserId = groupService.inviteUsers(am2);
+        } catch (GroupPermissionException e) {
+            assert (e.message.equals("User does not exist"));
+        }
 
-        InviteUserRequest am3 = new InviteUserRequest(successResponse.groupId, Collections.singletonList(userId1));
-        StdResponse duplicateAddResponse = groupService.inviteUsers(am3);
-        assert (duplicateAddResponse.message.equals("User " + userId1 + " is already has an invitation"));
+        InviteUserRequest am3 = new InviteUserRequest(successResponse.groupId, Collections.singletonList(userId2));
+        am3.userId = userId1;
+        try {
+            StdResponse duplicateAddResponse = groupService.inviteUsers(am3);
+        } catch (GroupPermissionException e) {
+            assert (e.message.equals("User " + userId1 + " is already has an invitation"));
+        }
     }
 
     @Test

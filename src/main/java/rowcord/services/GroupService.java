@@ -5,9 +5,7 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.transaction.annotation.Transactional;
 import rowcord.exceptions.GroupPermissionException;
 import rowcord.models.GroupPermissions;
-import rowcord.models.requests.GroupCreationRequest;
-import rowcord.models.requests.GroupSearchRequest;
-import rowcord.models.requests.InviteUserRequest;
+import rowcord.models.requests.*;
 import rowcord.models.responses.GroupCreationResponse;
 import rowcord.models.responses.GroupSearchResponse;
 import rowcord.models.responses.StdResponse;
@@ -91,6 +89,8 @@ public class GroupService extends Service {
             }
         }
 
+        // TODO if user has already requested to join the group, add into group membership instead of giving invitation
+
         List<Object[]> batch = new ArrayList<Object[]>();
         for (long m : req.userIds) {
             batch.add(new Object[]{m, req.groupId});
@@ -100,14 +100,50 @@ public class GroupService extends Service {
         return new StdResponse(200, true, totalUpdateCounts + " userIds added to group");
     }
 
+    public StdResponse getInvitations(long userId) {
+        // TODO
+        return null;
+    }
+
+    public StdResponse respondToInvitation(InvitationResponseRequest req) {
+        // TODO
+
+        // validate req
+
+        // validate invitation exists
+
+        // add to group
+        return null;
+    }
+
+    public StdResponse requestToJoinGroup(JoinGroupRequest req) {
+        // TODO
+
+        // validate req
+
+        // if invitation exists, add to group directly
+
+        // update invitation table
+        return null;
+    }
+
+    public StdResponse respondToJoinRequest(JoinGroupResponseRequest req) {
+        // TODO
+
+        // validate req
+
+        // validate join request exists
+
+        // add to group
+        return null;
+    }
+
     private boolean memberIsInGroup(long userId, long groupId) {
-        boolean isInGroup = this.jt.queryForObject("SELECT EXISTS(SELECT 1 FROM groupMembers WHERE userId = ? AND groupId = ?)", new Object[]{userId, groupId}, Boolean.class);
-        return isInGroup;
+        return this.jt.queryForObject("SELECT EXISTS(SELECT 1 FROM groupMembers WHERE userId = ? AND groupId = ?)", new Object[]{userId, groupId}, Boolean.class);
     }
 
     private boolean memberHasInvitation(long userId, long groupId) {
-        boolean hasInvitation = this.jt.queryForObject("SELECT EXISTS(SELECT 1 FROM groupInvitations WHERE userId = ? AND groupId = ?)", new Object[]{userId, groupId}, Boolean.class);
-        return hasInvitation;
+        return this.jt.queryForObject("SELECT EXISTS(SELECT 1 FROM groupInvitations WHERE userId = ? AND groupId = ?)", new Object[]{userId, groupId}, Boolean.class);
     }
 
     public GroupSearchResponse searchGroups(GroupSearchRequest req) {

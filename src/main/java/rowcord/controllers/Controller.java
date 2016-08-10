@@ -28,6 +28,16 @@ public class Controller {
         }
     }
 
+    long pre(HttpServletRequest httpServletRequest) {
+        String jwt = httpServletRequest.getHeader("Authorization");
+        try {
+            Claims claims = Jwts.parser().setSigningKey("secret key").parseClaimsJws(jwt).getBody();
+            return Long.parseLong(claims.getSubject());
+        } catch (Exception e) {
+            throw new JwtAuthException();
+        }
+    }
+
     protected ResponseEntity wrap(StdResponse stdResponse) {
         stdResponse.timestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         switch (stdResponse.status) {

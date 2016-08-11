@@ -9,6 +9,8 @@ import rowcord.models.requests.StdRequest;
 import rowcord.models.responses.StdResponse;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
+import java.util.Calendar;
 
 /**
  * Created by jiaweizhang on 7/26/2016.
@@ -27,6 +29,7 @@ public class Controller {
     }
 
     protected ResponseEntity wrap(StdResponse stdResponse) {
+        stdResponse.timestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         switch (stdResponse.status) {
             case 200:
                 return ResponseEntity.status(HttpStatus.OK).body(stdResponse);

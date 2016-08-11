@@ -11,6 +11,12 @@ consumes:
 produces:
   - application/json
 paths:
+  /api/admin/dbup:
+    get:
+      summary: Reset database
+      responses:
+        200:
+          description: Successfully reset database
   /api/users/register:
     post:
       summary: Create an account
@@ -30,7 +36,7 @@ paths:
             "password": "mypassword"
           }
       responses:
-        201:
+        200:
           description: Account created
         default:
           description: Account creation failed
@@ -53,7 +59,7 @@ paths:
             "password": "mypassword"
           }
       responses:
-        201:
+        200:
           description: Logged in
         default:
           description: Account login failed
@@ -73,7 +79,7 @@ paths:
                 type: number
                 enum: [ 1, 2, 3 ]
       responses:
-        201:
+        200:
           description: Group created
         default:
           description: Group creation failed
@@ -88,7 +94,7 @@ paths:
               search:
                 type: string
       responses:
-        201:
+        200:
           description: Successfully searched
   /api/groups/invite:
     post:
@@ -105,7 +111,7 @@ paths:
                 items:
                   type: number
       responses:
-        201:
+        200:
           description: Successfully invited
         default:
           description: Failed to invite

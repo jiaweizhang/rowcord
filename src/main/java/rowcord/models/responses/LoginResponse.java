@@ -6,9 +6,9 @@ package rowcord.models.responses;
 public class LoginResponse extends StdResponse {
     public String jwt;
 
-    public LoginResponse(int status, boolean error, String message, String jwt) {
+    public LoginResponse(int status, boolean success, String message, String jwt) {
         this.status = status;
-        this.error = error;
+        this.success = success;
         this.message = message;
         this.jwt = jwt;
     }

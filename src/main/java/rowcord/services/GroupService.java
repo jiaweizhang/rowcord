@@ -1,8 +1,10 @@
 package rowcord.services;
 
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.transaction.annotation.Transactional;
+import rowcord.exceptions.GroupPermissionException;
+import rowcord.models.GroupPermissions;
 import rowcord.models.requests.GroupCreationRequest;
 import rowcord.models.requests.GroupSearchRequest;
 import rowcord.models.requests.InviteUserRequest;
@@ -10,9 +12,10 @@ import rowcord.models.responses.GroupCreationResponse;
 import rowcord.models.responses.GroupSearchResponse;
 import rowcord.models.responses.StdResponse;
 
-import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
+import java.sql.Types;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,57 +30,64 @@ import java.util.stream.IntStream;
 public class GroupService extends Service {
 
     public StdResponse createGroup(GroupCreationRequest groupCreationRequest) {
-        int groupNameCount = this.jt.queryForObject(
-                "SELECT COUNT(*) FROM groups WHERE groupName = ?",
-                new Object[]{groupCreationRequest.groupName}, Integer.class);
-        if (groupNameCount != 0) {
-            return new StdResponse(200, true, "Group name already exists");
+
+        List<SqlParameter> paramList = Arrays.asList(
+                new SqlParameter("p_groupName", Types.VARCHAR),
+                new SqlParameter("p_groupDescription", Types.VARCHAR),
+                new SqlParameter("p_groupTypeId", Types.INTEGER),
+                new SqlParameter("p_userId", Types.BIGINT),
+                new SqlOutParameter("p_groupId", Types.BIGINT),
+                new SqlOutParameter("p_success", Types.BOOLEAN),
+                new SqlOutParameter("p_message", Types.VARCHAR)
+        );
+
+        final String procedureCall = "{call sp_createGroup(?, ?, ?, ?, ?, ?, ?)}";
+        Map<String, Object> resultMap = this.jt.call(connection -> {
+
+            CallableStatement callableStatement = connection.prepareCall(procedureCall);
+            callableStatement.setString(1, groupCreationRequest.groupName);
+            callableStatement.setString(2, groupCreationRequest.groupDescription);
+            callableStatement.setInt(3, groupCreationRequest.groupTypeId);
+            callableStatement.setLong(4, groupCreationRequest.userId);
+            callableStatement.registerOutParameter(5, Types.BIGINT);
+            callableStatement.registerOutParameter(6, Types.BOOLEAN);
+            callableStatement.registerOutParameter(7, Types.VARCHAR);
+            return callableStatement;
+
+        }, paramList);
+
+        if ((boolean) resultMap.get("p_success")) {
+            return new GroupCreationResponse(
+                    200,
+                    true,
+                    (String) resultMap.get("p_message"),
+                    (long) resultMap.get("p_groupId")
+            );
         }
-
-        if (groupCreationRequest.groupTypeId < 1 || groupCreationRequest.groupTypeId > 3) {
-            return new StdResponse(200, true, "Group type not valid");
-        }
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        this.jt.update(
-                connection -> {
-                    PreparedStatement ps = connection.prepareStatement(
-                            "INSERT INTO groups (groupName, groupDescription, groupTypeId) VALUES (?, ?, ?)",
-                            new String[]{"groupid"});
-                    ps.setString(1, groupCreationRequest.groupName);
-                    ps.setString(2, groupCreationRequest.groupDescription);
-                    ps.setInt(3, groupCreationRequest.groupTypeId);
-                    return ps;
-                },
-                keyHolder);
-
-        return new GroupCreationResponse(200, false, "Successfully created group", keyHolder.getKey().longValue());
+        return new StdResponse(200, false, (String) resultMap.get("p_message"));
     }
 
     public StdResponse inviteUsers(InviteUserRequest req) {
-        // validate list
-        if (req.userIds.size() == 0) {
-            return new StdResponse(200, true, "Cannot add empty member list");
+        req.validate();
+
+        GroupPermissions groupPermissions = getGroupPermissionsForUser(req.userId, req.groupId);
+        if (!groupPermissions.isValid) {
+            throw new GroupPermissionException(groupPermissions.message);
         }
 
-        if (!req.userIds.stream().allMatch(new HashSet<>()::add)) {
-            // duplicates exist
-            return new StdResponse(200, true, "Cannot add duplicate userIds");
-        }
-
-        if (!groupExists(req.groupId)) {
-            return new StdResponse(200, true, "Group does not exist");
+        if (!groupPermissions.canInvite()) {
+            throw new GroupPermissionException("No invite permission");
         }
 
         for (long m : req.userIds) {
-            if (!userExists(m)) {
-                return new StdResponse(200, true, "User " + m + " does not exist");
+            if (!isValidUser(m)) {
+                return new StdResponse(200, false, "User " + m + " does not exist");
             }
             if (memberIsInGroup(m, req.groupId)) {
-                return new StdResponse(200, true, "User " + m + " is already in the group");
+                return new StdResponse(200, false, "User " + m + " is already in the group");
             }
             if (memberHasInvitation(m, req.groupId)) {
-                return new StdResponse(200, true, "User " + m + " is already has an invitation");
+                return new StdResponse(200, false, "User " + m + " is already has an invitation");
             }
         }
 
@@ -87,7 +97,7 @@ public class GroupService extends Service {
         }
         int[] updateCounts = this.jt.batchUpdate("INSERT INTO groupInvitations (userId, groupId) VALUES (?, ?)", batch);
         long totalUpdateCounts = IntStream.of(updateCounts).sum();
-        return new StdResponse(200, false, totalUpdateCounts + " userIds added to group");
+        return new StdResponse(200, true, totalUpdateCounts + " userIds added to group");
     }
 
     private boolean memberIsInGroup(long userId, long groupId) {
@@ -100,19 +110,9 @@ public class GroupService extends Service {
         return hasInvitation;
     }
 
-    private boolean userExists(long userId) {
-        boolean userExists = this.jt.queryForObject("SELECT EXISTS(SELECT 1 FROM users WHERE userId = ?)", new Object[]{userId}, Boolean.class);
-        return userExists;
-    }
-
-    private boolean groupExists(long groupId) {
-        boolean groupExists = this.jt.queryForObject("SELECT EXISTS(SELECT 1 FROM groups WHERE groupId = ?)", new Object[]{groupId}, Boolean.class);
-        return groupExists;
-    }
-
     public GroupSearchResponse searchGroups(GroupSearchRequest req) {
         List<Map<String, Object>> results = this.jt.queryForList("SELECT groupId, groupName FROM groups WHERE groupName LIKE ? AND groupTypeId IN (1, 2) ORDER BY groupName LIMIT 12", req.search + "%");
         Map<Long, String> response = results.stream().collect(Collectors.toMap(r -> (long) r.get("groupId"), r -> (String) r.get("groupName")));
-        return new GroupSearchResponse(200, false, "Successfully searched groupNames", response);
+        return new GroupSearchResponse(200, true, "Successfully searched groupNames", response);
     }
 }

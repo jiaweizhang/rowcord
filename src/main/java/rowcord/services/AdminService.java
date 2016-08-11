@@ -18,13 +18,9 @@ public class AdminService extends Service {
     public StdResponse upgradeDb() throws IOException {
         String query = readQuery("sql/setup.sql");
         jt.execute(query);
-        return new StdResponse(200, false, "Successfully upgraded database");
-    }
-
-    public StdResponse tearDown() throws IOException {
-        String query = readQuery("sql/teardown.sql");
-        jt.execute(query);
-        return new StdResponse(200, false, "Successfully tore down database");
+        String procs = readQuery("sql/procs.sql");
+        jt.execute(procs);
+        return new StdResponse(200, true, "Successfully upgraded database");
     }
 
     private String readQuery(String file) throws IOException {
@@ -32,6 +28,11 @@ public class AdminService extends Service {
         String str;
         StringBuilder sb = new StringBuilder();
         while ((str = in.readLine()) != null) {
+            int index;
+            // removes single-line comments
+            if ((index = str.indexOf("--")) >= 0) {
+                str = str.substring(0, index);
+            }
             sb.append(str).append(" ");
         }
         in.close();

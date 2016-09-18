@@ -2,8 +2,11 @@
 <html ng-app="rowcordApp" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Alan Guo</title>
+    <title>Rowcord</title>
     <script src="https://use.fontawesome.com/9c7229e395.js"></script>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"
+            integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 </head>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -48,14 +51,12 @@
     <div ng-view></div>
 </div>
 
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://code.jquery.com/jquery-3.1.0.min.js"
-        integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
-
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-route.js"></script>
 <script src="scripts/app.js"></script>
+<script src="scripts/controllers/header.js"></script>
 <script src="scripts/controllers/home.js"></script>
+<script src="scripts/controllers/login.js"></script>
 
 
 </body>

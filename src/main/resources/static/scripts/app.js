@@ -1,8 +1,8 @@
 /**
  * Created by alanguo on 8/10/16.
  */
-var rowcord = angular.module('rowcordApp', ['ngRoute']);
-rowcord.config(function ($routeProvider) {
+var rowcordApp = angular.module('rowcordApp', ['ngRoute']);
+rowcordApp.config(function ($routeProvider) {
     $routeProvider
         .when('/', {
             templateUrl: '../views/home.html',

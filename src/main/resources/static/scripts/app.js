@@ -12,7 +12,14 @@ rowcordApp.config(function ($routeProvider) {
             templateUrl: '../views/login.html',
             controller: 'loginController'
         })
-
+        .when('/groups', {
+            templateUrl: '../views/groups.html',
+            controller: 'groupsController'
+        })
+        .when('/logout', {
+            templateUrl: '../views/logout.html',
+            controller: 'logoutController'
+        })
         .otherwise({
             templateUrl: '../views/home.html',
             controller: 'homeController'

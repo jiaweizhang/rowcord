@@ -6,22 +6,15 @@ rowcordApp.config(function ($routeProvider) {
     $routeProvider
         .when('/', {
             templateUrl: '../views/home.html',
-            controller: 'homeCtrl'
+            controller: 'homeController'
         })
         .when('/login', {
             templateUrl: '../views/login.html',
-            controller: 'loginCtrl'
+            controller: 'loginController'
         })
-        //.when('/resume', {
-        //    templateUrl: '../views/resume.html',
-        //    controller: 'resumeCtrl'
-        //})
-        //.when('/contact', {
-        //    templateUrl: '../views/contact.html',
-        //    controller: 'contactCtrl'
-        //})
+
         .otherwise({
             templateUrl: '../views/home.html',
-            controller: 'homeCtrl'
+            controller: 'homeController'
         })
 });
